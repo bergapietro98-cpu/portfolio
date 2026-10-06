@@ -1,0 +1,3090 @@
+<!DOCTYPE html>
+<html lang="it" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIETRO BERGAMASCHI — Portfolio & Studio Archive</title>
+    
+    <!-- Google Fonts: Cormorant Garamond, Inter, Space Grotesk, Space Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Three.js & Loaders for 3D Spatial Viewer (OBJ, FBX, GLTF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fflate@0.8.0/umd/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#F4F2ED',
+                        charcoal: '#121212',
+                        accent: '#E63946',
+                        subtle: '#888888',
+                        paperDark: '#0E0E0F',
+                        cardDark: '#171719'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Space Mono', 'monospace'],
+                        grotesk: ['Space Grotesk', 'sans-serif'],
+                        serif: ['Cormorant Garamond', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888888;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #444444;
+        }
+
+        body {
+            transition: background-color 0.25s ease, color 0.25s ease;
+            cursor: default;
+        }
+
+        #custom-cursor {
+            pointer-events: none;
+            will-change: transform, width, height;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transform: translateZ(0);
+            transition: transform 0.06s ease-out, width 0.18s ease, height 0.18s ease;
+            z-index: 9999;
+        }
+
+        /* 3D CAD Modeling Viewport Reticle */
+        #cad-cursor {
+            pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 99999;
+            will-change: transform;
+            transform: translate(-50%, -50%) translateZ(0);
+            display: none;
+        }
+        .cad-crosshair-active #project-3d-viewport,
+        .cad-crosshair-active #project-3d-canvas-container,
+        .cad-crosshair-active #project-3d-canvas-container canvas {
+            cursor: none !important;
+        }
+
+        /* Completely disable custom cursors on touch screens, smartphones and tablets */
+        @media (hover: none), (pointer: coarse), (max-width: 1023px) {
+            #custom-cursor,
+            #cad-cursor {
+                display: none !important;
+            }
+            .cad-crosshair-active #project-3d-viewport,
+            .cad-crosshair-active #project-3d-canvas-container,
+            .cad-crosshair-active #project-3d-canvas-container canvas {
+                cursor: auto !important;
+            }
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .zoom-transition {
+            transition: transform 0.2s cubic-bezier(0.2, 0, 1);
+        }
+
+        .lazy-img {
+            opacity: 0;
+            transition: opacity 0.25s ease-in-out;
+            content-visibility: auto;
+        }
+        .lazy-img.loaded {
+            opacity: 1;
+        }
+        .shimmer-placeholder {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.8s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Mobile full-screen overlay for 3D Viewport when opened */
+        #project-3d-viewport.mobile-active {
+            display: flex !important;
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100% !important;
+            height: 100dvh !important;
+            z-index: 9999 !important;
+            background-color: #0E0E10 !important;
+        }
+
+        #project-3d-canvas-container {
+            background: radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.045) 0%, rgba(18, 18, 22, 0.7) 62%, rgba(10, 10, 12, 0.95) 100%);
+            contain: strict;
+        }
+
+        #project-3d-canvas-container canvas {
+            display: block !important;
+            width: 100% !important;
+            height: 100% !important;
+            touch-action: none !important;
+            will-change: transform;
+        }
+
+        #lb-gesture-area {
+            touch-action: none;
+        }
+
+        /* GPU accelerated drawers and backdrops */
+        #modal-content,
+        #bio-window,
+        #fullscreen-lightbox,
+        #hover-preview-container {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+    </style>
+</head>
+
+<body class="bg-cream text-charcoal dark:bg-paperDark dark:text-cream font-sans min-h-full selection:bg-accent selection:text-white relative pb-16">
+
+    <!-- Interactive Cursor Dot for editorial layout (Desktop only) -->
+    <div id="custom-cursor" class="fixed top-0 left-0 w-4 h-4 rounded-full bg-accent mix-blend-difference hidden md:flex items-center justify-center -translate-x-1/2 -translate-y-1/2 pointer-events-none z-50">
+        <span id="cursor-text" class="text-[9px] font-mono text-white font-bold opacity-0 transition-opacity uppercase tracking-widest"></span>
+    </div>
+
+    <!-- 3D CAD Modeling Viewport Reticle Cursor (Desktop with precision mouse only) -->
+    <div id="cad-cursor">
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="22" y1="2" x2="22" y2="15" stroke="white" stroke-width="1" stroke-opacity="0.85"/>
+            <line x1="22" y1="29" x2="22" y2="42" stroke="white" stroke-width="1" stroke-opacity="0.85"/>
+            <line x1="2" y1="22" x2="15" y2="22" stroke="white" stroke-width="1" stroke-opacity="0.85"/>
+            <line x1="29" y1="22" x2="42" y2="22" stroke="white" stroke-width="1" stroke-opacity="0.85"/>
+            <rect id="cad-pickbox" x="17.5" y="17.5" width="9" height="9" stroke="white" stroke-width="1.2" stroke-opacity="0.9" fill="black" fill-opacity="0.35"/>
+            <circle cx="22" cy="22" r="1.5" fill="#E63946"/>
+            <g id="cad-orbit-ring" opacity="0" class="origin-center transition-opacity duration-150">
+                <circle cx="22" cy="22" r="19" stroke="#E63946" stroke-width="1" stroke-dasharray="3 3"/>
+            </g>
+        </svg>
+        <div class="absolute -bottom-3 -right-3 font-mono text-[8px] flex items-center gap-0.5 pointer-events-none select-none drop-shadow">
+            <span class="text-red-500 font-bold">X</span>
+            <span class="text-emerald-400 font-bold">Y</span>
+            <span class="text-blue-400 font-bold">Z</span>
+        </div>
+    </div>
+
+    <!-- Archival Hover Preview Floating Card -->
+    <div id="hover-preview-container" class="fixed pointer-events-none z-40 hidden md:block opacity-0 w-[280px] h-[185px] overflow-hidden rounded-sm border border-charcoal/20 dark:border-cream/20 shadow-2xl bg-charcoal transition-opacity duration-150 will-change-transform">
+        <img id="hover-preview-img" src="" alt="Anteprima Progetto" class="w-full h-full object-cover">
+    </div>
+
+    <header class="sticky top-0 z-30 bg-cream/90 dark:bg-paperDark/90 backdrop-blur-md text-sm font-mono border-b border-charcoal/5 dark:border-cream/5">
+        <div class="px-4 py-2.5 sm:py-3 md:px-8 flex items-center justify-between gap-4">
+            <!-- Studio Name -->
+            <div class="flex items-center space-x-3">
+                <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" class="font-bold text-base sm:text-lg tracking-tight hover:opacity-75 transition-opacity">
+                    PIETRO BERGAMASCHI
+                </a>
+                <span class="hidden sm:inline-block text-[11px] sm:text-xs px-2 py-0.5 border border-accent text-accent rounded uppercase tracking-widest">PORTFOLIO</span>
+            </div>
+
+            <!-- Top Actions: About Me & Mode Switcher -->
+            <div class="flex items-center space-x-4 text-xs sm:text-sm">
+                <button onclick="openBioWindow()" class="hover:text-accent transition-colors font-bold uppercase tracking-wider flex items-center gap-1.5 text-accent">
+                    <span>ABOUT ME</span>
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </button>
+                <span class="text-charcoal/20 dark:text-cream/20">|</span>
+                <button id="theme-toggle" class="hover:text-accent transition-colors flex items-center gap-1.5" title="Cambia Tema">
+                    <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                    <span class="hidden sm:inline">MODE</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="px-4 pt-3 pb-6 md:pt-3.5 md:pb-8 md:px-8 max-w-[1800px] mx-auto min-h-[75vh]">
+        
+        <!-- Category Filter & Sort Bar (Optimized Horizontal Mobile Balance) -->
+        <div class="mb-4 sm:mb-5 flex items-center justify-between gap-1.5 sm:gap-3 text-xs font-mono">
+            
+            <!-- Category Dropdown -->
+            <div class="relative flex items-center gap-1 sm:gap-1.5">
+                <span class="text-[10px] uppercase tracking-wider hidden sm:inline text-subtle">FILTRA:</span>
+                <div class="relative">
+                    <button id="category-dropdown-btn" onclick="toggleCategoryDropdown(event)" class="h-7 bg-transparent hover:bg-charcoal/5 dark:hover:bg-cream/5 border border-charcoal/20 dark:border-cream/20 text-charcoal dark:text-cream px-1.5 sm:px-2.5 rounded text-[10px] font-mono uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 cursor-pointer focus:outline-none focus:border-accent transition-colors">
+                        <span class="w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
+                        <span id="category-dropdown-label" class="truncate max-w-[105px] xs:max-w-[130px] sm:max-w-none">
+                            <span class="hidden sm:inline">CATEGORIA [TUTTI]</span>
+                            <span class="sm:hidden">CAT [TUTTI]</span>
+                        </span>
+                        <i data-lucide="chevron-down" id="category-dropdown-chevron" class="w-3 h-3 text-subtle shrink-0 transition-transform duration-200"></i>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div id="category-dropdown-menu" class="absolute top-8 left-0 z-50 bg-[#F4F2ED] dark:bg-[#161618] border border-charcoal/20 dark:border-cream/20 rounded shadow-2xl py-1 min-w-[230px] sm:min-w-[260px] max-h-[60vh] overflow-y-auto hidden">
+                        <div class="px-3 py-1 text-[9px] uppercase tracking-widest text-subtle border-b border-charcoal/10 dark:border-white/10 font-bold">
+                            SELEZIONA CATEGORIA D'ARCHIVIO
+                        </div>
+                        <div id="category-dropdown-list" class="divide-y divide-charcoal/5 dark:divide-white/5">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sort By & Layout Switcher (Balanced Spacing on Mobile) -->
+            <div class="flex items-center justify-end gap-1.5 sm:gap-3 text-subtle shrink-0">
+                <div class="relative flex items-center gap-1 sm:gap-1.5">
+                    <span class="text-[10px] uppercase tracking-wider hidden sm:inline text-subtle">ORDINA:</span>
+                    <div class="relative">
+                        <button id="sort-dropdown-btn" onclick="toggleSortDropdown(event)" class="h-7 bg-transparent hover:bg-charcoal/5 dark:hover:bg-cream/5 border border-charcoal/20 dark:border-cream/20 text-charcoal dark:text-cream px-1.5 sm:px-2.5 rounded text-[10px] font-mono uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 cursor-pointer focus:outline-none focus:border-accent transition-colors">
+                            <span class="w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
+                            <span id="sort-dropdown-label" class="truncate max-w-[85px] xs:max-w-[105px] sm:max-w-none">
+                                <span class="hidden sm:inline">ANNO [2026 → 2023]</span>
+                                <span class="sm:hidden">ANNO [26→23]</span>
+                            </span>
+                            <i data-lucide="chevron-down" id="sort-dropdown-chevron" class="w-3 h-3 text-subtle shrink-0 transition-transform duration-200"></i>
+                        </button>
+
+                        <!-- Sort Dropdown Menu -->
+                        <div id="sort-dropdown-menu" class="absolute top-8 right-0 z-50 bg-[#F4F2ED] dark:bg-[#161618] border border-charcoal/20 dark:border-cream/20 rounded shadow-2xl py-1 min-w-[210px] sm:min-w-[230px] hidden">
+                            <div class="px-3 py-1 text-[9px] uppercase tracking-widest text-subtle border-b border-charcoal/10 dark:border-white/10 font-bold">
+                                CRITERIO D'ORDINAMENTO
+                            </div>
+                            <div id="sort-dropdown-list" class="divide-y divide-charcoal/5 dark:divide-white/5">
+                                <!-- Populated dynamically via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View Switcher -->
+                <div class="flex items-center space-x-0.5 border border-charcoal/20 dark:border-cream/20 p-0.5 rounded h-7 shrink-0">
+                    <button id="view-list" onclick="setViewMode('list')" class="h-full px-1 sm:px-1.5 hover:bg-charcoal/10 dark:hover:bg-cream/10 rounded transition-colors text-accent flex items-center justify-center" title="Vista Elenco Archivio">
+                        <i data-lucide="list" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <button id="view-grid" onclick="setViewMode('grid')" class="h-full px-1 sm:px-1.5 hover:bg-charcoal/10 dark:hover:bg-cream/10 rounded transition-colors flex items-center justify-center" title="Vista Griglia">
+                        <i data-lucide="grid" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Archival Count Subtitle -->
+        <div class="mb-4 text-[10px] font-mono text-subtle uppercase tracking-wider">
+            SHOWING <span id="project-count" class="text-charcoal dark:text-cream font-bold">8</span> ARCHIVAL RECORDS
+        </div>
+
+        <!-- Dynamic Container for Grid & List Views -->
+        <div id="portfolio-container" class="transition-all duration-300">
+            <!-- Project items rendered dynamically via JavaScript -->
+        </div>
+    </main>
+
+    <div id="bio-window-backdrop" class="fixed inset-0 z-50 bg-charcoal/40 dark:bg-black/60 backdrop-blur-[2px] opacity-0 pointer-events-none transition-opacity duration-200 flex items-center justify-center p-3 sm:p-6 md:p-8">
+        <div id="bio-window" class="w-full max-w-3xl bg-[#F8F7F3] dark:bg-[#141416] text-charcoal dark:text-cream border border-charcoal/30 dark:border-cream/30 shadow-2xl rounded-sm transform scale-95 transition-transform duration-200 overflow-hidden flex flex-col max-h-[90vh]">
+            
+            <!-- Window Title Bar -->
+            <div class="bg-charcoal text-cream dark:bg-cream dark:text-charcoal px-4 py-2.5 flex items-center justify-between font-mono text-xs select-none shrink-0">
+                <span class="font-bold tracking-wider">BIO — PIETRO BERGAMASCHI.EXE</span>
+                <div class="flex items-center space-x-4">
+                    <span class="opacity-60 hidden sm:inline">[ESC TO CLOSE]</span>
+                    <button onclick="closeBioWindow()" class="font-bold hover:text-accent transition-colors">
+                        <span>[✕]</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scrollable Content Area -->
+            <div class="p-4 sm:p-6 md:p-10 overflow-y-auto space-y-6 sm:space-y-8 font-sans">
+                <!-- Headline -->
+                <div class="space-y-3">
+                    <span class="font-mono text-[10px] sm:text-xs text-accent uppercase tracking-widest font-semibold">CIAO, SONO PIETRO BERGAMASCHI</span>
+                    <h2 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif italic text-charcoal dark:text-cream leading-snug sm:leading-tight">
+                        Sono un architetto formatosi tra Milano, Venezia e Parigi. La mia forza motrice è una profonda curiosità, il piacere della scoperta guida ogni mio approccio progettuale, alimentato da un'inesauribile voglia di fare e da una costante apertura alla contaminazione con altre discipline e sguardi.
+                    </h2>
+                </div>
+
+                <!-- Narrative -->
+                <div class="space-y-3 sm:space-y-4 text-xs sm:text-sm md:text-base leading-relaxed text-charcoal/85 dark:text-cream/85 font-sans pt-1 sm:pt-4">
+                    <p>
+                        Attraverso una molteplicità di linguaggi, porto avanti un'indagine continua del mondo che mi circonda, cercando con sensibilità e umiltà di offrire una lettura critica delle diverse sfide. Considero il porsi le giuste domande come il primo passo indispensabile di un processo analitico e creativo che si sviluppa sul campo. Nel mio lavoro, il paesaggio e la città non sono mai un fondale statico, ma organismi vivi e reattivi.
+                    </p>
+                    <p>
+                        La mia ricerca si sviluppa in un’esplorazione multidisciplinare che unisce fotografia, video, disegno, realizzazione di modelli e scrittura e spazia su diversi ambiti d’indagine: dai progetti dedicati alla scuola e alla salvaguardia del territorio, alla creazione di cartografie critiche e luoghi d’incontro slegati dalle logiche di consumo; dal confronto tra corpo e architettura, fino alla documentazione delle pratiche di riappropriazione urbana.
+                    </p>
+                    <p class="font-medium text-charcoal dark:text-cream pt-1">
+                        In questa ricerca, intendo il corpo come lo strumento primario con cui percepiamo e indaghiamo lo spazio. Poiché lo spazio e il corpo sono elementi centrali nella vita di ogni persona, sono consapevole che intervenire su di essi e modificarli comporti profondo rispetto e grande responsabilità.
+                    </p>
+                </div>
+
+                <!-- Experience & Education Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 border-t border-charcoal/15 dark:border-cream/15 pt-5 sm:pt-6 font-mono text-xs">
+                    <div>
+                        <h4 class="font-bold uppercase tracking-wider text-accent mb-3 flex items-center gap-1.5">
+                            <i data-lucide="briefcase" class="w-3.5 h-3.5"></i>
+                            <span>ESPERIENZE SELEZIONATE</span>
+                        </h4>
+                        <ul class="space-y-3">
+                            <li class="border-b border-charcoal/10 dark:border-cream/10 pb-2">
+                                <div class="flex justify-between font-semibold">
+                                    <span>Teatro nel Bicchiere Festival</span>
+                                    <span>2026</span>
+                                </div>
+                                <span class="text-subtle text-[11px]">Produzione Culturale ed Eventi</span>
+                            </li>
+                            <li class="border-b border-charcoal/10 dark:border-cream/10 pb-2">
+                                <div class="flex justify-between font-semibold">
+                                    <span>Consorzio di Progettazione</span>
+                                    <span>2025 — 2026</span>
+                                </div>
+                                <span class="text-subtle text-[11px]">Venezia (VE) — Ricerca Spaziale e Progettazione Architettonica</span>
+                            </li>
+                            <li class="border-b border-charcoal/10 dark:border-cream/10 pb-2">
+                                <div class="flex justify-between font-semibold">
+                                    <span>Lorenzo Guzzini Studio</span>
+                                    <span>2023</span>
+                                </div>
+                                <span class="text-subtle text-[11px]">Milano — Assistente alla Progettazione e Modellazione</span>
+                            </li>
+                            <li>
+                                <div class="flex justify-between font-semibold">
+                                    <span>FC Internazionale Milano</span>
+                                    <span>2018 — 2024</span>
+                                </div>
+                                <span class="text-subtle text-[11px]">Steward — Stadio San Siro</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold uppercase tracking-wider text-accent mb-3 flex items-center gap-1.5">
+                            <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
+                            <span>FORMAZIONE</span>
+                        </h4>
+                        <ul class="space-y-3">
+                            <li class="border-b border-charcoal/10 dark:border-cream/10 pb-2">
+                                <div class="flex justify-between font-semibold">
+                                    <span>IUAV Università di Venezia</span>
+                                    <span>2023 — 2026</span>
+                                </div>
+                                <span class="text-subtle text-[11px]">Laurea Magistrale in Architettura</span>
+                            </li>
+                            <li class="border-b border-charcoal/10 dark:border-cream/10 pb-2">
+                                <div class="flex justify-between font-semibold">
+                                    <span>ENSA Paris-Belleville</span>
+                                    <span>2024 — 2025</span>
+                                </div>
+                                <span class="text-subtle text-[11px]">École Nationale Supérieure d'Architecture de Paris-Belleville</span>
+                            </li>
+                            <li>
+                                <div class="flex justify-between font-semibold">
+                                    <span>Politecnico di Milano</span>
+                                    <span>2019 — 2023</span>
+                                </div>
+                                <span class="text-subtle text-[11px]">Laurea Triennale in Architettura, 110/110</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Bottom Fixed Direct Contact Bar -->
+            <div class="border-t border-charcoal/15 dark:border-cream/15 px-4 sm:px-6 py-3 bg-charcoal/5 dark:bg-cream/5 flex flex-wrap justify-between items-center font-mono text-[11px] sm:text-xs gap-2 sm:gap-3 select-none shrink-0">
+                <span class="text-subtle font-medium tracking-wider">CONTATTO DIRETTO:</span>
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <a href="tel:+393770933679" class="hover:text-accent font-semibold transition-colors">+ 39 3770933679</a>
+                    <span class="text-charcoal/20 dark:text-cream/20">•</span>
+                    <a href="mailto:bergapietro98@gmail.com" class="text-accent underline font-semibold hover:opacity-80 transition-opacity truncate max-w-[190px] sm:max-w-none">bergapietro98@gmail.com</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="project-modal" class="fixed inset-0 z-50 bg-charcoal/35 dark:bg-black/45 backdrop-blur-[1px] opacity-0 pointer-events-none transition-opacity duration-300 flex justify-end">
+        
+        <!-- 3D Spatial Viewport: 50% split on lg+ screens, Fullscreen overlay when triggered on mobile/tablet -->
+        <div id="project-3d-viewport" class="hidden lg:flex lg:w-1/2 h-full flex-col relative bg-[#0D0D0F]/90 lg:bg-[#0D0D0F]/75 backdrop-blur-md border-r border-charcoal/20 dark:border-cream/15 overflow-hidden">
+            <!-- 3D Header HUD: Exactly 16px from top (top-4) with fixed 32px height (h-8) -->
+            <div class="absolute top-4 left-4 sm:left-6 right-4 sm:right-6 z-10 flex items-center justify-between font-mono text-[9px] sm:text-[10px] select-none pointer-events-none gap-2 h-8">
+                <!-- 3D Project Switcher: Project Title Dropdown (Arrows removed) -->
+                <div class="flex items-center gap-1 sm:gap-1.5 pointer-events-auto h-8">
+                    <div class="relative h-8">
+                        <button id="p3d-prj-dropdown-btn" onclick="toggle3DPrjDropdown(event)" class="h-8 flex items-center gap-1.5 bg-charcoal/85 text-cream/90 hover:text-white backdrop-blur-md px-2.5 sm:px-3 rounded border border-white/10 shadow-md cursor-pointer transition-colors">
+                            <span class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse shrink-0"></span>
+                            <span id="p3d-model-tag" class="tracking-wider uppercase font-semibold truncate max-w-[125px] sm:max-w-[210px]">PRJ // 3D VIEWER</span>
+                            <i data-lucide="chevron-down" id="p3d-prj-dropdown-chevron" class="w-3 h-3 text-white/60 shrink-0 transition-transform duration-200"></i>
+                        </button>
+
+                        <!-- Project Selector Dropdown inside 3D Viewport -->
+                        <div id="p3d-prj-dropdown-menu" class="absolute top-9 left-0 z-50 bg-[#161618] border border-white/20 rounded shadow-2xl py-1.5 min-w-[250px] sm:min-w-[280px] max-h-[55vh] overflow-y-auto hidden">
+                            <div class="px-3 py-1 text-[9px] uppercase tracking-widest text-subtle border-b border-white/10 font-bold">
+                                CAMBIA PROGETTO 3D
+                            </div>
+                            <div id="p3d-prj-dropdown-list" class="divide-y divide-white/5">
+                                <!-- Populated dynamically via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clean Controls (Mobile Back Button moved to bottom-left) -->
+                <div class="flex items-center gap-1.5 sm:gap-2 pointer-events-auto h-8">
+                    <!-- Rotation Pause / Play Button -->
+                    <button id="p3d-pause-btn" onclick="toggle3DPause()" class="h-8 px-2 sm:px-2.5 bg-charcoal/80 hover:bg-white/20 text-cream/90 backdrop-blur-md rounded border border-white/10 uppercase tracking-wider transition-colors flex items-center gap-1 shadow-md cursor-pointer" title="Pausa / Avvia rotazione">
+                        <i data-lucide="pause" id="p3d-pause-icon" class="w-3 h-3 text-accent"></i>
+                        <span id="p3d-pause-label" class="hidden sm:inline">PAUSA</span>
+                    </button>
+                    <button onclick="cycle3DDisplayMode()" class="h-8 px-2 sm:px-2.5 bg-charcoal/80 hover:bg-white/20 text-cream/90 backdrop-blur-md rounded border border-white/10 uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-md cursor-pointer">
+                        <span id="p3d-mode-dot" class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                        <span id="p3d-mode-btn-label">CAD TECH</span>
+                    </button>
+                    <button onclick="reset3DCamera()" class="h-8 px-2 sm:px-2.5 bg-charcoal/80 hover:bg-white/20 text-cream/90 backdrop-blur-md rounded border border-white/10 uppercase tracking-wider transition-colors shadow-md cursor-pointer flex items-center justify-center" title="Ripristina Camera">
+                        RESET
+                    </button>
+                </div>
+            </div>
+
+            <!-- Canvas Container: Centered flexbox to guarantee true center alignment with studio depth gradient -->
+            <div id="project-3d-canvas-container" class="w-full h-full flex-1 relative flex items-center justify-center"></div>
+
+            <!-- Bottom 3D Bar: "ORBITA A 360°" on bottom left, "TORNA AL PRJ" shifted to bottom right -->
+            <div class="absolute bottom-4 left-4 sm:left-6 right-4 sm:right-6 z-10 flex justify-between items-center font-mono text-[9px] sm:text-[10px] select-none pointer-events-none gap-3">
+                <!-- Bottom Left: "ORBITA A 360°" & subtle archive note -->
+                <div class="text-left text-cream/50 pointer-events-none flex items-center gap-2">
+                    <span id="p3d-controls-hint" class="tracking-wider uppercase font-medium text-cream/70">ORBITA A 360°</span>
+                    <span class="hidden sm:inline text-cream/20">|</span>
+                    <span class="hidden sm:inline text-cream/40">SPATIAL ARCHIVE</span>
+                </div>
+
+                <!-- Mobile Back to Project Button (Bottom Right) -->
+                <div class="pointer-events-auto">
+                    <button id="mobile-3d-close-btn" onclick="closeMobile3DView()" class="lg:hidden h-8 px-3 bg-accent text-white rounded font-mono text-[10px] font-bold uppercase tracking-wider shadow-xl hover:bg-accent/80 transition-colors flex items-center gap-1.5 cursor-pointer">
+                        <span>TORNA AL PRJ →</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Editorial Drawer Content: Matched to top-4 (pt-4) and shared 32px height (h-8) -->
+        <div id="modal-content" class="w-full lg:w-1/2 bg-cream dark:bg-cardDark h-full overflow-y-auto transform translate-x-full transition-transform duration-300 ease-out border-l border-charcoal/20 dark:border-cream/20 flex flex-col justify-between pt-4 pb-4 px-4 sm:px-6 shadow-2xl">
+            
+            <div>
+                <!-- Header: Symmetrical vertical spacing (16px to top border, 16px to bottom grey line) -->
+                <div class="flex items-center justify-between font-mono text-xs border-b border-charcoal/10 dark:border-cream/10 pb-4 mb-6">
+                    <div class="flex items-center gap-2 sm:gap-3 h-8">
+                        <!-- Quick PRJ Cycle Arrows in Top Header -->
+                        <div class="flex items-center space-x-0.5 bg-charcoal/5 dark:bg-cream/5 p-0.5 rounded border border-charcoal/15 dark:border-cream/15 h-8">
+                            <button id="modal-header-prev-btn" class="h-full px-2 hover:text-accent hover:bg-charcoal/10 dark:hover:bg-cream/10 rounded transition-colors text-xs font-bold flex items-center justify-center" title="PRJ Prec. (←)">
+                                ‹
+                            </button>
+                            <span class="text-charcoal/20 dark:text-cream/20 text-[10px]">|</span>
+                            <button id="modal-header-next-btn" class="h-full px-2 hover:text-accent hover:bg-charcoal/10 dark:hover:bg-cream/10 rounded transition-colors text-xs font-bold flex items-center justify-center" title="PRJ Succ. (→)">
+                                ›
+                            </button>
+                        </div>
+                        <span id="modal-id" class="text-accent font-bold">PRJ-01</span>
+                        <span class="text-charcoal/30 dark:text-cream/30">//</span>
+                        <span id="modal-category" class="text-subtle uppercase tracking-wider text-[9px] sm:text-[10px] truncate max-w-[120px] sm:max-w-none">ARCHITETTURA</span>
+                    </div>
+                    <button onclick="closeProjectModal()" class="h-8 flex items-center gap-1.5 hover:text-accent transition-colors uppercase font-normal tracking-wider text-[11px] sm:text-xs">
+                        <span>CHIUDI</span>
+                        <span class="hidden sm:inline">[ESC]</span>
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Title & Subtitle -->
+                <div>
+                    <h1 id="modal-title" class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal italic tracking-tight leading-tight sm:leading-none text-charcoal dark:text-cream">
+                        Titolo del Progetto
+                    </h1>
+                    <p id="modal-subtitle" class="mt-2 font-mono text-[10px] sm:text-[11px] uppercase tracking-widest text-charcoal dark:text-cream font-normal">
+                        Sottotitolo
+                    </p>
+                </div>
+
+                <!-- Mobile / Tablet Dedicated 3D Spatial Viewer Trigger Button -->
+                <div class="lg:hidden mt-4">
+                    <button onclick="openMobile3DView()" class="w-full py-2.5 px-3.5 bg-charcoal text-cream dark:bg-cream dark:text-charcoal hover:bg-accent hover:text-white dark:hover:bg-accent dark:hover:text-white transition-all rounded-sm flex items-center justify-between font-mono text-[11px] font-bold shadow-md border border-charcoal/20 dark:border-cream/20">
+                        <span class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+                            <span id="mobile-3d-btn-title">VISUALIZZA 3D [PRJ-01]</span>
+                        </span>
+                        <span class="text-[9px] tracking-wider uppercase bg-accent/15 text-accent px-1.5 py-0.5 rounded font-mono">
+                            APRI 3D ↗
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Metadata Row: Location (left), Client (middle), Year (right) -->
+                <div class="grid grid-cols-3 gap-2 sm:gap-4 py-3 sm:py-4 my-4 sm:my-5 border-y border-charcoal/15 dark:border-cream/15 font-mono text-[10px] sm:text-xs">
+                    <div>
+                        <span class="text-subtle block uppercase tracking-wider text-[9px] sm:text-[10px] mb-0.5 sm:mb-1">LOCATION</span>
+                        <span id="modal-location" class="font-semibold text-charcoal dark:text-cream block truncate">—</span>
+                    </div>
+                    <div>
+                        <span class="text-subtle block uppercase tracking-wider text-[9px] sm:text-[10px] mb-0.5 sm:mb-1">CLIENT</span>
+                        <span id="modal-client" class="font-semibold text-charcoal dark:text-cream block truncate">—</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-subtle block uppercase tracking-wider text-[9px] sm:text-[10px] mb-0.5 sm:mb-1">YEAR</span>
+                        <span id="modal-year" class="font-semibold text-charcoal dark:text-cream block">—</span>
+                    </div>
+                </div>
+
+                <!-- Narrative Overview -->
+                <div class="py-2 sm:py-3 space-y-3 sm:space-y-4 font-sans text-xs sm:text-sm md:text-base leading-relaxed text-charcoal/90 dark:text-cream/90">
+                    <h3 class="font-mono text-[10px] sm:text-xs uppercase tracking-widest text-subtle">PRJ OVERVIEW</h3>
+                    <div id="modal-description" class="space-y-3 sm:space-y-4 text-justify [text-align-last:left] hyphens-none leading-relaxed">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Media Viewer with Touch Swipe on Mobile/Tablet -->
+                <div class="my-5 sm:my-6 space-y-3 sm:space-y-4">
+                    <div id="modal-media-box" class="relative group bg-charcoal/5 dark:bg-cream/5 rounded border border-charcoal/10 dark:border-cream/10 overflow-hidden cursor-zoom-in w-full select-none">
+                        <!-- Photo container (Full width, auto-scaling height preserving original ratio) -->
+                        <img id="modal-main-img" src="" alt="Anteprima Progetto" class="w-full h-auto block transition-transform duration-500 group-hover:scale-[1.01]">
+                        <!-- Video container: Autoplay, muted, loop, full width, natural auto height -->
+                        <video id="modal-main-video" autoplay loop muted playsinline preload="metadata" class="w-full h-auto block bg-black hidden pointer-events-none"></video>
+
+                        <!-- In-page Media Slide Counter (useful for touch swiping on mobile) -->
+                        <div id="modal-media-counter" class="absolute top-2.5 left-2.5 bg-charcoal/80 text-cream font-mono text-[9px] px-2 py-0.5 rounded shadow pointer-events-none backdrop-blur-sm">
+                            01 / 01
+                        </div>
+
+                        <!-- Fullscreen overlay button -->
+                        <div id="modal-fullscreen-hint" class="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 bg-charcoal/85 text-cream font-mono text-[9px] sm:text-[10px] px-2 sm:px-2.5 py-1 rounded opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 sm:gap-1.5 uppercase tracking-wider pointer-events-none shadow-lg backdrop-blur-sm">
+                            <i data-lucide="maximize-2" class="w-3 h-3 text-accent"></i>
+                            <span>FULL SCREEN</span>
+                        </div>
+                    </div>
+                    <!-- Thumbnails row -->
+                    <div id="modal-gallery-thumbs" class="grid grid-cols-4 sm:grid-cols-6 gap-1.5 sm:gap-2">
+                        <!-- Thumbnails injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer: Prev / Next Navigation aligned with bottom margin -->
+            <div class="pt-4 border-t border-charcoal/15 dark:border-cream/15 flex justify-between items-center font-mono text-[11px] sm:text-xs">
+                <button id="modal-prev-btn" class="hover:text-accent flex items-center gap-1 transition-colors">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                    <span>PRJ PREC.</span>
+                </button>
+                <button id="modal-next-btn" class="hover:text-accent flex items-center gap-1 transition-colors">
+                    <span>PRJ SUCC.</span>
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fullscreen Lightbox (Mobile & Tablet Refined) -->
+    <div id="fullscreen-lightbox" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-between p-3 sm:p-5 md:p-8 select-none">
+        
+        <!-- Lightbox Top Bar: Minimal with PRJ badge, counter, and touch-target X button -->
+        <div class="flex items-center justify-between font-mono text-xs text-cream/70 border-b border-white/10 pb-3 relative">
+            <div class="flex items-center gap-2 sm:gap-3 relative">
+                <!-- Dropdown Trigger on Project ID (Title removed) -->
+                <button id="lb-prj-dropdown-btn" onclick="toggleLightboxPrjDropdown(event)" class="text-accent font-bold flex items-center gap-1.5 px-2.5 py-1 rounded bg-white/5 hover:bg-white/15 border border-accent/40 transition-colors cursor-pointer group text-xs sm:text-sm" title="Cambia PRJ">
+                    <span id="lb-prj-id">PRJ-01</span>
+                    <i data-lucide="chevron-down" id="lb-prj-dropdown-chevron" class="w-3.5 h-3.5 transition-transform duration-200"></i>
+                </button>
+
+                <!-- Project Selector Dropdown Menu -->
+                <div id="lb-prj-dropdown-menu" class="absolute top-9 left-0 z-50 bg-[#161618] border border-white/20 rounded shadow-2xl py-1.5 min-w-[260px] sm:min-w-[280px] max-h-[60vh] overflow-y-auto hidden">
+                    <div class="px-3 py-1 text-[9px] uppercase tracking-widest text-subtle border-b border-white/10 font-bold">
+                        SELEZIONA PROGETTO D'ARCHIVIO
+                    </div>
+                    <div id="lb-prj-dropdown-list" class="divide-y divide-white/5">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide Counter & Simple Touch-Friendly 'X' Close Button -->
+            <div class="flex items-center gap-3 sm:gap-5">
+                <div class="flex items-center gap-1.5">
+                    <span id="lb-counter" class="text-accent font-bold text-xs sm:text-sm tracking-wider">01 / 01</span>
+                </div>
+                <!-- Clean [X] Button without text -->
+                <button onclick="closeLightbox()" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-cream hover:text-accent bg-white/10 hover:bg-white/20 active:scale-95 rounded transition-all cursor-pointer" title="Chiudi">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Lightbox Center Content with Gesture Area (Touch Swipe, Pinch-to-Zoom & Pan) -->
+        <div id="lb-gesture-area" class="relative flex-1 flex items-center justify-center my-2 sm:my-4 overflow-hidden cursor-zoom-in">
+            <!-- Nav buttons visible on larger screens, gesture on touch -->
+            <button onclick="prevLightboxSlide()" class="hidden md:flex absolute left-2 md:left-6 z-20 w-11 h-11 rounded-full bg-black/60 hover:bg-accent text-white items-center justify-center transition-all border border-white/20 hover:border-transparent group" title="PRJ Prec. (←)">
+                <i data-lucide="chevron-left" class="w-6 h-6 group-hover:-translate-x-0.5 transition-transform"></i>
+            </button>
+
+            <div class="w-full h-full flex items-center justify-center overflow-hidden">
+                <img id="lb-main-img" src="" alt="Fullscreen Archival View" class="max-w-[92vw] max-h-[74vh] object-contain shadow-2xl select-none zoom-transition pointer-events-auto origin-center">
+                <video id="lb-main-video" controls playsinline preload="metadata" class="max-w-[92vw] max-h-[74vh] object-contain hidden shadow-2xl bg-black"></video>
+            </div>
+
+            <button onclick="nextLightboxSlide()" class="hidden md:flex absolute right-2 md:right-6 z-20 w-11 h-11 rounded-full bg-black/60 hover:bg-accent text-white items-center justify-center transition-all border border-white/20 hover:border-transparent group" title="PRJ Succ. (→)">
+                <i data-lucide="chevron-right" class="w-6 h-6 group-hover:translate-x-0.5 transition-transform"></i>
+            </button>
+        </div>
+
+        <!-- Lightbox Bottom Thumbnails & Hints (Text hidden on smartphone and tablet touch, visible only on desktop lg+) -->
+        <div class="flex items-center justify-center lg:justify-between gap-2 border-t border-white/10 pt-2 sm:pt-3">
+            <span class="font-mono text-[9px] sm:text-[10px] text-cream/40 uppercase tracking-widest hidden lg:inline">
+                SCORRI / ROTELLINA PER ZOOM
+            </span>
+            <div id="lb-thumbnails" class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto max-w-full py-1">
+                <!-- Injected via JS -->
+            </div>
+            <span class="font-mono text-[9px] sm:text-[10px] text-cream/40 uppercase tracking-widest hidden lg:inline">
+                [ESC PER USCIRE]
+            </span>
+        </div>
+    </div>
+
+    <!-- Fixed Bottom Status Footer -->
+    <footer class="fixed bottom-0 left-0 right-0 z-30 bg-cream/95 dark:bg-paperDark/95 backdrop-blur-md border-t border-charcoal/15 dark:border-cream/15 py-2.5 px-4 md:px-8 text-xs font-mono flex items-center justify-between text-charcoal dark:text-cream select-none">
+        <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>
+            <a href="tel:+393770933679" class="hover:text-accent transition-colors font-medium tracking-wider">+ 39 3770933679</a>
+        </div>
+        <div>
+            <a href="mailto:bergapietro98@gmail.com" class="hover:text-accent transition-colors font-medium tracking-wider underline decoration-charcoal/30 dark:decoration-cream/30 hover:decoration-accent">bergapietro98@gmail.com</a>
+        </div>
+    </footer>
+
+    <script>
+        /*
+           ==========================================================================
+           DEVICE DETECTION UTILITY (Fine pointer / mouse vs Touch)
+           ==========================================================================
+        */
+        function hasFinePointer() {
+            return window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches && window.innerWidth >= 1024;
+        }
+
+        /*
+           ==========================================================================
+           GLOBAL MOBILE 3D VIEWER FUNCTIONS (REFINED DIMENSION RECALCULATION)
+           ==========================================================================
+        */
+        function update3DViewportDimensions() {
+            const container = document.getElementById('project-3d-canvas-container');
+            if (container && renderer3d && camera3d) {
+                const w = container.clientWidth || window.innerWidth;
+                const h = container.clientHeight || window.innerHeight;
+                if (w > 0 && h > 0) {
+                    camera3d.aspect = w / h;
+                    camera3d.updateProjectionMatrix();
+                    renderer3d.setSize(w, h, false);
+                    renderer3d.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+                }
+            }
+        }
+        window.update3DViewportDimensions = update3DViewportDimensions;
+
+        function openMobile3DView() {
+            const viewport = document.getElementById('project-3d-viewport');
+            if (!viewport) return;
+            viewport.classList.add('mobile-active');
+
+            const activeList = getFilteredAndSortedProjects();
+            const p = currentActiveProject || activeList[currentModalIndex] || projects[currentModalIndex];
+            currentActiveProject = p;
+
+            if (p && typeof window.setupProject3D === 'function') {
+                window.setupProject3D(p);
+            }
+
+            // Staged dimension updates ensuring reflow is captured smoothly without lag spikes
+            requestAnimationFrame(() => {
+                update3DViewportDimensions();
+                if (typeof window.reset3DCamera === 'function') {
+                    window.reset3DCamera();
+                }
+            });
+            setTimeout(update3DViewportDimensions, 100);
+        }
+        window.openMobile3DView = openMobile3DView;
+
+        function closeMobile3DView() {
+            const viewport = document.getElementById('project-3d-viewport');
+            if (!viewport) return;
+            viewport.classList.remove('mobile-active');
+            if (window.innerWidth < 1024) {
+                window.stop3DRenderLoop();
+            }
+        }
+        window.closeMobile3DView = closeMobile3DView;
+
+        /*
+           ==========================================================================
+           ARCHIVAL DATASET
+           ==========================================================================
+        */
+        const projects = [
+            {
+                id: "PRJ-02",
+                title: "I Don't Want To Grow Up",
+                subtitle: "Il vuoto come risorsa",
+                category: "Architettura",
+                location: "Mestre (VE) // ITA",
+                year: "2024",
+                client: "A. Iorio, S. Bullo",
+                model3d: "images/IORIO/xsitoport/ONJJ.glb",
+                drapeImg: null,
+                description: `Il progetto di laboratorio interviene nel tessuto urbano di Mestre per risponderne alle fragilità storiche e territoriali.\n\nOriginariamente sviluppatasi in stretta sinergia con il fiume Marzenego, la città ha subito prima l'industrializzazione del dopoguerra e poi la subalternità al turismo veneziano, trasformandosi in un'area di servizio deregolamentata e segnata dal degrado, con dinamiche spesso ignorate dai recenti interventi urbani, M9 in primis.\n\nL'intervento si insedia in un <em class="italic">terrain vague</em> centrale assumendo una postura critica: accoglie il linguaggio dell'edificato esistente ma riattiva la memoria fluviale del luogo. Una nuova piazza pubblica, segnata da monolitici blocchi in cemento dalle forme scultoree e inclinate, fa da soglia verso un ampio parco urbano racchiuso tra i palazzi circostanti. Il parco valorizza le preesistenze archeologico-industriali, convertendo un involucro edilizio in uno scheletro praticabile e le vecchie fondazioni in una vasca d'acqua.\n\nIl programma funzionale unisce un volume centrale per concerti a pianta centrale, corpi laterali per commercio e mensa, e molteplici spazi collettivi ad accesso libero, pensati per restituire alla comunità luoghi di sosta e socialità slegati dal consumo.`,
+                coverImg: "images/IORIO/xsitoport/rendu2export.jpg",
+                gallery: [
+                    "images/IORIO/xsitoport/schema-grande-LAGUNA.jpg",
+                    "images/IORIO/xsitoport/DSCF5643.jpg",
+                    "images/IORIO/xsitoport/DSCF5766.jpg",
+                    "images/IORIO/xsitoport/axomilitare.jpg",
+                    "images/IORIO/xsitoport/SPACCATO-AXO.jpg",
+                    "images/IORIO/xsitoport/1-500.jpg",
+                    "images/IORIO/xsitoport/1-250.jpg",
+                    "images/IORIO/xsitoport/PROSPETTI.jpg",
+                    "images/IORIO/xsitoport/SEZIONI-AA-BB.jpg",
+                    "images/IORIO/xsitoport/meccanica-definitivo.jpg",
+                    "images/IORIO/xsitoport/render3export.jpg",
+                    "images/IORIO/xsitoport/Rendu-1-bis.jpg",
+                    "images/IORIO/xsitoport/rendu2export.jpg"
+                ]
+            },
+            {
+                id: "PRJ-01",
+                title: "Scuola Espansa",
+                subtitle: "Una matrice civica e culturale per la città contemporanea",
+                category: "Architettura",
+                location: "Castelfranco Veneto (TV) // ITA",
+                year: "2023",
+                client: "A. Ferlenga, V. Tatano, G. Emmi",
+                model3d: "images/ferlenga/TENT1.glb",
+                drapeImg: null,
+                description: `In un panorama nazionale segnato dal precario stato di salute dell'istituzione scolastica e da un patrimonio edilizio spesso fatiscente, concepito per modelli pedagogici ormai superati e inadeguati ad affrontare le complessità del nostro tempo, il progetto di recupero di un complesso esistente a Castelfranco Veneto si propone come un'alternativa concreta e rigenerativa.\n\nL'intervento riconfigura l'edificio in un polo scolastico integrato, capace di agire come centro attivo e punto di riferimento non solo per la comunità studentesca, ma per l'intera cittadinanza. La scuola supera così il proprio recinto fisico e funzionale per trasformarsi in un luogo di crescita culturale diffuso, accessibile a diverse fasce d'età anche nelle ore extrascolastiche.\n\nL’architettura si fa strumento di trasformazione pedagogica, spaziale e cantiere sostenibile: il mantenimento della struttura originaria si sposa con l'inserimento strategico di moduli prefabbricati in legno. Questa scelta risponde a un'attenta fattibilità costruttiva e garantisce tempi di posa ridotti, consentendo l'assemblaggio in loco durante i periodi di sospensione delle lezioni senza mai interrompere la continuità delle attività didattiche.\n\nI moduli lignei scardinano la rigidità della didattica passiva e la tradizionale sequenza aula-corridoio: i connettivi orizzontali si dilatano, accogliendo aree per lo studio autonomo, l'interazione informale, il riposo e le attività di gruppo fuori dall'aula.\n\nL'ampliamento complessivo integra una nuova ala amministrativa con aula magna pensata per supportare la gestione di una struttura complessa in crescita e una biblioteca/archivio scolastico. All'esterno, una nuova piazza fa da cerniera tra i corpi edificati e il tessuto urbano, mentre il parco circostante diviene un’infrastruttura fluida in cui si alternano sport, svago e outdoor education aperti alla vita del quartiere.`,
+                coverImg: "images/ferlenga/06_amministrazione_2.jpg",
+                gallery: [
+                    "images/ferlenga/Assonometria_grande_ULTIMA-(1).jpg",
+                    "images/ferlenga/Binder1.pdf_Pagina_1.jpg",
+                    "images/ferlenga/Binder1.pdf_Pagina_2.jpg",
+                    "images/ferlenga/Binder1.pdf_Pagina_3.jpg",
+                    "images/ferlenga/Binder1.pdf_Pagina_4.jpg",
+                    "images/ferlenga/Pagina_4.jpg",
+                    "images/ferlenga/Binder1.pdf_Pagina_5.jpg",
+                    "images/ferlenga/Prospetto_01.1.jpg",
+                    "images/ferlenga/TAVOLE-TATANO_Pagina_1.jpg",
+                    "images/ferlenga/TAVOLE-TATANO_Pagina_2.jpg",
+                    "images/ferlenga/01_vista-biblioteca.jpg",
+                    "images/ferlenga/02_dal-nord_notte.jpg",
+                    "images/ferlenga/03_dal-sud.jpg",
+                    "images/ferlenga/05_biblio_2.jpg",
+                    "images/ferlenga/06_amministrazione_2.jpg"
+                ]
+            },
+            {
+                id: "PRJ-05",
+                title: "Watching The Watchers",
+                subtitle: "Cartografia critica della videosorveglianza a Parigi",
+                category: "Architettura",
+                location: "Parigi // FR",
+                year: "2025",
+                client: "E. Essaïan",
+                model3d: null,
+                drapeImg: "images/SEMINAIRE/DSC05068.jpg",
+                description: `La domanda centrale da cui si sviluppa questa ricerca è: <em class="italic">come funzionano i sistemi di videosorveglianza, da cosa sono composti e in che modo interagiscono con lo spazio e il paesaggio urbano?</em>\n\nIl progetto affonda le sue radici nei principi dell'Internazionale Situazionista, adottando la <em class="italic">dérive psicogeografica</em> come metodo primario di indagine: attraversare e vivere la città per analizzarne le dinamiche di potere invisibili. L'atto di osservare la videosorveglianza si trasforma così in una pratica di sovversione dello sguardo, un watching the watchers che ribalta la prospettiva del controllo sistemico. La ricerca si è svolta tra le strade di Parigi, trasformando il tessuto urbano nello scenario di un'esplorazione critica ed esperientialie.\n\nA questa dimensione d'indagine diretta si affianca la raccolta e la visualizzazione dei dati. Attraverso la consultazione di canali istituzionali, ho mappato la presenza dei dispositivi per rendere visibile la struttura invisibile del controllo tecnologico nello spazio pubblico. La fotografia interviene poi come ulteriore livello analitico, documentando come l'oggetto "telecamera" si articoli fisicamente nell'architettura e nell'arredo urbano, fino a naturalizzare la propria presenza.\n\nQuesto lavoro si configura così come un esercizio sperimentale che mette in dialogo ricerca sul campo, cartografia e documentazione visiva: un'integrazione di metodologie diverse per esplorare lo spazio urbano e riflettere su come la tecnologia modella la nostra percezione della città.`,
+                coverImg: "images/SEMINAIRE/DSC05216.JPG",
+                gallery: [
+                    {
+                        src: "images/SEMINAIRE/videocamere.mp4",
+                        poster: "images/SEMINAIRE/DSC05216.JPG"
+                    },
+                    "images/SEMINAIRE/COPERTINA-INDICE-DRITTI.jpg",
+                    "images/SEMINAIRE/NUMERO-CAMERE.jpg",
+                    "images/SEMINAIRE/DENSITà-E-TURISMO.jpg",
+                    "images/SEMINAIRE/TOT-E-DESNITY.jpg",
+                    "images/SEMINAIRE/1ARNDSMNT.jpg",
+                    "images/SEMINAIRE/19ESIMO.jpg",
+                    "images/SEMINAIRE/CANDELABRE-PIETON.jpg",
+                    "images/SEMINAIRE/LAMPIONISTORICI.jpg",
+                    "images/SEMINAIRE/CAMERAPTZ.jpg",
+                    "images/SEMINAIRE/1_CAMERAPTZ.jpg",
+                    "images/SEMINAIRE/MAPPA.jpg"
+                ]
+            },
+            {
+                id: "PRJ-04",
+                title: "Furore Composto",
+                subtitle: "Cortometraggio al Centre National de la Danse (CND)",
+                category: "Videomaking",
+                location: "Pantin // FR",
+                year: "2024",
+                client: "A. Pasquier",
+                model3d: null,
+                drapeImg: "images/furore composto/Screenshot 2026-10-01 133810.png",
+                description: `L’architettura smette di essere un semplice sfondo per farsi protagonista, partner narrativo e rivelatore di emozioni. Attraverso una ricerca che unisce qualità sensibili come luce, materia, proporzioni e memoria a una sperimentazione visivo-sonora al confine tra finzione e documentario, il cortometraggio trasforma lo spazio in una materia viva, fluida e in continua reinvenzione.\n\nL’opera indaga la relazione profonda e conflittuale tra corpo e architettura, mettendo in dialogo il dinamismo, la fluidità e la carnalità della figura umana con le linee rigide, severe e brutaliste dell'edificio del CND (Centre National de la Danse) di Pantin. Nel confronto serrato tra la materia organica in movimento e la monumentalità del cemento, lo spazio si riscopre organismo reattivo e il gesto cinematografico rivela come la percezione stessa dell'architettura possa essere riscritta dall'esperienza sensoriale e dalla presenza del corpo.\n\n<div class="mt-6 pt-4 border-t border-charcoal/15 dark:border-cream/15 font-mono text-xs"><span class="text-subtle uppercase tracking-widest text-[10px] block mb-1 font-semibold">SELEZIONI E FESTIVAL</span><p class="font-sans font-medium text-sm text-charcoal dark:text-cream">Festival Close Up 2025, Parigi</p></div>`,
+                coverImg: "images/furore composto/Screenshot-2026-10-01-132701.jpg",
+                gallery: [
+                    "images/furore composto/Screenshot-2026-10-01-133913.jpg",
+                    "images/furore composto/Screenshot-2026-10-01-133928.jpg",
+                    "images/furore composto/Screenshot-2026-10-01-132504.jpg",
+                    "images/furore composto/Screenshot-2026-10-01-132545.jpg",
+                    "images/furore composto/Screenshot-2026-10-01-132536.jpg",
+                    "images/furore composto/Screenshot-2026-10-01-132556.jpg",
+                    "images/furore composto/Screenshot-2026-10-01-132608.jpg",
+                    "images/furore composto/Screenshot-2026-10-01-132633.jpg",
+                    "images/furore composto/Screenshot-2026-10-01-132701.jpg",
+                    "images/furore composto/Screenshot-2026-10-01-132727.jpg",
+                    "images/furore composto/Screenshot-2026-10-01-132817.jpg",
+                    "images/furore composto/Screenshot-2026-10-01-132925.jpg",
+                    "images/furore composto/Screenshot-2026-10-01-133021.jpg",
+                    "images/furore composto/Screenshot-2026-10-01-133521.jpg",
+                    "images/furore composto/Screenshot-2026-10-01-133826.jpg"
+                ]
+            },
+            {
+                id: "PRJ-03",
+                title: "Atlantikwall",
+                subtitle: "Gita in Haut de France tra bunker e diffidenza",
+                category: "Videomaking",
+                location: "Le Portel // FR",
+                year: "2024",
+                client: "Personal",
+                model3d: null,
+                drapeImg: "images/atlantikwall/Screenshot 2026-10-01 140443.png",
+                description: `Realizzato sotto forma di video-diario, il cortometraggio documenta un'esplorazione lungo le coste dell'Hauts-de-France per osservare ciò che resta delle fortificazioni del Vallo Atlantico. Ormai in rovina e lentamente erosi dal tempo e dagli agenti atmosferici, questi bunker si sono trasformati in parte integrante del paesaggio costiero, sospesi tra memoria monumentale e decadenza naturale.\n\nAttraverso la forma di un racconto ordinario e riflessivo, l'opera indaga lo stato attuale del territorio, mettendo in sovrapposizione la stratificazione storica della Seconda Guerra Mondiale con le tracce della contemporaneità, segnate dalla presenza e dalle dinamiche delle crisi migratorie di chi tenta la traversata del Canale della Manica.`,
+                coverImg: "images/atlantikwall/Screenshot-2026-10-01-140343.jpg",
+                gallery: [
+                    "images/atlantikwall/Screenshot-2026-10-01-134248.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-134319.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-134339.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-134455.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-134522.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-134636.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-134721.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-134802.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-135312.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-135346.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-135504.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-135835.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-140124.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-140133.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-140146.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-140203.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-140250.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-140343.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-140443.jpg",
+                    "images/atlantikwall/Screenshot-2026-10-01-140534.jpg"
+                ]
+            },
+            {
+                id: "PRJ-07",
+                title: "Garda Street Parade",
+                subtitle: "Vieni a danzare con noi",
+                category: "Urbanistica",
+                location: "Desenzano del Garda (BS) // ITA",
+                year: "2026",
+                client: "Personal",
+                model3d: null,
+                drapeImg: "images/street/_LOR6576.jpg",
+                description: `Il progetto documenta l’organizzazione e la realizzazione di una street parade, dove il gesto liberatorio della danza si carica di un profondo valore politico, anticapitalista e di riappropriazione dello spazio pubblico, inteso come luogo di collettività e dissenso slegato dalle logiche del consumo.\n\nAttraverso l'occupazione festosa e consapevole delle strade e delle piazze, la manifestazione oppone la voglia di stare insieme alle dinamiche speculative che rendono la città sempre più inabitabile, svuotando i luoghi di significato per ridurli a meri spazi di transito anziché di ritrovo e aggregazione.\n\nIn risposta a un sistema oppressivo, a decreti restrittivi e ad abusi di potere, la piazza si trasforma in uno spazio di resistenza, la festa diventa uno strumento per sottrarre il territorio all'abbandono e allo sfruttamento, convertendo il corpo collettivo in un atto di opposizione contro ogni forma di violenza istituzionale e contro tutte le guerre.`,
+                coverImg: "images/street/_LOR6752.jpg",
+                gallery: [
+                    "images/street/Risorsa-4.jpg",
+                    "images/street/Risorsa-5.jpg",
+                    "images/street/Risorsa-1.jpg",
+                    "images/street/Risorsa-2.jpg",
+                    "images/street/Risorsa-3.jpg",
+                    "images/street/_LOR6560.jpg",
+                    "images/street/_LOR6565.jpg",
+                    "images/street/_LOR6587.jpg",
+                    "images/street/_LOR6596.jpg",
+                    "images/street/_LOR6599.jpg",
+                    "images/street/_LOR6612.jpg",
+                    "images/street/_LOR6641.jpg",
+                    "images/street/_LOR6675.jpg",
+                    "images/street/_LOR6678.jpg",
+                    "images/street/_LOR6688.jpg",
+                    "images/street/_LOR6678.jpg",
+                    "images/street/_LOR6710.jpg",
+                    "images/street/_LOR6720.jpg",
+                    "images/street/_LOR6745.jpg",
+                    "images/street/_LOR6748.jpg",
+                    "images/street/_LOR6752.jpg",
+                    "images/street/_LOR6780.jpg"
+                ]
+            },
+            {
+                id: "PRJ-06",
+                title: "Trame Visive",
+                subtitle: "Installazione",
+                category: "Installazione",
+                location: "Verona (VR) // ITA",
+                year: "2025",
+                client: "Kene Collective x Verona Art Week",
+                model3d: null,
+                drapeImg: "images/kene 432/Sequenza-01.00_02_23_03.jpg",
+                description: `“Quale impronta seguire per raggiungere la meta?” “Quale sarà l’eredità che lascerò?” “Come posso lasciare il segno nel mondo?” Se si riflette su queste domande in senso lato, estrapolandone un senso diverso rispetto al più immediato valore deterministico o aspirazionale, ci si accorge che emergono principalmente tre elementi fondamentali: la traccia, inteso come testimonianza del proprio passaggio; l’ intreccio di questa con le altre per dar vita a una trama di relazioni potenzialmente infinite; e la memoria, tangibile, come un’impronta, o intangibile, come il ricordo che deriva da un’incontro.\n\nLa vita è in sé e per sé il passaggio e l’interscambio tra l’individualità e la collettività, tra la solitudine e la condivisione, ed è proprio ciò che qualcuno ha fatto prima di noi a darci la bussola per seguire - o non seguire - determinati percorsi. Ecco allora che accade qualcosa dopo ogni sguardo, ogni stretta di mano, ogni conversazione, ogni amicizia e amore, ogni odio e discussione, persino dopo la morte: non importa più il tempo di interazione che si è avuto con un essere umano, la barriera temporale cede in virtù dell’effetto che quella avrà nella vita di altri.\n\nOgni giorno una traccia di vita segna il futuro percorso di altri, a distanza di secoli o di minuti, di secondi o di mesi, per dar vita alla vita stessa. TRAME VISIVE si propone come lente di ingrandimento sulle piccole grandi tracce del quotidiano, per ricordare che inconsapevolmente o meno, tutti valiamo per qualcuno, persino in un futuro che non vedremo mai.`,
+                coverImg: "images/kene 432/LRNZ7438.MP4.00_00_10_12.jpg",
+                gallery: [
+                    "images/kene 432/LRNZ7438.MP4.00_00_10_12.jpg",
+                    "images/kene 432/LRNZ7438.MP4.00_00_15_16.jpg",
+                    "images/kene 432/LRNZ7438.MP4.00_00_35_00.jpg",
+                    "images/kene 432/LRNZ7438.MP4.00_01_33_02.jpg",
+                    "images/kene 432/Sequenza-01.00_00_14_11.jpg",
+                    "images/kene 432/Sequenza-01.00_02_23_03.jpg",
+                    "images/kene 432/Sequenza-01.00_02_33_22.jpg",
+                    "images/kene 432/Copia-di-Selezione-clip.00_00_58_08.Immagine002.jpg",
+                    "images/kene 432/INSTA_QUADRATO_NORM_BIANCO.jpg"
+                ]
+            },
+            {
+                id: "PRJ-08",
+                title: "The Edge of Becoming",
+                subtitle: "Videomapping per il Bright Festival 2026",
+                category: "Videomapping",
+                location: "Firenze (FI) // ITA",
+                year: "2026",
+                client: "Kene Collective x Bright Festival",
+                model3d: null,
+                drapeImg: "images/kene bright festival/_LOR4102.jpg",
+                description: `In <em class="italic">I passage di Parigi (Das Passagen-Werk)</em>, Walter Benjamin riflette sui passages couverts parigini e su come queste strutture tipiche del primo Novecento rappresentino la forma originaria della modernità: la fantasmagoria che alimenta l'illusione ottica del sociale. A partire da questa idea, possiamo pensarli come uno spazio liminale, una soglia che permette l'accesso a un altro mondo. Si tratta di soglie a metà strada tra il noto e l'ignoto, momenti in cui ci lasciamo alle spalle chi eravamo, senza ancora essere o sapere cosa diventeremo.\n\nCirca un secolo dopo, è possibile varcare alcune di queste soglie con l'aiuto della tecnologia, ossia grazie all'estensione fisiologica e tecnica della curiosità umana. L'arte multimediale è la torcia che illumina l'incertezza del futuro, permettendoci di rischiare e di dare forma visiva all'immaginazione e alla fantasia. Forse non smetteremo mai di temere una soglia, eppure, grazie alla luminosità di quella torcia, avremo meno paura di attraversare l'oscurità che si cela oltre di essa.`,
+                coverImg: "images/kene bright festival/7-8.jpg",
+                gallery: [
+                    "images/kene bright festival/preselezione/_LOR4069.jpg",
+                    "images/kene bright festival/preselezione/_LOR4100.jpg",
+                    "images/kene bright festival/preselezione/_LOR4108.jpg",
+                    "images/kene bright festival/preselezione/_LOR4192.jpg",
+                    "images/kene bright festival/preselezione/_LOR4456.jpg",
+                    "images/kene bright festival/preselezione/_LOR4619.jpg",
+                    "images/kene bright festival/preselezione/_LOR4669.jpg",
+                    "images/kene bright festival/preselezione/_LOR4679.jpg",
+                    "images/kene bright festival/preselezione/_LOR4711.jpg",
+                    "images/kene bright festival/preselezione/_LOR4724.jpg",
+                    "images/kene bright festival/preselezione/_LOR4736.jpg",
+                    "images/kene bright festival/preselezione/_LOR4138.jpg",
+                    "images/kene bright festival/preselezione/_LOR4604.jpg",
+                    "images/kene bright festival/preselezione/_LOR4463.jpg"
+                ]
+            }
+        ];
+
+        /*
+           ==========================================================================
+           APPLICATION STATE & VARIABLES
+           ==========================================================================
+        */
+        let currentView = 'list';
+        let currentCategory = 'ALL';
+        let currentSort = 'year-desc';
+        let currentModalIndex = 0;
+        let currentActiveImageIndex = 0;
+        let currentMediaList = [];
+
+        // Pan & Zoom state for Lightbox
+        let lbZoom = 1;
+        let lbPanX = 0;
+        let lbPanY = 0;
+        let isPanning = false;
+        let startMouseX = 0;
+        let startMouseY = 0;
+
+        // Elements
+        const cursor = document.getElementById('custom-cursor');
+        const cursorText = document.getElementById('cursor-text');
+        const cadCursor = document.getElementById('cad-cursor');
+        const cadOrbitRing = document.getElementById('cad-orbit-ring');
+        const cadPickbox = document.getElementById('cad-pickbox');
+        const hoverPreview = document.getElementById('hover-preview-container');
+        const hoverPreviewImg = document.getElementById('hover-preview-img');
+
+        // RAF-based Smooth Pointer & Hover positioning to avoid layout thrashing
+        let mouseX = 0, mouseY = 0;
+        let isRafScheduled = false;
+
+        function positionHoverPreview(clientX, clientY) {
+            if (!hoverPreview || hoverPreview.style.opacity !== '1') return;
+            const cardW = 280;
+            const cardH = 185;
+            const margin = 20;
+
+            let left = clientX + margin;
+            let top = clientY - Math.round(cardH * (2 / 3));
+
+            const minTop = 10;
+            const maxTop = window.innerHeight - cardH - 10;
+            top = Math.max(minTop, Math.min(top, maxTop));
+
+            if (left + cardW > window.innerWidth - 20) {
+                left = clientX - cardW - margin;
+            }
+            left = Math.max(10, left);
+
+            hoverPreview.style.transform = `translate3d(${left}px, ${top}px, 0)`;
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (!hasFinePointer()) return;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            if (!isRafScheduled) {
+                isRafScheduled = true;
+                requestAnimationFrame(() => {
+                    if (cursor && !document.body.classList.contains('cad-crosshair-active')) {
+                        cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+                    }
+                    if (cadCursor && document.body.classList.contains('cad-crosshair-active')) {
+                        cadCursor.style.left = `${mouseX}px`;
+                        cadCursor.style.top = `${mouseY}px`;
+                    }
+                    positionHoverPreview(mouseX, mouseY);
+                    isRafScheduled = false;
+                });
+            }
+        }, { passive: true });
+
+        window.setCursorHover = function(text = '') {
+            if (!hasFinePointer()) return;
+            if (!cursor || !cursorText) return;
+            if (text) {
+                cursor.classList.remove('w-4', 'h-4');
+                cursor.classList.add('w-14', 'h-14');
+                cursorText.textContent = text;
+                cursorText.classList.remove('opacity-0');
+            } else {
+                cursor.classList.remove('w-14', 'h-14');
+                cursor.classList.add('w-4', 'h-4');
+                cursorText.classList.add('opacity-0');
+            }
+        };
+
+        window.isAnyModalOpen = function() {
+            const prjModal = document.getElementById('project-modal');
+            const bioBackdrop = document.getElementById('bio-window-backdrop');
+            const lb = document.getElementById('fullscreen-lightbox');
+            return (prjModal && !prjModal.classList.contains('opacity-0')) ||
+                   (bioBackdrop && !bioBackdrop.classList.contains('opacity-0')) ||
+                   (lb && !lb.classList.contains('opacity-0'));
+        };
+
+        let hoverDebounceTimer = null;
+        window.showPreview = function(imgUrl, cursorLabel, e) {
+            if (!hasFinePointer()) return;
+            if (window.isAnyModalOpen()) return;
+            window.setCursorHover(cursorLabel);
+            if (imgUrl && currentView === 'list' && hoverPreview && hoverPreviewImg) {
+                if (e) positionHoverPreview(e.clientX, e.clientY);
+                clearTimeout(hoverDebounceTimer);
+                hoverDebounceTimer = setTimeout(() => {
+                    if (hoverPreviewImg.src !== imgUrl) {
+                        hoverPreviewImg.src = imgUrl;
+                    }
+                    hoverPreviewImg.onerror = function() {
+                        this.onerror = null;
+                        this.src = 'https://placehold.co/300x200/171719/ffffff?text=Studio+Archive';
+                    };
+                    hoverPreview.style.opacity = '1';
+                }, 30);
+            }
+        };
+
+        window.hidePreview = function() {
+            clearTimeout(hoverDebounceTimer);
+            if (hasFinePointer()) {
+                window.setCursorHover('');
+            }
+            if (hoverPreview) {
+                hoverPreview.style.opacity = '0';
+            }
+        };
+
+        // Cache for dynamically extracted video poster frames
+        const videoPosterCache = {};
+
+        window.getMediaSrc = function(media) {
+            if (!media) return '';
+            return typeof media === 'object' ? (media.src || '') : media;
+        };
+
+        window.getMediaPoster = function(media, project) {
+            if (typeof media === 'object' && media.poster) return media.poster;
+            const src = window.getMediaSrc(media);
+            if (videoPosterCache[src]) return videoPosterCache[src];
+            if (project && project.videoPoster) return project.videoPoster;
+            return (project && (project.coverImg || project.drapeImg)) || '';
+        };
+
+        window.isMediaVideo = function(media) {
+            if (!media) return false;
+            const url = window.getMediaSrc(media);
+            return /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(url);
+        };
+
+        window.isMediaGif = function(media) {
+            if (!media) return false;
+            const url = window.getMediaSrc(media);
+            return /\.gif(\?.*)?$/i.test(url);
+        };
+
+        // Automatic Dynamic Frame Extraction from Video via HTML5 Canvas
+        window.extractFrameFromVideo = function(videoUrl, onExtracted) {
+            if (!videoUrl || videoPosterCache[videoUrl]) {
+                if (onExtracted && videoPosterCache[videoUrl]) onExtracted(videoPosterCache[videoUrl]);
+                return;
+            }
+            const tempVid = document.createElement('video');
+            tempVid.muted = true;
+            tempVid.playsInline = true;
+            tempVid.preload = 'auto';
+            tempVid.src = videoUrl;
+            
+            const capture = () => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = tempVid.videoWidth || 640;
+                    canvas.height = tempVid.videoHeight || 360;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(tempVid, 0, 0, canvas.width, canvas.height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+                    if (dataUrl && dataUrl.length > 100) {
+                        videoPosterCache[videoUrl] = dataUrl;
+                        if (onExtracted) onExtracted(dataUrl);
+                    }
+                } catch (e) {}
+            };
+
+            tempVid.addEventListener('loadeddata', () => {
+                tempVid.currentTime = 0.5;
+            }, { once: true });
+
+            tempVid.addEventListener('seeked', () => {
+                capture();
+            }, { once: true });
+        };
+
+        window.imgFallback = function(imgEl) {
+            imgEl.onerror = null;
+            imgEl.src = 'https://placehold.co/600x450/171719/ffffff?text=Studio+Archive';
+        };
+
+        function getCategories() {
+            const catSet = new Set();
+            projects.forEach(p => {
+                if (p.category) catSet.add(p.category.trim());
+            });
+            return Array.from(catSet);
+        }
+
+        function getProjectNum(p) {
+            const match = (p.id || '').match(/\d+/);
+            return match ? parseInt(match[0], 10) : 0;
+        }
+
+        function getFilteredAndSortedProjects() {
+            let list = [...projects];
+
+            if (currentCategory !== 'ALL') {
+                list = list.filter(p => (p.category || '').toUpperCase() === currentCategory.toUpperCase());
+            }
+
+            if (currentSort === 'year-desc') {
+                list.sort((a, b) => {
+                    const yearDiff = parseInt(b.year || '0') - parseInt(a.year || '0');
+                    if (yearDiff !== 0) return yearDiff;
+                    return getProjectNum(b) - getProjectNum(a);
+                });
+            } else if (currentSort === 'year-asc') {
+                list.sort((a, b) => {
+                    const yearDiff = parseInt(a.year || '0') - parseInt(b.year || '0');
+                    if (yearDiff !== 0) return yearDiff;
+                    return getProjectNum(a) - getProjectNum(b);
+                });
+            } else if (currentSort === 'title-asc') {
+                list.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+            }
+
+            return list;
+        }
+
+        window.renderCategoryDropdown = function() {
+            const listEl = document.getElementById('category-dropdown-list');
+            const labelEl = document.getElementById('category-dropdown-label');
+            const isAll = currentCategory === 'ALL';
+            const catText = isAll ? 'TUTTI' : currentCategory.toUpperCase();
+
+            if (labelEl) {
+                labelEl.innerHTML = `
+                    <span class="hidden sm:inline">CATEGORIA [${catText}]</span>
+                    <span class="sm:hidden">CAT [${catText}]</span>
+                `;
+            }
+            if (!listEl) return;
+
+            const categories = getCategories();
+            const totalCount = projects.length;
+            const isAllActive = currentCategory === 'ALL';
+
+            let itemsHtml = `
+                <button onclick="setCategoryFilter('ALL')" class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-charcoal/5 dark:hover:bg-white/10 transition-colors group ${isAllActive ? 'bg-accent/10 text-accent font-bold' : 'text-charcoal/80 dark:text-cream/80'}">
+                    <span class="font-mono text-[10px] uppercase tracking-wider">TUTTI I PROGETTI</span>
+                    <span class="font-mono text-[9px] ${isAllActive ? 'text-accent' : 'text-subtle'}">[${totalCount}]</span>
+                </button>
+            `;
+
+            categories.forEach(cat => {
+                const count = projects.filter(p => (p.category || '').toUpperCase() === cat.toUpperCase()).length;
+                const isSelected = currentCategory.toUpperCase() === cat.toUpperCase();
+                itemsHtml += `
+                    <button onclick="setCategoryFilter('${cat}')" class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-charcoal/5 dark:hover:bg-white/10 transition-colors group ${isSelected ? 'bg-accent/10 text-accent font-bold' : 'text-charcoal/80 dark:text-cream/80'}">
+                        <span class="font-mono text-[10px] uppercase tracking-wider">${cat}</span>
+                        <span class="font-mono text-[9px] ${isSelected ? 'text-accent' : 'text-subtle'}">[${count}]</span>
+                    </button>
+                `;
+            });
+
+            listEl.innerHTML = itemsHtml;
+        };
+
+        function toggleCategoryDropdown(e) {
+            if (e) e.stopPropagation();
+            window.closeSortDropdown();
+            const menu = document.getElementById('category-dropdown-menu');
+            const chevron = document.getElementById('category-dropdown-chevron');
+            if (!menu) return;
+
+            const isHidden = menu.classList.contains('hidden');
+            if (isHidden) {
+                window.renderCategoryDropdown();
+                menu.classList.remove('hidden');
+                if (chevron) chevron.classList.add('rotate-180');
+            } else {
+                menu.classList.add('hidden');
+                if (chevron) chevron.classList.remove('rotate-180');
+            }
+        }
+        window.toggleCategoryDropdown = toggleCategoryDropdown;
+
+        function closeCategoryDropdown() {
+            const menu = document.getElementById('category-dropdown-menu');
+            const chevron = document.getElementById('category-dropdown-chevron');
+            if (menu) menu.classList.add('hidden');
+            if (chevron) chevron.classList.remove('rotate-180');
+        }
+        window.closeCategoryDropdown = closeCategoryDropdown;
+
+        /*
+           ==========================================================================
+           CUSTOM SORT DROPDOWN (Balanced Dimensions & Adaptive Mobile Labels)
+           ==========================================================================
+        */
+        const sortOptions = [
+            { value: 'year-desc', label: 'ANNO [2026 → 2023]', mobileLabel: 'ANNO [26→23]' },
+            { value: 'year-asc', label: 'ANNO [2023 → 2026]', mobileLabel: 'ANNO [23→26]' },
+            { value: 'title-asc', label: 'TITOLO [A → Z]', mobileLabel: 'TITOLO [A-Z]' }
+        ];
+
+        window.renderSortDropdown = function() {
+            const listEl = document.getElementById('sort-dropdown-list');
+            const labelEl = document.getElementById('sort-dropdown-label');
+            const currentOpt = sortOptions.find(o => o.value === currentSort) || sortOptions[0];
+            if (labelEl) {
+                labelEl.innerHTML = `
+                    <span class="hidden sm:inline">${currentOpt.label}</span>
+                    <span class="sm:hidden">${currentOpt.mobileLabel}</span>
+                `;
+            }
+            if (!listEl) return;
+
+            listEl.innerHTML = sortOptions.map(opt => {
+                const isSelected = opt.value === currentSort;
+                return `
+                    <button onclick="setSortMode('${opt.value}')" class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-charcoal/5 dark:hover:bg-white/10 transition-colors group ${isSelected ? 'bg-accent/10 text-accent font-bold' : 'text-charcoal/80 dark:text-cream/80'}">
+                        <span class="font-mono text-[10px] uppercase tracking-wider">${opt.label}</span>
+                        ${isSelected ? '<span class="w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>' : ''}
+                    </button>
+                `;
+            }).join('');
+        };
+
+        function toggleSortDropdown(e) {
+            if (e) e.stopPropagation();
+            window.closeCategoryDropdown();
+            const menu = document.getElementById('sort-dropdown-menu');
+            const chevron = document.getElementById('sort-dropdown-chevron');
+            if (!menu) return;
+
+            const isHidden = menu.classList.contains('hidden');
+            if (isHidden) {
+                window.renderSortDropdown();
+                menu.classList.remove('hidden');
+                if (chevron) chevron.classList.add('rotate-180');
+            } else {
+                menu.classList.add('hidden');
+                if (chevron) chevron.classList.remove('rotate-180');
+            }
+        }
+        window.toggleSortDropdown = toggleSortDropdown;
+
+        function closeSortDropdown() {
+            const menu = document.getElementById('sort-dropdown-menu');
+            const chevron = document.getElementById('sort-dropdown-chevron');
+            if (menu) menu.classList.add('hidden');
+            if (chevron) chevron.classList.remove('rotate-180');
+        }
+        window.closeSortDropdown = closeSortDropdown;
+
+        window.setCategoryFilter = function(category) {
+            currentCategory = category;
+            window.closeCategoryDropdown();
+            window.renderCategoryDropdown();
+            window.renderPortfolio();
+        };
+
+        window.setSortMode = function(mode) {
+            currentSort = mode;
+            window.closeSortDropdown();
+            window.renderSortDropdown();
+            window.renderPortfolio();
+        };
+
+        window.renderPortfolio = function() {
+            const container = document.getElementById('portfolio-container');
+            const activeProjects = getFilteredAndSortedProjects();
+            const countEl = document.getElementById('project-count');
+            if (countEl) countEl.textContent = activeProjects.length;
+
+            if (!container) return;
+
+            if (activeProjects.length === 0) {
+                container.className = "py-16 text-center border-t border-charcoal/20 dark:border-cream/20 font-mono text-subtle text-xs";
+                container.innerHTML = `
+                    <div class="space-y-2">
+                        <p class="uppercase tracking-wider">NESSUN PROGETTO TROVATO IN QUESTA CATEGORIA</p>
+                        <button onclick="setCategoryFilter('ALL')" class="text-accent underline font-semibold">MOSTRA TUTTI I RECORD</button>
+                    </div>
+                `;
+                return;
+            }
+
+            if (currentView === 'grid') {
+                container.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6";
+                container.innerHTML = activeProjects.map((p, idx) => `
+                    <div onclick="openProjectModal(${idx})" 
+                         onmouseenter="showPreview('${p.coverImg}', 'VIEW', event)" 
+                         onmouseleave="hidePreview()"
+                         class="group cursor-pointer border border-charcoal/15 dark:border-cream/15 p-4 flex flex-col justify-between hover:border-accent dark:hover:border-accent transition-all duration-300 bg-cream/30 dark:bg-cardDark/40">
+                        <div>
+                            <div class="flex justify-between items-center text-[10px] font-mono text-subtle mb-3">
+                                <span>${p.id}</span>
+                                <span>[${p.year}]</span>
+                            </div>
+                            <div class="aspect-[4/3] overflow-hidden mb-4 bg-charcoal/5 dark:bg-cream/5 relative border border-charcoal/10 dark:border-cream/10 shimmer-placeholder">
+                                <img src="${p.coverImg}" alt="${p.title}" loading="lazy" decoding="async" class="lazy-img w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onload="this.classList.add('loaded')" onerror="window.imgFallback(this); this.classList.add('loaded');">
+                            </div>
+                            <span class="text-[10px] font-mono uppercase tracking-widest text-accent mb-1 block">${p.category}</span>
+                            <h3 class="font-serif italic text-xl group-hover:text-accent transition-colors leading-snug mb-2">${p.title}</h3>
+                            <p class="text-xs font-sans text-subtle line-clamp-2">${p.subtitle}</p>
+                        </div>
+                        <div class="pt-4 mt-4 border-t border-charcoal/10 dark:border-cream/10 flex justify-between items-center text-[11px] font-mono">
+                            <span class="text-subtle truncate max-w-[180px]">${p.client}</span>
+                            <span class="group-hover:translate-x-1 transition-transform">↗</span>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                container.className = "flex flex-col border-t border-charcoal/20 dark:border-cream/20";
+                container.innerHTML = `
+                    <div class="hidden md:grid grid-cols-12 py-2 px-3 border-b border-charcoal/20 dark:border-cream/20 font-mono text-[11px] text-subtle uppercase tracking-wider">
+                        <div class="col-span-1">REF</div>
+                        <div class="col-span-5">PRJ TITLE</div>
+                        <div class="col-span-2">CATEGORY</div>
+                        <div class="col-span-3">CLIENT</div>
+                        <div class="col-span-1 text-right">YEAR</div>
+                    </div>
+                ` + activeProjects.map((p, idx) => `
+                    <div onclick="openProjectModal(${idx})" 
+                         onmouseenter="showPreview('${p.coverImg}', 'OPEN', event)" 
+                         onmouseleave="hidePreview()"
+                         class="grid grid-cols-12 py-3.5 px-3 border-b border-charcoal/15 dark:border-cream/15 items-center font-mono text-xs hover:bg-accent/10 hover:border-accent transition-colors cursor-pointer group">
+                        <div class="col-span-3 sm:col-span-2 md:col-span-1 text-subtle font-mono tracking-wider">${p.id}</div>
+                        <div class="col-span-9 sm:col-span-10 md:col-span-5 pr-2">
+                            <div class="font-serif italic text-base md:text-lg group-hover:text-accent transition-colors">${p.title}</div>
+                            <div class="md:hidden text-[10px] text-subtle mt-0.5 flex gap-2 font-mono">
+                                <span>${p.category}</span>
+                                <span>•</span>
+                                <span>${p.year}</span>
+                            </div>
+                        </div>
+                        <div class="hidden md:block col-span-2 text-subtle uppercase text-[10px] tracking-wider">${p.category}</div>
+                        <div class="hidden md:block col-span-3 text-subtle truncate pr-4">${p.client}</div>
+                        <div class="hidden md:block col-span-1 text-right">${p.year}</div>
+                    </div>
+                `).join('');
+            }
+        };
+
+        window.setViewMode = function(mode) {
+            currentView = mode;
+            ['grid', 'list'].forEach(m => {
+                const btn = document.getElementById(`view-${m}`);
+                if (btn) {
+                    if (m === mode) {
+                        btn.classList.add('text-accent');
+                    } else {
+                        btn.classList.remove('text-accent');
+                    }
+                }
+            });
+            window.renderPortfolio();
+        };
+
+        function openBioWindow() {
+            window.hidePreview();
+            const backdrop = document.getElementById('bio-window-backdrop');
+            const windowEl = document.getElementById('bio-window');
+            if (!backdrop || !windowEl) return;
+            backdrop.classList.remove('opacity-0', 'pointer-events-none');
+            backdrop.classList.add('opacity-100');
+            windowEl.classList.remove('scale-95');
+            windowEl.classList.add('scale-100');
+        }
+        window.openBioWindow = openBioWindow;
+
+        function closeBioWindow() {
+            const backdrop = document.getElementById('bio-window-backdrop');
+            const windowEl = document.getElementById('bio-window');
+            if (!backdrop || !windowEl) return;
+            windowEl.classList.remove('scale-100');
+            windowEl.classList.add('scale-95');
+            backdrop.classList.remove('opacity-100');
+            setTimeout(() => {
+                backdrop.classList.add('opacity-0', 'pointer-events-none');
+            }, 180);
+        }
+        window.closeBioWindow = closeBioWindow;
+
+        const bioBackdrop = document.getElementById('bio-window-backdrop');
+        if (bioBackdrop) {
+            bioBackdrop.addEventListener('click', (e) => {
+                if (e.target.id === 'bio-window-backdrop') window.closeBioWindow();
+            });
+        }
+
+        const themeBtn = document.getElementById('theme-toggle');
+        if (themeBtn) {
+            themeBtn.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+            });
+        }
+
+        function openProjectModal(index) {
+            window.hidePreview();
+            const activeList = getFilteredAndSortedProjects();
+            currentModalIndex = index;
+            const p = activeList[index] || projects[index];
+            if (!p) return;
+
+            // Guaranteed active project assignment across all viewport dimensions
+            currentActiveProject = p;
+
+            document.getElementById('modal-id').textContent = p.id;
+            document.getElementById('modal-category').textContent = (p.category || 'ARCHITETTURA').toUpperCase();
+            document.getElementById('modal-title').textContent = p.title;
+            document.getElementById('modal-subtitle').textContent = p.subtitle || '';
+            document.getElementById('modal-location').textContent = p.location || '—';
+            document.getElementById('modal-client').textContent = p.client || '—';
+            document.getElementById('modal-year').textContent = p.year || '—';
+
+            // Extended narrative
+            const descDisplay = document.getElementById('modal-description');
+            if (p.description) {
+                descDisplay.innerHTML = p.description
+                    .split('\n\n')
+                    .map(para => {
+                        if (para.trim().startsWith('<div')) return para.trim();
+                        return `<p class="text-justify [text-align-last:left] hyphens-none leading-relaxed">${para.trim()}</p>`;
+                    })
+                    .join('');
+            } else {
+                descDisplay.innerHTML = '';
+            }
+
+            // Gallery setup
+            currentActiveImageIndex = 0;
+            currentMediaList = (p.gallery && p.gallery.length > 0) ? p.gallery : [p.coverImg];
+
+            window.renderModalMedia();
+            window.renderModalThumbs();
+
+            const modal = document.getElementById('project-modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            content.classList.remove('translate-x-full');
+
+            // Set mobile 3D button label with PRJ ID
+            const mobileBtnLabel = document.getElementById('mobile-3d-btn-title');
+            if (mobileBtnLabel) {
+                mobileBtnLabel.textContent = `VISUALIZZA 3D [${p.id}]`;
+            }
+
+            // Ensure mobile 3D overlay is closed by default when switching projects
+            window.closeMobile3DView();
+
+            // Initialize 3D Viewport: immediate on split-screen (lg+), or if 3D overlay is active
+            if (window.innerWidth >= 1024) {
+                setTimeout(() => {
+                    if (typeof window.setupProject3D === 'function') {
+                        window.setupProject3D(p);
+                    }
+                }, 40);
+            }
+
+            // Prev / Next bindings within current filtered and sorted view
+            const triggerPrev = () => {
+                const prevIndex = (currentModalIndex - 1 + activeList.length) % activeList.length;
+                window.openProjectModal(prevIndex);
+            };
+            const triggerNext = () => {
+                const nextIndex = (currentModalIndex + 1) % activeList.length;
+                window.openProjectModal(nextIndex);
+            };
+
+            const prevBtn = document.getElementById('modal-prev-btn');
+            const nextBtn = document.getElementById('modal-next-btn');
+            const topPrevBtn = document.getElementById('modal-header-prev-btn');
+            const topNextBtn = document.getElementById('modal-header-next-btn');
+
+            if (prevBtn) prevBtn.onclick = triggerPrev;
+            if (nextBtn) nextBtn.onclick = triggerNext;
+            if (topPrevBtn) topPrevBtn.onclick = triggerPrev;
+            if (topNextBtn) topNextBtn.onclick = triggerNext;
+
+            if (window.lucide) lucide.createIcons();
+        }
+        window.openProjectModal = openProjectModal;
+
+        function closeProjectModal() {
+            window.closeMobile3DView();
+            const modal = document.getElementById('project-modal');
+            const content = document.getElementById('modal-content');
+            if (!modal || !content) return;
+            content.classList.add('translate-x-full');
+            
+            const videoEl = document.getElementById('modal-main-video');
+            if (videoEl) {
+                try { videoEl.pause(); } catch(e) {}
+            }
+
+            // Halt 3D render loop completely when modal closes to eliminate background GPU/CPU drain
+            window.stop3DRenderLoop();
+
+            setTimeout(() => {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+            }, 250);
+        }
+        window.closeProjectModal = closeProjectModal;
+
+        const projectModal = document.getElementById('project-modal');
+        if (projectModal) {
+            projectModal.addEventListener('click', (e) => {
+                if (e.target.id === 'project-modal') window.closeProjectModal();
+            });
+        }
+
+        window.renderModalMedia = function() {
+            const activeItem = currentMediaList[currentActiveImageIndex];
+            const activeUrl = window.getMediaSrc(activeItem);
+            const activeList = getFilteredAndSortedProjects();
+            const p = activeList[currentModalIndex] || projects[currentModalIndex];
+            const posterUrl = window.getMediaPoster(activeItem, p);
+
+            const imgEl = document.getElementById('modal-main-img');
+            const videoEl = document.getElementById('modal-main-video');
+            const hintEl = document.getElementById('modal-fullscreen-hint');
+            const counterEl = document.getElementById('modal-media-counter');
+
+            if (counterEl) {
+                const cur = String(currentActiveImageIndex + 1).padStart(2, '0');
+                const tot = String(currentMediaList.length).padStart(2, '0');
+                counterEl.textContent = `${cur} / ${tot}`;
+            }
+
+            if (window.isMediaVideo(activeItem)) {
+                imgEl.classList.add('hidden');
+                videoEl.classList.remove('hidden');
+                videoEl.muted = true;
+
+                if (posterUrl) {
+                    videoEl.poster = posterUrl;
+                }
+
+                videoEl.src = activeUrl;
+                videoEl.play().catch(() => {});
+                window.extractFrameFromVideo(activeUrl, (extractedDataUrl) => {
+                    if (videoEl && !videoEl.classList.contains('hidden')) {
+                        videoEl.poster = extractedDataUrl;
+                    }
+                });
+
+                if (hintEl) hintEl.classList.remove('hidden');
+            } else {
+                if (videoEl) {
+                    try { videoEl.pause(); } catch(e) {}
+                    videoEl.removeAttribute('poster');
+                    videoEl.classList.add('hidden');
+                }
+                imgEl.classList.remove('hidden');
+                imgEl.src = activeUrl;
+                imgEl.onerror = function() {
+                    window.imgFallback(this);
+                };
+                if (hintEl) hintEl.classList.remove('hidden');
+            }
+        };
+
+        window.renderModalThumbs = function() {
+            const thumbsContainer = document.getElementById('modal-gallery-thumbs');
+            if (!thumbsContainer) return;
+            const activeList = getFilteredAndSortedProjects();
+            const p = activeList[currentModalIndex] || projects[currentModalIndex];
+
+            thumbsContainer.innerHTML = currentMediaList.map((mediaItem, idx) => {
+                const mediaUrl = window.getMediaSrc(mediaItem);
+                const isVid = window.isMediaVideo(mediaItem);
+                const isGif = window.isMediaGif(mediaItem);
+                const posterUrl = window.getMediaPoster(mediaItem, p);
+
+                return `
+                    <div onclick="setActiveModalMedia(${idx})" 
+                         class="relative aspect-square overflow-hidden border-2 ${idx === currentActiveImageIndex ? 'border-accent ring-1 ring-accent' : 'border-charcoal/20 dark:border-cream/20'} hover:border-accent transition-all rounded cursor-pointer group bg-black/10 dark:bg-black/30 shimmer-placeholder">
+                        ${isVid ? `
+                            <div class="relative w-full h-full bg-charcoal">
+                                <img src="${posterUrl}" alt="Video Preview" loading="lazy" decoding="async" class="lazy-img w-full h-full object-cover opacity-85 group-hover:opacity-100 transition-opacity" onload="this.classList.add('loaded')" onerror="window.imgFallback(this); this.classList.add('loaded');">
+                                <div class="absolute inset-0 bg-black/35 flex flex-col items-center justify-center text-white">
+                                    <i data-lucide="play" class="w-4 h-4 text-accent drop-shadow"></i>
+                                    <span class="text-[8px] font-mono mt-0.5 font-bold tracking-wider">VIDEO</span>
+                                </div>
+                            </div>
+                        ` : isGif ? `
+                            <img src="${mediaUrl}" loading="lazy" decoding="async" class="lazy-img w-full h-full object-cover" onload="this.classList.add('loaded')">
+                            <span class="absolute bottom-1 right-1 bg-charcoal/80 text-accent font-mono text-[8px] px-1 rounded">GIF</span>
+                        ` : `
+                            <img src="${mediaUrl}" loading="lazy" decoding="async" class="lazy-img w-full h-full object-cover" onload="this.classList.add('loaded')" onerror="this.onerror=null; this.src='https://placehold.co/100x100/171719/ffffff?text=Thumb'; this.classList.add('loaded');">
+                        `}
+                    </div>
+                `;
+            }).join('');
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.setActiveModalMedia = function(index) {
+            currentActiveImageIndex = index;
+            window.renderModalMedia();
+            window.renderModalThumbs();
+        };
+
+        // Attach Swipe & Tap listener on in-page media container
+        const modalMediaBox = document.getElementById('modal-media-box');
+        if (modalMediaBox) {
+            let mTouchStartX = 0;
+            let mTouchStartY = 0;
+            let mTouchStartTime = 0;
+            let mIsSwiping = false;
+            let mLastSwipeTime = 0;
+
+            modalMediaBox.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    const t = e.touches[0];
+                    mTouchStartX = t.clientX;
+                    mTouchStartY = t.clientY;
+                    mTouchStartTime = Date.now();
+                    mIsSwiping = false;
+                }
+            }, { passive: true });
+
+            modalMediaBox.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 1) {
+                    const t = e.touches[0];
+                    const dx = t.clientX - mTouchStartX;
+                    const dy = t.clientY - mTouchStartY;
+
+                    if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+                        mIsSwiping = true;
+                        if (e.cancelable) e.preventDefault();
+                    }
+                }
+            }, { passive: false });
+
+            modalMediaBox.addEventListener('touchend', (e) => {
+                if (e.changedTouches.length === 1) {
+                    const t = e.changedTouches[0];
+                    const dx = t.clientX - mTouchStartX;
+                    const dy = t.clientY - mTouchStartY;
+                    const elapsed = Date.now() - mTouchStartTime;
+
+                    if (mIsSwiping || (Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy) * 1.2)) {
+                        mLastSwipeTime = Date.now();
+                        if (dx < 0) {
+                            if (currentMediaList.length > 1) {
+                                const nextIndex = (currentActiveImageIndex + 1) % currentMediaList.length;
+                                window.setActiveModalMedia(nextIndex);
+                            }
+                        } else {
+                            if (currentMediaList.length > 1) {
+                                const prevIndex = (currentActiveImageIndex - 1 + currentMediaList.length) % currentMediaList.length;
+                                window.setActiveModalMedia(prevIndex);
+                            }
+                        }
+                    } else if (elapsed < 350 && Math.hypot(dx, dy) < 16) {
+                        window.openLightbox(currentActiveImageIndex);
+                    }
+                }
+            }, { passive: true });
+
+            modalMediaBox.addEventListener('click', () => {
+                if (Date.now() - mLastSwipeTime > 350) {
+                    window.openLightbox(currentActiveImageIndex);
+                }
+            });
+        }
+
+        window.updateLightboxZoomDisplay = function() {
+            const imgEl = document.getElementById('lb-main-img');
+            const isVid = window.isMediaVideo(currentMediaList[currentActiveImageIndex]);
+
+            if (imgEl && !isVid) {
+                if (lbZoom > 1.05) {
+                    imgEl.style.cursor = isPanning ? 'grabbing' : 'grab';
+                    imgEl.style.transform = `translate3d(${lbPanX}px, ${lbPanY}px, 0) scale(${lbZoom})`;
+                    imgEl.classList.remove('zoom-transition');
+                } else {
+                    lbZoom = 1;
+                    lbPanX = 0;
+                    lbPanY = 0;
+                    imgEl.style.cursor = 'zoom-in';
+                    imgEl.style.transform = 'translate3d(0px, 0px, 0) scale(1)';
+                    imgEl.classList.add('zoom-transition');
+                }
+            }
+        };
+
+        function zoomLightbox(delta) {
+            const newZoom = Math.min(Math.max(1, lbZoom + delta), 4.5);
+            lbZoom = Math.round(newZoom * 100) / 100;
+            if (lbZoom === 1) {
+                lbPanX = 0;
+                lbPanY = 0;
+            }
+            window.updateLightboxZoomDisplay();
+        }
+        window.zoomLightbox = zoomLightbox;
+
+        function resetLightboxZoom() {
+            lbZoom = 1;
+            lbPanX = 0;
+            lbPanY = 0;
+            window.updateLightboxZoomDisplay();
+        }
+        window.resetLightboxZoom = resetLightboxZoom;
+
+        window.renderLightboxPrjDropdown = function() {
+            const listEl = document.getElementById('lb-prj-dropdown-list');
+            if (!listEl) return;
+            const activeList = getFilteredAndSortedProjects();
+
+            listEl.innerHTML = activeList.map((p, idx) => {
+                const isCurrent = idx === currentModalIndex;
+                return `
+                    <button onclick="switchLightboxProject(${idx})" class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-white/10 transition-colors group ${isCurrent ? 'bg-accent/20 text-accent font-bold' : 'text-cream/80'}">
+                        <div class="flex items-center gap-2 truncate">
+                            <span class="font-mono text-xs ${isCurrent ? 'text-accent' : 'text-subtle group-hover:text-cream'}">${p.id}</span>
+                            <span class="font-serif italic text-sm truncate">${p.title}</span>
+                        </div>
+                        <span class="font-mono text-[10px] text-subtle shrink-0 ml-2">[${p.year}]</span>
+                    </button>
+                `;
+            }).join('');
+        };
+
+        function toggleLightboxPrjDropdown(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById('lb-prj-dropdown-menu');
+            const chevron = document.getElementById('lb-prj-dropdown-chevron');
+            if (!menu) return;
+
+            const isHidden = menu.classList.contains('hidden');
+            if (isHidden) {
+                window.renderLightboxPrjDropdown();
+                menu.classList.remove('hidden');
+                if (chevron) chevron.classList.add('rotate-180');
+            } else {
+                menu.classList.add('hidden');
+                if (chevron) chevron.classList.remove('rotate-180');
+            }
+        }
+        window.toggleLightboxPrjDropdown = toggleLightboxPrjDropdown;
+
+        function closeLightboxPrjDropdown() {
+            const menu = document.getElementById('lb-prj-dropdown-menu');
+            const chevron = document.getElementById('lb-prj-dropdown-chevron');
+            if (menu) menu.classList.add('hidden');
+            if (chevron) chevron.classList.remove('rotate-180');
+        }
+        window.closeLightboxPrjDropdown = closeLightboxPrjDropdown;
+
+        function switchLightboxProject(index) {
+            window.closeLightboxPrjDropdown();
+            window.openProjectModal(index);
+            window.openLightbox(0);
+        }
+        window.switchLightboxProject = switchLightboxProject;
+
+        /*
+           ==========================================================================
+           3D VIEWPORT PROJECT SWITCHER (DROPDOWN ONLY - DESKTOP & MOBILE)
+           ==========================================================================
+        */
+        window.render3DPrjDropdown = function() {
+            const listEl = document.getElementById('p3d-prj-dropdown-list');
+            if (!listEl) return;
+            const activeList = getFilteredAndSortedProjects();
+
+            listEl.innerHTML = activeList.map((p, idx) => {
+                const isCurrent = idx === currentModalIndex;
+                return `
+                    <button onclick="switch3DProject(${idx})" class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-white/10 transition-colors group ${isCurrent ? 'bg-accent/20 text-accent font-bold' : 'text-cream/80'}">
+                        <div class="flex items-center gap-2 truncate">
+                            <span class="font-mono text-xs ${isCurrent ? 'text-accent' : 'text-subtle group-hover:text-cream'}">${p.id}</span>
+                            <span class="font-serif italic text-sm truncate">${p.title}</span>
+                        </div>
+                        <span class="font-mono text-[9px] text-subtle shrink-0 ml-2">[${p.model3d ? '3D' : 'DRAPPO'}]</span>
+                    </button>
+                `;
+            }).join('');
+        };
+
+        function toggle3DPrjDropdown(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById('p3d-prj-dropdown-menu');
+            const chevron = document.getElementById('p3d-prj-dropdown-chevron');
+            if (!menu) return;
+
+            const isHidden = menu.classList.contains('hidden');
+            if (isHidden) {
+                window.render3DPrjDropdown();
+                menu.classList.remove('hidden');
+                if (chevron) chevron.classList.add('rotate-180');
+            } else {
+                menu.classList.add('hidden');
+                if (chevron) chevron.classList.remove('rotate-180');
+            }
+        }
+        window.toggle3DPrjDropdown = toggle3DPrjDropdown;
+
+        function close3DPrjDropdown() {
+            const menu = document.getElementById('p3d-prj-dropdown-menu');
+            const chevron = document.getElementById('p3d-prj-dropdown-chevron');
+            if (menu) menu.classList.add('hidden');
+            if (chevron) chevron.classList.remove('rotate-180');
+        }
+        window.close3DPrjDropdown = close3DPrjDropdown;
+
+        function switch3DProject(index) {
+            const isMobile3D = document.getElementById('project-3d-viewport')?.classList.contains('mobile-active');
+            window.close3DPrjDropdown();
+            window.openProjectModal(index);
+            if (isMobile3D) {
+                window.openMobile3DView();
+            }
+        }
+        window.switch3DProject = switch3DProject;
+
+        function openLightbox(index = 0) {
+            window.hidePreview();
+            currentActiveImageIndex = index;
+            const activeList = getFilteredAndSortedProjects();
+            const p = activeList[currentModalIndex] || projects[currentModalIndex];
+            
+            const lbPrjIdEl = document.getElementById('lb-prj-id');
+            if (lbPrjIdEl) lbPrjIdEl.textContent = p.id;
+
+            window.closeLightboxPrjDropdown();
+            window.resetLightboxZoom();
+            window.updateLightboxDisplay();
+
+            const lb = document.getElementById('fullscreen-lightbox');
+            lb.classList.remove('opacity-0', 'pointer-events-none');
+            if (window.lucide) lucide.createIcons();
+        }
+        window.openLightbox = openLightbox;
+
+        function closeLightbox() {
+            window.closeLightboxPrjDropdown();
+            const lb = document.getElementById('fullscreen-lightbox');
+            const videoEl = document.getElementById('lb-main-video');
+            if (videoEl) {
+                try { videoEl.pause(); } catch(e) {}
+            }
+            window.resetLightboxZoom();
+            lb.classList.add('opacity-0', 'pointer-events-none');
+        }
+        window.closeLightbox = closeLightbox;
+
+        window.updateLightboxDisplay = function() {
+            window.resetLightboxZoom();
+            const currentMedia = currentMediaList[currentActiveImageIndex];
+            const activeUrl = window.getMediaSrc(currentMedia);
+            const activeList = getFilteredAndSortedProjects();
+            const p = activeList[currentModalIndex] || projects[currentModalIndex];
+            const posterUrl = window.getMediaPoster(currentMedia, p);
+
+            const imgEl = document.getElementById('lb-main-img');
+            const videoEl = document.getElementById('lb-main-video');
+            const counterEl = document.getElementById('lb-counter');
+
+            const cur = String(currentActiveImageIndex + 1).padStart(2, '0');
+            const tot = String(currentMediaList.length).padStart(2, '0');
+            counterEl.textContent = `${cur} / ${tot}`;
+
+            if (window.isMediaVideo(currentMedia)) {
+                imgEl.classList.add('hidden');
+                videoEl.classList.remove('hidden');
+                videoEl.muted = false;
+                if (posterUrl) {
+                    videoEl.poster = posterUrl;
+                }
+                videoEl.src = activeUrl;
+                videoEl.play().catch(() => {});
+            } else {
+                if (videoEl) {
+                    try { videoEl.pause(); } catch(e) {}
+                    videoEl.removeAttribute('poster');
+                    videoEl.classList.add('hidden');
+                }
+                imgEl.classList.remove('hidden');
+                imgEl.src = activeUrl;
+                imgEl.onerror = function() {
+                    window.imgFallback(this);
+                };
+            }
+
+            const thumbsEl = document.getElementById('lb-thumbnails');
+            thumbsEl.innerHTML = currentMediaList.map((m, idx) => {
+                const thumbPoster = window.getMediaPoster(m, p);
+                const thumbSrc = window.getMediaSrc(m);
+                return `
+                    <div onclick="setLightboxMedia(${idx})" class="w-9 h-7 sm:w-10 sm:h-8 rounded overflow-hidden border ${idx === currentActiveImageIndex ? 'border-accent ring-1 ring-accent' : 'border-white/20 opacity-50 hover:opacity-100'} cursor-pointer bg-black shrink-0 transition-all">
+                        ${window.isMediaVideo(m) ? `
+                            <div class="relative w-full h-full">
+                                <img src="${thumbPoster}" alt="Video Thumb" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="window.imgFallback(this)">
+                                <div class="absolute inset-0 bg-black/40 flex items-center justify-center text-[7px] font-mono text-accent font-bold">VID</div>
+                            </div>
+                        ` : window.isMediaGif(m) ? `
+                            <div class="relative w-full h-full">
+                                <img src="${thumbSrc}" loading="lazy" decoding="async" class="w-full h-full object-cover">
+                                <span class="absolute bottom-0 right-0 bg-charcoal text-accent font-mono text-[7px] px-0.5">GIF</span>
+                            </div>
+                        ` : `
+                            <img src="${thumbSrc}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/80x60/171719/ffffff?text=Thumb'">
+                        `}
+                    </div>
+                `;
+            }).join('');
+
+            window.updateLightboxZoomDisplay();
+        };
+
+        function setLightboxMedia(idx) {
+            currentActiveImageIndex = idx;
+            window.updateLightboxDisplay();
+        }
+        window.setLightboxMedia = setLightboxMedia;
+
+        function nextLightboxSlide() {
+            if (!currentMediaList.length) return;
+            currentActiveImageIndex = (currentActiveImageIndex + 1) % currentMediaList.length;
+            window.updateLightboxDisplay();
+        }
+        window.nextLightboxSlide = nextLightboxSlide;
+
+        function prevLightboxSlide() {
+            if (!currentMediaList.length) return;
+            currentActiveImageIndex = (currentActiveImageIndex - 1 + currentMediaList.length) % currentMediaList.length;
+            window.updateLightboxDisplay();
+        }
+        window.prevLightboxSlide = prevLightboxSlide;
+
+        /*
+           ==========================================================================
+           FLUID TOUCH GESTURE RECOGNITION (SWIPE, PINCH-TO-ZOOM, PAN & DOUBLE-TAP)
+           ==========================================================================
+        */
+        const gestureArea = document.getElementById('lb-gesture-area');
+        const lbImg = document.getElementById('lb-main-img');
+
+        if (gestureArea && lbImg) {
+            gestureArea.addEventListener('wheel', (e) => {
+                const videoEl = document.getElementById('lb-main-video');
+                if (videoEl && !videoEl.classList.contains('hidden')) return;
+                e.preventDefault();
+                const delta = e.deltaY < 0 ? 0.35 : -0.35;
+                window.zoomLightbox(delta);
+            }, { passive: false });
+
+            lbImg.addEventListener('mousedown', (e) => {
+                if (lbZoom <= 1.05) return;
+                e.preventDefault();
+                isPanning = true;
+                startMouseX = e.clientX - lbPanX;
+                startMouseY = e.clientY - lbPanY;
+                window.updateLightboxZoomDisplay();
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isPanning) return;
+                lbPanX = e.clientX - startMouseX;
+                lbPanY = e.clientY - startMouseY;
+                window.updateLightboxZoomDisplay();
+            }, { passive: true });
+
+            window.addEventListener('mouseup', () => {
+                if (isPanning) {
+                    isPanning = false;
+                    window.updateLightboxZoomDisplay();
+                }
+            });
+
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let touchStartTime = 0;
+            let lastTapTime = 0;
+            let initialPinchDist = 0;
+            let initialPinchZoom = 1;
+            let isPinching = false;
+            let touchPanStartX = 0;
+            let touchPanStartY = 0;
+
+            gestureArea.addEventListener('touchstart', (e) => {
+                const videoEl = document.getElementById('lb-main-video');
+                if (videoEl && !videoEl.classList.contains('hidden')) return;
+
+                if (e.touches.length === 2) {
+                    isPinching = true;
+                    initialPinchDist = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                    initialPinchZoom = lbZoom;
+                } else if (e.touches.length === 1) {
+                    isPinching = false;
+                    const touch = e.touches[0];
+                    touchStartX = touch.clientX;
+                    touchStartY = touch.clientY;
+                    touchStartTime = Date.now();
+
+                    if (lbZoom > 1.05) {
+                        touchPanStartX = touch.clientX - lbPanX;
+                        touchPanStartY = touch.clientY - lbPanY;
+                    }
+                }
+            }, { passive: false });
+
+            gestureArea.addEventListener('touchmove', (e) => {
+                const videoEl = document.getElementById('lb-main-video');
+                if (videoEl && !videoEl.classList.contains('hidden')) return;
+
+                if (e.touches.length === 2 && isPinching) {
+                    e.preventDefault();
+                    const curDist = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                    if (initialPinchDist > 0) {
+                        const ratio = curDist / initialPinchDist;
+                        const targetZoom = Math.min(Math.max(1, initialPinchZoom * ratio), 4.5);
+                        lbZoom = Math.round(targetZoom * 100) / 100;
+                        window.updateLightboxZoomDisplay();
+                    }
+                } else if (e.touches.length === 1 && lbZoom > 1.05) {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    lbPanX = touch.clientX - touchPanStartX;
+                    lbPanY = touch.clientY - touchPanStartY;
+                    window.updateLightboxZoomDisplay();
+                }
+            }, { passive: false });
+
+            gestureArea.addEventListener('touchend', (e) => {
+                const videoEl = document.getElementById('lb-main-video');
+                if (videoEl && !videoEl.classList.contains('hidden')) return;
+
+                if (isPinching && e.touches.length < 2) {
+                    isPinching = false;
+                    if (lbZoom < 1.05) {
+                        window.resetLightboxZoom();
+                    }
+                    return;
+                }
+
+                if (e.changedTouches.length === 1 && !isPinching) {
+                    const touch = e.changedTouches[0];
+                    const deltaX = touch.clientX - touchStartX;
+                    const deltaY = touch.clientY - touchStartY;
+                    const elapsed = Date.now() - touchStartTime;
+
+                    const now = Date.now();
+                    if (now - lastTapTime < 300 && Math.hypot(deltaX, deltaY) < 20) {
+                        lastTapTime = 0;
+                        if (lbZoom > 1.05) {
+                            window.resetLightboxZoom();
+                        } else {
+                            window.zoomLightbox(1.5);
+                        }
+                        return;
+                    }
+                    lastTapTime = now;
+
+                    if (lbZoom <= 1.05 && elapsed < 600) {
+                        if (Math.abs(deltaX) > 42 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+                            if (deltaX < 0) {
+                                window.nextLightboxSlide();
+                            } else {
+                                window.prevLightboxSlide();
+                            }
+                        }
+                    }
+                }
+            }, { passive: true });
+
+            lbImg.addEventListener('dblclick', (e) => {
+                e.preventDefault();
+                if (lbZoom > 1) {
+                    window.resetLightboxZoom();
+                } else {
+                    window.zoomLightbox(1.5);
+                }
+            });
+        }
+
+        document.addEventListener('click', (e) => {
+            const catDropdownBtn = document.getElementById('category-dropdown-btn');
+            const catDropdownMenu = document.getElementById('category-dropdown-menu');
+            if (catDropdownMenu && !catDropdownMenu.classList.contains('hidden')) {
+                if (!catDropdownMenu.contains(e.target) && (!catDropdownBtn || !catDropdownBtn.contains(e.target))) {
+                    window.closeCategoryDropdown();
+                }
+            }
+
+            const sortDropdownBtn = document.getElementById('sort-dropdown-btn');
+            const sortDropdownMenu = document.getElementById('sort-dropdown-menu');
+            if (sortDropdownMenu && !sortDropdownMenu.classList.contains('hidden')) {
+                if (!sortDropdownMenu.contains(e.target) && (!sortDropdownBtn || !sortDropdownBtn.contains(e.target))) {
+                    window.closeSortDropdown();
+                }
+            }
+
+            const dropdownBtn = document.getElementById('lb-prj-dropdown-btn');
+            const dropdownMenu = document.getElementById('lb-prj-dropdown-menu');
+            if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
+                if (!dropdownMenu.contains(e.target) && (!dropdownBtn || !dropdownBtn.contains(e.target))) {
+                    window.closeLightboxPrjDropdown();
+                }
+            }
+
+            const p3dDropdownBtn = document.getElementById('p3d-prj-dropdown-btn');
+            const p3dDropdownMenu = document.getElementById('p3d-prj-dropdown-menu');
+            if (p3dDropdownMenu && !p3dDropdownMenu.classList.contains('hidden')) {
+                if (!p3dDropdownMenu.contains(e.target) && (!p3dDropdownBtn || !p3dDropdownBtn.contains(e.target))) {
+                    window.close3DPrjDropdown();
+                }
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            const lb = document.getElementById('fullscreen-lightbox');
+            const isLbOpen = lb && !lb.classList.contains('opacity-0');
+
+            if (isLbOpen) {
+                const dropdownMenu = document.getElementById('lb-prj-dropdown-menu');
+                if (e.key === 'Escape') {
+                    if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
+                        window.closeLightboxPrjDropdown();
+                    } else {
+                        window.closeLightbox();
+                    }
+                } else if (e.key === 'ArrowRight') window.nextLightboxSlide();
+                else if (e.key === 'ArrowLeft') window.prevLightboxSlide();
+                else if (e.key === '+' || e.key === '=') window.zoomLightbox(0.35);
+                else if (e.key === '-' || e.key === '_') window.zoomLightbox(-0.35);
+                else if (e.key === '0') window.resetLightboxZoom();
+                return;
+            }
+
+            const modal = document.getElementById('project-modal');
+            const isModalOpen = modal && !modal.classList.contains('opacity-0');
+
+            if (e.key === 'Escape') {
+                window.closeProjectModal();
+                window.closeBioWindow();
+            } else if (isModalOpen && e.key === 'ArrowRight') {
+                currentActiveImageIndex = (currentActiveImageIndex + 1) % currentMediaList.length;
+                window.renderModalMedia();
+                window.renderModalThumbs();
+            } else if (isModalOpen && e.key === 'ArrowLeft') {
+                currentActiveImageIndex = (currentActiveImageIndex - 1 + currentMediaList.length) % currentMediaList.length;
+                window.renderModalMedia();
+                window.renderModalThumbs();
+            }
+        });
+
+        /*
+           ==========================================================================
+           THREE.JS OPTIMIZED ENGINE & MEMORY DISPOSAL SYSTEM
+           ==========================================================================
+        */
+        let scene3d = null;
+        let camera3d = null;
+        let renderer3d = null;
+        let controls3d = null;
+        let current3dMeshGroup = null;
+        let animFrameId3d = null;
+        let current3DMode = 'object';
+        let currentActiveProject = null;
+        let is3DPaused = false;
+
+        const clock3d = new THREE.Clock();
+        let activeClothSim = null;
+        const raycaster3d = new THREE.Raycaster();
+        const mouse3dVec = new THREE.Vector2(-999, -999);
+        let lastMousePos = { x: 0, y: 0, time: 0 };
+        let mouseSpeed = 0;
+
+        // Recursive WebGL resource disposal to eliminate memory leaks across project switches
+        function disposeHierarchy(obj) {
+            if (!obj) return;
+            obj.traverse((child) => {
+                if (child.geometry) {
+                    child.geometry.dispose();
+                }
+                if (child.material) {
+                    const mats = Array.isArray(child.material) ? child.material : [child.material];
+                    mats.forEach(m => {
+                        if (m.map) m.map.dispose();
+                        if (m.lightMap) m.lightMap.dispose();
+                        if (m.bumpMap) m.bumpMap.dispose();
+                        if (m.normalMap) m.normalMap.dispose();
+                        if (m.specularMap) m.specularMap.dispose();
+                        if (m.envMap) m.envMap.dispose();
+                        m.dispose();
+                    });
+                }
+            });
+        }
+
+        function toggle3DPause() {
+            is3DPaused = !is3DPaused;
+            window.updatePauseButtonUI();
+        }
+        window.toggle3DPause = toggle3DPause;
+
+        window.updatePauseButtonUI = function() {
+            const btnLabel = document.getElementById('p3d-pause-label');
+            const icon = document.getElementById('p3d-pause-icon');
+            if (!btnLabel) return;
+            if (is3DPaused) {
+                btnLabel.textContent = 'AVVIA';
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'play');
+                    icon.className = 'w-3 h-3 text-emerald-400';
+                }
+            } else {
+                btnLabel.textContent = 'PAUSA';
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'pause');
+                    icon.className = 'w-3 h-3 text-accent';
+                }
+            }
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.start3DRenderLoop = function() {
+            if (animFrameId3d) return;
+
+            const renderLoop3D = () => {
+                animFrameId3d = requestAnimationFrame(renderLoop3D);
+                if (controls3d) controls3d.update();
+
+                const delta = clock3d ? clock3d.getDelta() : 0.016;
+                const safeDelta = Math.min(delta, 0.045);
+                const elapsedTime = clock3d ? clock3d.getElapsedTime() : 0;
+
+                const now = performance.now();
+                if (now - lastMousePos.time > 35) {
+                    mouseSpeed = 0;
+                }
+
+                if (activeClothSim && activeClothSim.update) {
+                    activeClothSim.update(elapsedTime, safeDelta);
+                }
+
+                if (!is3DPaused && current3dMeshGroup && (!controls3d || !controls3d.state || controls3d.state === -1)) {
+                    const speed = current3dMeshGroup.userData.rotationSpeed || 0.22;
+                    current3dMeshGroup.rotation.y += speed * safeDelta;
+                }
+
+                if (renderer3d && scene3d && camera3d) {
+                    renderer3d.render(scene3d, camera3d);
+                }
+            };
+            renderLoop3D();
+        };
+
+        window.stop3DRenderLoop = function() {
+            if (animFrameId3d) {
+                cancelAnimationFrame(animFrameId3d);
+                animFrameId3d = null;
+            }
+        };
+
+        // Pause loop when browser tab loses focus to save memory and battery
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                window.stop3DRenderLoop();
+            } else {
+                const modal = document.getElementById('project-modal');
+                if (modal && !modal.classList.contains('opacity-0')) {
+                    window.start3DRenderLoop();
+                }
+            }
+        });
+
+        window.init3DViewer = function() {
+            const container = document.getElementById('project-3d-canvas-container');
+            if (!container || renderer3d || typeof THREE === 'undefined') return;
+
+            const width = container.clientWidth || window.innerWidth || 600;
+            const height = container.clientHeight || window.innerHeight || 800;
+
+            scene3d = new THREE.Scene();
+            scene3d.background = null;
+
+            camera3d = new THREE.PerspectiveCamera(45, width / height, 0.02, 1000);
+            camera3d.position.set(16, 13, 20);
+
+            renderer3d = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+            renderer3d.setClearColor(0x000000, 0);
+            renderer3d.setSize(width, height, false);
+            renderer3d.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+
+            renderer3d.domElement.style.touchAction = 'none';
+
+            if (renderer3d.outputEncoding !== undefined) {
+                renderer3d.outputEncoding = THREE.sRGBEncoding;
+            }
+
+            container.appendChild(renderer3d.domElement);
+
+            if (typeof THREE.OrbitControls !== 'undefined') {
+                controls3d = new THREE.OrbitControls(camera3d, renderer3d.domElement);
+                controls3d.enableDamping = true;
+                controls3d.dampingFactor = 0.08;
+                controls3d.rotateSpeed = 1.0;
+                controls3d.zoomSpeed = 1.2;
+                controls3d.minPolarAngle = 0;
+                controls3d.maxPolarAngle = Math.PI;
+                controls3d.minDistance = 0.15;
+                controls3d.maxDistance = 150;
+                controls3d.target.set(0, 2.5, 0);
+
+                controls3d.touches = {
+                    ONE: THREE.TOUCH.ROTATE,
+                    TWO: THREE.TOUCH.DOLLY_PAN
+                };
+            }
+
+            const ambient = new THREE.AmbientLight(0xffffff, 0.72);
+            scene3d.add(ambient);
+
+            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444455, 0.45);
+            hemiLight.position.set(0, 45, 0);
+            scene3d.add(hemiLight);
+
+            const keyLight = new THREE.DirectionalLight(0xffffff, 0.75);
+            keyLight.position.set(16, 20, 24);
+            scene3d.add(keyLight);
+
+            const rimLight = new THREE.DirectionalLight(0xffffff, 0.55);
+            rimLight.position.set(-18, 14, -22);
+            scene3d.add(rimLight);
+
+            const fillLightBottom = new THREE.DirectionalLight(0xffffff, 0.35);
+            fillLightBottom.position.set(0, -22, 4);
+            scene3d.add(fillLightBottom);
+
+            const viewport = document.getElementById('project-3d-viewport');
+            if (viewport) {
+                viewport.addEventListener('mouseenter', () => {
+                    if (!hasFinePointer()) return;
+                    document.body.classList.add('cad-crosshair-active');
+                    if (cadCursor) cadCursor.style.display = 'block';
+                    if (cursor) cursor.style.display = 'none';
+                });
+
+                viewport.addEventListener('mouseleave', () => {
+                    if (!hasFinePointer()) return;
+                    document.body.classList.remove('cad-crosshair-active');
+                    if (cadCursor) cadCursor.style.display = 'none';
+                    if (cursor) cursor.style.display = 'flex';
+                });
+            }
+
+            container.addEventListener('mousedown', () => {
+                if (!hasFinePointer()) return;
+                if (cadOrbitRing) cadOrbitRing.style.opacity = '1';
+                if (cadPickbox) {
+                    cadPickbox.setAttribute('stroke', '#E63946');
+                    cadPickbox.setAttribute('fill', '#E63946');
+                    cadPickbox.setAttribute('fill-opacity', '0.35');
+                }
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (!hasFinePointer()) return;
+                if (cadOrbitRing) cadOrbitRing.style.opacity = '0';
+                if (cadPickbox) {
+                    cadPickbox.setAttribute('stroke', 'white');
+                    cadPickbox.setAttribute('fill', 'black');
+                    cadPickbox.setAttribute('fill-opacity', '0.35');
+                }
+            });
+
+            container.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                mouse3dVec.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse3dVec.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+                const now = performance.now();
+                const dt = Math.max(1, now - lastMousePos.time);
+                const dist = Math.hypot(e.clientX - lastMousePos.x, e.clientY - lastMousePos.y);
+                
+                mouseSpeed = dist / dt;
+
+                lastMousePos.x = e.clientX;
+                lastMousePos.y = e.clientY;
+                lastMousePos.time = now;
+            }, { passive: true });
+
+            container.addEventListener('mouseleave', () => {
+                mouse3dVec.set(-999, -999);
+                mouseSpeed = 0;
+            });
+
+            container.addEventListener('touchmove', (e) => {
+                if (e.touches && e.touches.length === 1) {
+                    const rect = container.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    mouse3dVec.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+                    mouse3dVec.y = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
+                    mouseSpeed = 0.35;
+                }
+            }, { passive: true });
+
+            container.addEventListener('touchend', () => {
+                mouse3dVec.set(-999, -999);
+                mouseSpeed = 0;
+            });
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 1024) {
+                    window.closeMobile3DView();
+                }
+                update3DViewportDimensions();
+            });
+
+            window.start3DRenderLoop();
+        };
+
+        window.apply3DModeToGroup = function(group) {
+            if (!group) return;
+            group.traverse((child) => {
+                if (child.isMesh && child.geometry) {
+                    if (child.userData.isDrape) {
+                        const m = child.material;
+                        if (current3DMode === 'technical') {
+                            m.wireframe = true;
+                            m.color.setHex(0xE63946);
+                        } else {
+                            m.wireframe = false;
+                            m.color.setHex(0xffffff);
+                        }
+                        m.needsUpdate = true;
+                        return;
+                    }
+
+                    if (child.material) {
+                        const mats = Array.isArray(child.material) ? child.material : [child.material];
+                        mats.forEach(m => {
+                            m.polygonOffset = true;
+                            m.polygonOffsetFactor = 1;
+                            m.polygonOffsetUnits = 1;
+                            m.wireframe = false;
+                            m.depthWrite = true;
+                            m.depthTest = true;
+                        });
+                    }
+
+                    let edgeLine = child.getObjectByName('__arch_edges__');
+                    if (!edgeLine && child.geometry) {
+                        try {
+                            const edgesGeom = new THREE.EdgesGeometry(child.geometry, 25);
+                            const lineMat = new THREE.LineBasicMaterial({ 
+                                color: 0xE63946, 
+                                linewidth: 1,
+                                transparent: true,
+                                opacity: 0.95
+                            });
+                            edgeLine = new THREE.LineSegments(edgesGeom, lineMat);
+                            edgeLine.name = '__arch_edges__';
+                            child.add(edgeLine);
+                        } catch (e) {}
+                    }
+
+                    if (edgeLine) {
+                        edgeLine.visible = true;
+                        if (current3DMode === 'technical') {
+                            edgeLine.material.color.setHex(0xE63946);
+                            edgeLine.material.opacity = 0.95;
+                        } else {
+                            edgeLine.material.color.setHex(0x111113);
+                            edgeLine.material.opacity = 0.85;
+                        }
+                    }
+
+                    if (child.material) {
+                        const mats = Array.isArray(child.material) ? child.material : [child.material];
+                        mats.forEach(m => {
+                            if (current3DMode === 'technical') {
+                                m.color.setHex(0x18181c);
+                                m.roughness = 0.65;
+                            } else {
+                                if (child.userData.hasTexture && m.map) {
+                                    m.color.setHex(0xffffff);
+                                } else if (child.userData.baseColor !== undefined) {
+                                    m.color.setHex(child.userData.baseColor);
+                                } else {
+                                    m.color.setHex(0xedece8);
+                                }
+                                m.roughness = 0.45;
+                            }
+                            m.needsUpdate = true;
+                        });
+                    }
+                }
+            });
+        };
+
+        function cycle3DDisplayMode() {
+            current3DMode = (current3DMode === 'technical') ? 'object' : 'technical';
+
+            const labelEl = document.getElementById('p3d-mode-btn-label');
+            const dotEl = document.getElementById('p3d-mode-dot');
+
+            if (labelEl) {
+                labelEl.textContent = (current3DMode === 'technical') ? 'CAD TECH' : 'OBJECT MODE';
+            }
+
+            if (dotEl) {
+                if (current3DMode === 'technical') {
+                    dotEl.className = 'w-1.5 h-1.5 rounded-full bg-accent';
+                } else {
+                    dotEl.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400';
+                }
+            }
+
+            if (current3dMeshGroup) {
+                window.apply3DModeToGroup(current3dMeshGroup);
+            }
+        }
+        window.cycle3DDisplayMode = cycle3DDisplayMode;
+
+        window.setupProject3D = function(project) {
+            currentActiveProject = project;
+
+            const titleLower = (project && project.title) ? project.title.toLowerCase() : '';
+            const isCadTechDefault = titleLower.includes('grow up') || 
+                                     titleLower.includes('scuola') || 
+                                     (project && (project.id === 'PRJ-01' || project.id === 'PRJ-02'));
+
+            current3DMode = isCadTechDefault ? 'technical' : 'object';
+
+            const labelEl = document.getElementById('p3d-mode-btn-label');
+            const dotEl = document.getElementById('p3d-mode-dot');
+            if (labelEl) {
+                labelEl.textContent = (current3DMode === 'technical') ? 'CAD TECH' : 'OBJECT MODE';
+            }
+            if (dotEl) {
+                dotEl.className = (current3DMode === 'technical') 
+                    ? 'w-1.5 h-1.5 rounded-full bg-accent' 
+                    : 'w-1.5 h-1.5 rounded-full bg-emerald-400';
+            }
+
+            window.updatePauseButtonUI();
+            window.init3DViewer();
+            window.start3DRenderLoop();
+            if (!scene3d) return;
+
+            const tagEl = document.getElementById('p3d-model-tag');
+            const hintEl = document.getElementById('p3d-controls-hint');
+
+            // Explicit disposal of previous 3D object to free GPU memory
+            if (current3dMeshGroup) {
+                scene3d.remove(current3dMeshGroup);
+                disposeHierarchy(current3dMeshGroup);
+                current3dMeshGroup = null;
+            }
+            activeClothSim = null;
+
+            if (project && project.model3d) {
+                if (controls3d) {
+                    controls3d.enableDamping = false;
+                }
+                if (tagEl) tagEl.textContent = `${project.id} // ${project.title}`;
+                if (hintEl) hintEl.textContent = "ORBITA A 360°";
+                window.load3DModelFromPath(project.model3d);
+            } else {
+                if (controls3d) {
+                    controls3d.enableDamping = true;
+                    controls3d.dampingFactor = 0.14;
+                }
+                if (tagEl) tagEl.textContent = `${project ? project.id : 'PRJ'} // ${project ? project.title : 'DRAPPO'}`;
+                if (hintEl) hintEl.textContent = "ORBITA A 360°";
+                const texturePath = (project && (project.drapeImg || project.coverImg)) || '';
+                window.createInteractiveClothDrape(texturePath, project);
+            }
+
+            setTimeout(update3DViewportDimensions, 50);
+        };
+
+        // =========================================================================
+        // DRAPPO INTERATTIVO: ALTA EFFICIENZA CPU (36x36), ROTAZIONE E PROFONDITÀ
+        // =========================================================================
+        window.createInteractiveClothDrape = function(texturePath, project) {
+            const group = new THREE.Group();
+
+            const drapeWidth = 9.6;
+            const drapeHeight = 9.6;
+            const planeAspect = 1.0;
+
+            // Optimized segment density: 36x36 (1,369 vertices) delivers identical textile fidelity with 50%+ less CPU load
+            const segmentsX = 36;
+            const segmentsY = 36;
+            const cols = segmentsX + 1;
+            const rows = segmentsY + 1;
+            const vertexCount = cols * rows;
+
+            const clothGeom = new THREE.PlaneGeometry(drapeWidth, drapeHeight, segmentsX, segmentsY);
+            const origPositions = clothGeom.attributes.position.array.slice();
+
+            let dispZ = new Float32Array(vertexCount);
+            let velZ = new Float32Array(vertexCount);
+
+            // Precalculated UV coordinates for fast sinusoidal wave motion without per-vertex inner trig calls
+            const uNormArray = new Float32Array(cols);
+            for (let i = 0; i < cols; i++) uNormArray[i] = i / (cols - 1);
+            const vNormArray = new Float32Array(rows);
+            for (let j = 0; j < rows; j++) vNormArray[j] = j / (rows - 1);
+
+            const textureLoader = new THREE.TextureLoader();
+            const texture = textureLoader.load(
+                texturePath,
+                (tex) => {
+                    tex.generateMipmaps = true;
+                    tex.minFilter = THREE.LinearMipmapLinearFilter;
+                    tex.magFilter = THREE.LinearFilter;
+                    tex.wrapS = THREE.ClampToEdgeWrapping;
+                    tex.wrapT = THREE.ClampToEdgeWrapping;
+
+                    const img = tex.image;
+                    if (img && img.width && img.height) {
+                        const imgAspect = img.width / img.height;
+                        if (imgAspect > planeAspect) {
+                            const repeatX = planeAspect / imgAspect;
+                            tex.repeat.set(repeatX, 1);
+                            tex.offset.set((1 - repeatX) / 2, 0);
+                        } else {
+                            const repeatY = imgAspect / planeAspect;
+                            tex.repeat.set(1, repeatY);
+                            tex.offset.set(0, (1 - repeatY) / 2);
+                        }
+                    }
+                    tex.needsUpdate = true;
+                },
+                undefined,
+                () => {
+                    console.warn("Impossibile caricare texture drappo:", texturePath);
+                }
+            );
+
+            const clothMat = new THREE.MeshStandardMaterial({
+                map: texture,
+                side: THREE.DoubleSide,
+                roughness: 0.64,
+                metalness: 0.08,
+                shadowSide: THREE.DoubleSide
+            });
+
+            const clothMesh = new THREE.Mesh(clothGeom, clothMat);
+            clothMesh.userData.isDrape = true;
+            group.add(clothMesh);
+
+            group.position.set(0, 0, 0);
+            group.userData.targetCenter = new THREE.Vector3(0, 0, 0);
+            group.userData.rotationSpeed = 0.135;
+
+            group.rotation.y = 0.42;
+            group.rotation.x = 0.08;
+
+            let lastHitU = -1;
+            let lastHitV = -1;
+            let frameCounter = 0;
+
+            activeClothSim = {
+                mesh: clothMesh,
+                update: (time, dt) => {
+                    const pos = clothGeom.attributes.position;
+                    let mouseHitU = -1;
+                    let mouseHitV = -1;
+                    let impactDirectionSign = -1.0;
+
+                    if (mouse3dVec.x > -2 && camera3d) {
+                        raycaster3d.setFromCamera(mouse3dVec, camera3d);
+                        const intersects = raycaster3d.intersectObject(clothMesh);
+                        if (intersects.length > 0 && intersects[0].uv) {
+                            mouseHitU = intersects[0].uv.x;
+                            mouseHitV = intersects[0].uv.y;
+
+                            const localRayDir = raycaster3d.ray.direction.clone();
+                            localRayDir.applyEuler(new THREE.Euler(-group.rotation.x, -group.rotation.y, -group.rotation.z));
+                            impactDirectionSign = (localRayDir.z < 0) ? -1.0 : 1.0;
+                        }
+                    }
+
+                    if (mouseHitU >= 0 && mouseHitV >= 0) {
+                        let strokeDist = 0;
+                        if (lastHitU >= 0 && lastHitV >= 0) {
+                            strokeDist = Math.hypot(mouseHitU - lastHitU, mouseHitV - lastHitV);
+                        }
+
+                        const isMoving = (strokeDist > 0.001) || (mouseSpeed > 0.10);
+
+                        if (isMoving) {
+                            const hitVelocity = Math.max(strokeDist * 60, mouseSpeed * 0.42);
+                            const impulsePower = Math.min(1.10, hitVelocity * 0.35);
+
+                            const centerI = mouseHitU * (cols - 1);
+                            const centerJ = (1.0 - mouseHitV) * (rows - 1);
+
+                            const impactRadius = 6.8;
+                            const minI = Math.max(0, Math.floor(centerI - impactRadius));
+                            const maxI = Math.min(cols - 1, Math.ceil(centerI + impactRadius));
+                            const minJ = Math.max(0, Math.floor(centerJ - impactRadius));
+                            const maxJ = Math.min(rows - 1, Math.ceil(centerJ + impactRadius));
+
+                            for (let j = minJ; j <= maxJ; j++) {
+                                const dj = j - centerJ;
+                                const rowBase = j * cols;
+                                for (let i = minI; i <= maxI; i++) {
+                                    const di = i - centerI;
+                                    const dist = Math.hypot(di, dj);
+                                    if (dist < impactRadius) {
+                                        const t = dist / impactRadius;
+                                        const bellCurve = (1 - t * t) * (1 - t * t);
+                                        velZ[rowBase + i] += impulsePower * bellCurve * 2.2 * impactDirectionSign;
+                                    }
+                                }
+                            }
+                        }
+
+                        lastHitU = mouseHitU;
+                        lastHitV = mouseHitV;
+                    } else {
+                        lastHitU = -1;
+                        lastHitV = -1;
+                    }
+
+                    const tension = 16.0;
+                    const dissipation = 0.932;
+                    const t1 = time * 0.9;
+                    const t2 = time * 0.7;
+
+                    for (let j = 0; j < rows; j++) {
+                        const rowIdx = j * cols;
+                        const vNorm = vNormArray[j];
+                        const waveV1 = vNorm * 1.8;
+                        const waveV2 = vNorm * 2.1;
+
+                        for (let i = 0; i < cols; i++) {
+                            const idx = rowIdx + i;
+                            const left = (i > 0) ? dispZ[idx - 1] : dispZ[idx];
+                            const right = (i < cols - 1) ? dispZ[idx + 1] : dispZ[idx];
+                            const up = (j > 0) ? dispZ[idx - cols] : dispZ[idx];
+                            const down = (j < rows - 1) ? dispZ[idx + cols] : dispZ[idx];
+
+                            const laplacian = (left + right + up + down) * 0.25 - dispZ[idx];
+                            const force = laplacian * tension - (dispZ[idx] * 2.1);
+
+                            velZ[idx] = (velZ[idx] + force * dt) * dissipation;
+                            dispZ[idx] += velZ[idx] * dt;
+
+                            const uNorm = uNormArray[i];
+                            const floatBreeze = Math.sin(t1 + uNorm * 2.2 + waveV1) * 0.022
+                                              + Math.cos(t2 - uNorm * 1.5 + waveV2) * 0.014;
+
+                            const origIdx = idx * 3;
+                            pos.array[origIdx + 2] = origPositions[origIdx + 2] + floatBreeze + dispZ[idx];
+                            pos.array[origIdx] = origPositions[origIdx] + (dispZ[idx] * 0.045);
+                            pos.array[origIdx + 1] = origPositions[origIdx + 1] + (dispZ[idx] * 0.032);
+                        }
+                    }
+
+                    pos.needsUpdate = true;
+                    // Compute normals every other frame to ensure maximum 60/120fps smoothness
+                    frameCounter++;
+                    if (frameCounter % 2 === 0) {
+                        clothGeom.computeVertexNormals();
+                    }
+                }
+            };
+
+            current3dMeshGroup = group;
+            scene3d.add(current3dMeshGroup);
+
+            window.apply3DModeToGroup(current3dMeshGroup);
+            update3DViewportDimensions();
+            window.reset3DCamera();
+        };
+
+        function reset3DCamera() {
+            if (!camera3d || !controls3d) return;
+            const modelPath = (currentActiveProject && currentActiveProject.model3d) || '';
+            const isONJJ = modelPath.includes('ONJJ');
+            const isTENT1 = modelPath.includes('TENT1');
+            const isDrape = !modelPath;
+
+            let targetCenter = new THREE.Vector3(0, 0, 0);
+            if (current3dMeshGroup && current3dMeshGroup.userData.targetCenter) {
+                targetCenter.copy(current3dMeshGroup.userData.targetCenter);
+            } else if (!isDrape) {
+                targetCenter.set(0, 2.5, 0);
+            }
+
+            controls3d.target.copy(targetCenter);
+
+            const container = document.getElementById('project-3d-canvas-container');
+            let aspect = 1.0;
+            if (container && container.clientWidth > 0 && container.clientHeight > 0) {
+                aspect = container.clientWidth / container.clientHeight;
+            } else if (camera3d.aspect) {
+                aspect = camera3d.aspect;
+            } else {
+                aspect = window.innerWidth / window.innerHeight;
+            }
+
+            camera3d.aspect = aspect;
+            camera3d.updateProjectionMatrix();
+
+            const portraitFit = (aspect < 1.15) ? Math.max(1.0, 1.28 / Math.max(0.42, aspect)) : 1.0;
+
+            if (isDrape) {
+                const drapeDist = Math.max(17.5, 14.5 / Math.max(0.42, aspect));
+                camera3d.position.set(0, targetCenter.y, drapeDist);
+            } else if (isONJJ) {
+                const baseOffset = new THREE.Vector3(3.4, 1.6, 4.3);
+                baseOffset.multiplyScalar(portraitFit);
+                camera3d.position.copy(targetCenter).add(baseOffset);
+            } else if (isTENT1) {
+                const baseOffset = new THREE.Vector3(6.0, 2.5, 8.0);
+                baseOffset.multiplyScalar(portraitFit);
+                camera3d.position.copy(targetCenter).add(baseOffset);
+            } else {
+                const baseOffset = new THREE.Vector3(14.0, 6.5, 16.0);
+                baseOffset.multiplyScalar(portraitFit);
+                camera3d.position.copy(targetCenter).add(baseOffset);
+            }
+
+            controls3d.update();
+
+            if (current3dMeshGroup) {
+                current3dMeshGroup.rotation.y = isDrape ? 0.42 : 0;
+                current3dMeshGroup.rotation.x = isDrape ? 0.08 : 0;
+            }
+        }
+        window.reset3DCamera = reset3DCamera;
+
+        window.load3DModelFromPath = function(path) {
+            const ext = path.split('.').pop().toLowerCase();
+            const resourceDir = path.substring(0, path.lastIndexOf('/') + 1);
+            
+            if (ext === 'obj' && typeof THREE.OBJLoader !== 'undefined') {
+                const loader = new THREE.OBJLoader();
+                loader.load(path, (obj) => {
+                    obj.traverse((child) => {
+                        if (child.isMesh) {
+                            child.material = new THREE.MeshStandardMaterial({
+                                color: 0xedece8,
+                                roughness: 0.45,
+                                metalness: 0.02
+                            });
+                            child.userData.baseColor = 0xedece8;
+                        }
+                    });
+                    window.displayLoaded3DModel(obj);
+                }, undefined, (err) => {
+                    console.warn('Impossibile caricare il file OBJ specificato:', err);
+                    window.fallbackProcedural();
+                });
+            } else if (ext === 'fbx' && typeof THREE.FBXLoader !== 'undefined') {
+                const loader = new THREE.FBXLoader();
+                loader.setResourcePath(resourceDir);
+                loader.load(path, (fbx) => {
+                    fbx.traverse((child) => {
+                        if (child.isMesh && child.material) {
+                            const mats = Array.isArray(child.material) ? child.material : [child.material];
+                            mats.forEach(m => {
+                                if (m.map) {
+                                    child.userData.hasTexture = true;
+                                    m.color.setHex(0xffffff);
+                                } else if (m.color) {
+                                    child.userData.baseColor = m.color.getHex();
+                                }
+                            });
+                        }
+                    });
+                    window.displayLoaded3DModel(fbx);
+                }, undefined, (err) => {
+                    console.warn('Impossibile caricare il file FBX specificato:', err);
+                    window.fallbackProcedural();
+                });
+            } else if ((ext === 'glb' || ext === 'gltf') && typeof THREE.GLTFLoader !== 'undefined') {
+                const loader = new THREE.GLTFLoader();
+                loader.setResourcePath(resourceDir);
+                loader.load(path, (gltf) => {
+                    const model = gltf.scene || gltf.scenes[0];
+                    model.traverse((child) => {
+                        if (child.isMesh && child.material) {
+                            const mats = Array.isArray(child.material) ? child.material : [child.material];
+                            mats.forEach(m => {
+                                if (m.map) {
+                                    child.userData.hasTexture = true;
+                                } else if (m.color) {
+                                    child.userData.baseColor = m.color.getHex();
+                                }
+                            });
+                        }
+                    });
+                    window.displayLoaded3DModel(model);
+                }, undefined, (err) => {
+                    console.warn('Impossibile caricare il file GLTF/GLB specificato:', err);
+                    window.fallbackProcedural();
+                });
+            }
+        };
+
+        window.fallbackProcedural = function() {
+            const texturePath = (currentActiveProject && (currentActiveProject.drapeImg || currentActiveProject.coverImg)) || '';
+            window.createInteractiveClothDrape(texturePath, currentActiveProject);
+        };
+
+        window.displayLoaded3DModel = function(model) {
+            if (!scene3d || !model) return;
+
+            if (current3dMeshGroup) {
+                scene3d.remove(current3dMeshGroup);
+                disposeHierarchy(current3dMeshGroup);
+                current3dMeshGroup = null;
+            }
+
+            model.position.set(0, 0, 0);
+            model.rotation.set(0, 0, 0);
+            model.scale.set(1, 1, 1);
+            model.updateMatrixWorld(true);
+
+            const box = new THREE.Box3().setFromObject(model);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            const maxDim = Math.max(size.x, size.y, size.z) || 1;
+            
+            const modelPath = (currentActiveProject && currentActiveProject.model3d) || '';
+            const isONJJ = modelPath.includes('ONJJ');
+            const isTENT1 = modelPath.includes('TENT1');
+            const targetDim = isONJJ ? 12.0 : (isTENT1 ? 14.0 : 10.0);
+            const scaleFactor = targetDim / maxDim;
+
+            const wrapper = new THREE.Group();
+            model.position.set(-center.x, -center.y, -center.z);
+            wrapper.add(model);
+            wrapper.scale.setScalar(scaleFactor);
+
+            const scaledHeight = size.y * scaleFactor;
+            const centerY = scaledHeight / 2;
+            wrapper.position.set(0, centerY, 0);
+
+            wrapper.userData.targetCenter = new THREE.Vector3(0, centerY, 0);
+            wrapper.userData.rotationSpeed = (isONJJ || isTENT1) ? 0.12 : 0.20;
+
+            current3dMeshGroup = wrapper;
+            scene3d.add(current3dMeshGroup);
+
+            window.apply3DModeToGroup(current3dMeshGroup);
+            update3DViewportDimensions();
+            window.reset3DCamera();
+        };
+
+        if (window.lucide) lucide.createIcons();
+        window.renderCategoryDropdown();
+        window.renderSortDropdown();
+        window.renderPortfolio();
+    </script>
+</body>
+</html>
