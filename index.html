@@ -21,7 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -212,6 +212,7 @@
         <img id="hover-preview-img" src="" alt="Anteprima Progetto" class="w-full h-full object-cover">
     </div>
 
+    <!-- Top Navigation Header -->
     <header class="sticky top-0 z-30 bg-cream/90 dark:bg-paperDark/90 backdrop-blur-md text-sm font-mono border-b border-charcoal/5 dark:border-cream/5">
         <div class="px-4 py-2.5 sm:py-3 md:px-8 flex items-center justify-between gap-4">
             <!-- Studio Name -->
@@ -240,7 +241,7 @@
 
     <main class="px-4 pt-3 pb-6 md:pt-3.5 md:pb-8 md:px-8 max-w-[1800px] mx-auto min-h-[75vh]">
         
-        <!-- Category Filter & Sort Bar (Optimized Horizontal Mobile Balance) -->
+        <!-- Category Filter & Sort Bar -->
         <div class="mb-4 sm:mb-5 flex items-center justify-between gap-1.5 sm:gap-3 text-xs font-mono">
             
             <!-- Category Dropdown -->
@@ -268,7 +269,7 @@
                 </div>
             </div>
 
-            <!-- Sort By & Layout Switcher (Balanced Spacing on Mobile) -->
+            <!-- Sort By & Layout Switcher -->
             <div class="flex items-center justify-end gap-1.5 sm:gap-3 text-subtle shrink-0">
                 <div class="relative flex items-center gap-1 sm:gap-1.5">
                     <span class="text-[10px] uppercase tracking-wider hidden sm:inline text-subtle">ORDINA:</span>
@@ -443,7 +444,7 @@
         <div id="project-3d-viewport" class="hidden lg:flex lg:w-1/2 h-full flex-col relative bg-[#0D0D0F]/90 lg:bg-[#0D0D0F]/75 backdrop-blur-md border-r border-charcoal/20 dark:border-cream/15 overflow-hidden">
             <!-- 3D Header HUD: Exactly 16px from top (top-4) with fixed 32px height (h-8) -->
             <div class="absolute top-4 left-4 sm:left-6 right-4 sm:right-6 z-10 flex items-center justify-between font-mono text-[9px] sm:text-[10px] select-none pointer-events-none gap-2 h-8">
-                <!-- 3D Project Switcher: Project Title Dropdown (Arrows removed) -->
+                <!-- 3D Project Switcher: Project Title Dropdown -->
                 <div class="flex items-center gap-1 sm:gap-1.5 pointer-events-auto h-8">
                     <div class="relative h-8">
                         <button id="p3d-prj-dropdown-btn" onclick="toggle3DPrjDropdown(event)" class="h-8 flex items-center gap-1.5 bg-charcoal/85 text-cream/90 hover:text-white backdrop-blur-md px-2.5 sm:px-3 rounded border border-white/10 shadow-md cursor-pointer transition-colors">
@@ -464,14 +465,9 @@
                     </div>
                 </div>
 
-                <!-- Clean Controls (Mobile Back Button moved to bottom-left) -->
+                <!-- Clean Controls (Senza Pausa/Play, Mode button presente solo per modelli 3D) -->
                 <div class="flex items-center gap-1.5 sm:gap-2 pointer-events-auto h-8">
-                    <!-- Rotation Pause / Play Button -->
-                    <button id="p3d-pause-btn" onclick="toggle3DPause()" class="h-8 px-2 sm:px-2.5 bg-charcoal/80 hover:bg-white/20 text-cream/90 backdrop-blur-md rounded border border-white/10 uppercase tracking-wider transition-colors flex items-center gap-1 shadow-md cursor-pointer" title="Pausa / Avvia rotazione">
-                        <i data-lucide="pause" id="p3d-pause-icon" class="w-3 h-3 text-accent"></i>
-                        <span id="p3d-pause-label" class="hidden sm:inline">PAUSA</span>
-                    </button>
-                    <button onclick="cycle3DDisplayMode()" class="h-8 px-2 sm:px-2.5 bg-charcoal/80 hover:bg-white/20 text-cream/90 backdrop-blur-md rounded border border-white/10 uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-md cursor-pointer">
+                    <button id="p3d-mode-btn" onclick="cycle3DDisplayMode()" class="h-8 px-2 sm:px-2.5 bg-charcoal/80 hover:bg-white/20 text-cream/90 backdrop-blur-md rounded border border-white/10 uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-md cursor-pointer">
                         <span id="p3d-mode-dot" class="w-1.5 h-1.5 rounded-full bg-accent"></span>
                         <span id="p3d-mode-btn-label">CAD TECH</span>
                     </button>
@@ -486,14 +482,12 @@
 
             <!-- Bottom 3D Bar: "ORBITA A 360°" on bottom left, "TORNA AL PRJ" shifted to bottom right -->
             <div class="absolute bottom-4 left-4 sm:left-6 right-4 sm:right-6 z-10 flex justify-between items-center font-mono text-[9px] sm:text-[10px] select-none pointer-events-none gap-3">
-                <!-- Bottom Left: "ORBITA A 360°" & subtle archive note -->
                 <div class="text-left text-cream/50 pointer-events-none flex items-center gap-2">
                     <span id="p3d-controls-hint" class="tracking-wider uppercase font-medium text-cream/70">ORBITA A 360°</span>
                     <span class="hidden sm:inline text-cream/20">|</span>
                     <span class="hidden sm:inline text-cream/40">SPATIAL ARCHIVE</span>
                 </div>
 
-                <!-- Mobile Back to Project Button (Bottom Right) -->
                 <div class="pointer-events-auto">
                     <button id="mobile-3d-close-btn" onclick="closeMobile3DView()" class="lg:hidden h-8 px-3 bg-accent text-white rounded font-mono text-[10px] font-bold uppercase tracking-wider shadow-xl hover:bg-accent/80 transition-colors flex items-center gap-1.5 cursor-pointer">
                         <span>TORNA AL PRJ →</span>
@@ -502,14 +496,12 @@
             </div>
         </div>
 
-        <!-- Project Editorial Drawer Content: Matched to top-4 (pt-4) and shared 32px height (h-8) -->
         <div id="modal-content" class="w-full lg:w-1/2 bg-cream dark:bg-cardDark h-full overflow-y-auto transform translate-x-full transition-transform duration-300 ease-out border-l border-charcoal/20 dark:border-cream/20 flex flex-col justify-between pt-4 pb-4 px-4 sm:px-6 shadow-2xl">
             
             <div>
-                <!-- Header: Symmetrical vertical spacing (16px to top border, 16px to bottom grey line) -->
+                <!-- Header: Symmetrical vertical spacing -->
                 <div class="flex items-center justify-between font-mono text-xs border-b border-charcoal/10 dark:border-cream/10 pb-4 mb-6">
                     <div class="flex items-center gap-2 sm:gap-3 h-8">
-                        <!-- Quick PRJ Cycle Arrows in Top Header -->
                         <div class="flex items-center space-x-0.5 bg-charcoal/5 dark:bg-cream/5 p-0.5 rounded border border-charcoal/15 dark:border-cream/15 h-8">
                             <button id="modal-header-prev-btn" class="h-full px-2 hover:text-accent hover:bg-charcoal/10 dark:hover:bg-cream/10 rounded transition-colors text-xs font-bold flex items-center justify-center" title="PRJ Prec. (←)">
                                 ‹
@@ -553,7 +545,7 @@
                     </button>
                 </div>
 
-                <!-- Metadata Row: Location (left), Client (middle), Year (right) -->
+                <!-- Metadata Row -->
                 <div class="grid grid-cols-3 gap-2 sm:gap-4 py-3 sm:py-4 my-4 sm:my-5 border-y border-charcoal/15 dark:border-cream/15 font-mono text-[10px] sm:text-xs">
                     <div>
                         <span class="text-subtle block uppercase tracking-wider text-[9px] sm:text-[10px] mb-0.5 sm:mb-1">LOCATION</span>
@@ -577,20 +569,16 @@
                     </div>
                 </div>
 
-                <!-- Media Viewer with Touch Swipe on Mobile/Tablet -->
+                <!-- Media Viewer -->
                 <div class="my-5 sm:my-6 space-y-3 sm:space-y-4">
                     <div id="modal-media-box" class="relative group bg-charcoal/5 dark:bg-cream/5 rounded border border-charcoal/10 dark:border-cream/10 overflow-hidden cursor-zoom-in w-full select-none">
-                        <!-- Photo container (Full width, auto-scaling height preserving original ratio) -->
                         <img id="modal-main-img" src="" alt="Anteprima Progetto" class="w-full h-auto block transition-transform duration-500 group-hover:scale-[1.01]">
-                        <!-- Video container: Autoplay, muted, loop, full width, natural auto height -->
                         <video id="modal-main-video" autoplay loop muted playsinline preload="metadata" class="w-full h-auto block bg-black hidden pointer-events-none"></video>
 
-                        <!-- In-page Media Slide Counter (useful for touch swiping on mobile) -->
                         <div id="modal-media-counter" class="absolute top-2.5 left-2.5 bg-charcoal/80 text-cream font-mono text-[9px] px-2 py-0.5 rounded shadow pointer-events-none backdrop-blur-sm">
                             01 / 01
                         </div>
 
-                        <!-- Fullscreen overlay button -->
                         <div id="modal-fullscreen-hint" class="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 bg-charcoal/85 text-cream font-mono text-[9px] sm:text-[10px] px-2 sm:px-2.5 py-1 rounded opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 sm:gap-1.5 uppercase tracking-wider pointer-events-none shadow-lg backdrop-blur-sm">
                             <i data-lucide="maximize-2" class="w-3 h-3 text-accent"></i>
                             <span>FULL SCREEN</span>
@@ -603,7 +591,7 @@
                 </div>
             </div>
 
-            <!-- Modal Footer: Prev / Next Navigation aligned with bottom margin -->
+            <!-- Modal Footer: Prev / Next Navigation -->
             <div class="pt-4 border-t border-charcoal/15 dark:border-cream/15 flex justify-between items-center font-mono text-[11px] sm:text-xs">
                 <button id="modal-prev-btn" class="hover:text-accent flex items-center gap-1 transition-colors">
                     <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
@@ -617,19 +605,15 @@
         </div>
     </div>
 
-    <!-- Fullscreen Lightbox (Mobile & Tablet Refined) -->
     <div id="fullscreen-lightbox" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-between p-3 sm:p-5 md:p-8 select-none">
         
-        <!-- Lightbox Top Bar: Minimal with PRJ badge, counter, and touch-target X button -->
         <div class="flex items-center justify-between font-mono text-xs text-cream/70 border-b border-white/10 pb-3 relative">
             <div class="flex items-center gap-2 sm:gap-3 relative">
-                <!-- Dropdown Trigger on Project ID (Title removed) -->
                 <button id="lb-prj-dropdown-btn" onclick="toggleLightboxPrjDropdown(event)" class="text-accent font-bold flex items-center gap-1.5 px-2.5 py-1 rounded bg-white/5 hover:bg-white/15 border border-accent/40 transition-colors cursor-pointer group text-xs sm:text-sm" title="Cambia PRJ">
                     <span id="lb-prj-id">PRJ-01</span>
                     <i data-lucide="chevron-down" id="lb-prj-dropdown-chevron" class="w-3.5 h-3.5 transition-transform duration-200"></i>
                 </button>
 
-                <!-- Project Selector Dropdown Menu -->
                 <div id="lb-prj-dropdown-menu" class="absolute top-9 left-0 z-50 bg-[#161618] border border-white/20 rounded shadow-2xl py-1.5 min-w-[260px] sm:min-w-[280px] max-h-[60vh] overflow-y-auto hidden">
                     <div class="px-3 py-1 text-[9px] uppercase tracking-widest text-subtle border-b border-white/10 font-bold">
                         SELEZIONA PROGETTO D'ARCHIVIO
@@ -640,21 +624,17 @@
                 </div>
             </div>
 
-            <!-- Slide Counter & Simple Touch-Friendly 'X' Close Button -->
             <div class="flex items-center gap-3 sm:gap-5">
                 <div class="flex items-center gap-1.5">
                     <span id="lb-counter" class="text-accent font-bold text-xs sm:text-sm tracking-wider">01 / 01</span>
                 </div>
-                <!-- Clean [X] Button without text -->
                 <button onclick="closeLightbox()" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-cream hover:text-accent bg-white/10 hover:bg-white/20 active:scale-95 rounded transition-all cursor-pointer" title="Chiudi">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
         </div>
 
-        <!-- Lightbox Center Content with Gesture Area (Touch Swipe, Pinch-to-Zoom & Pan) -->
         <div id="lb-gesture-area" class="relative flex-1 flex items-center justify-center my-2 sm:my-4 overflow-hidden cursor-zoom-in">
-            <!-- Nav buttons visible on larger screens, gesture on touch -->
             <button onclick="prevLightboxSlide()" class="hidden md:flex absolute left-2 md:left-6 z-20 w-11 h-11 rounded-full bg-black/60 hover:bg-accent text-white items-center justify-center transition-all border border-white/20 hover:border-transparent group" title="PRJ Prec. (←)">
                 <i data-lucide="chevron-left" class="w-6 h-6 group-hover:-translate-x-0.5 transition-transform"></i>
             </button>
@@ -669,7 +649,6 @@
             </button>
         </div>
 
-        <!-- Lightbox Bottom Thumbnails & Hints (Text hidden on smartphone and tablet touch, visible only on desktop lg+) -->
         <div class="flex items-center justify-center lg:justify-between gap-2 border-t border-white/10 pt-2 sm:pt-3">
             <span class="font-mono text-[9px] sm:text-[10px] text-cream/40 uppercase tracking-widest hidden lg:inline">
                 SCORRI / ROTELLINA PER ZOOM
@@ -737,7 +716,6 @@
                 window.setupProject3D(p);
             }
 
-            // Staged dimension updates ensuring reflow is captured smoothly without lag spikes
             requestAnimationFrame(() => {
                 update3DViewportDimensions();
                 if (typeof window.reset3DCamera === 'function') {
@@ -758,11 +736,6 @@
         }
         window.closeMobile3DView = closeMobile3DView;
 
-        /*
-           ==========================================================================
-           ARCHIVAL DATASET
-           ==========================================================================
-        */
         const projects = [
             {
                 id: "PRJ-02",
@@ -1037,7 +1010,6 @@
         const hoverPreview = document.getElementById('hover-preview-container');
         const hoverPreviewImg = document.getElementById('hover-preview-img');
 
-        // RAF-based Smooth Pointer & Hover positioning to avoid layout thrashing
         let mouseX = 0, mouseY = 0;
         let isRafScheduled = false;
 
@@ -1166,7 +1138,6 @@
             return /\.gif(\?.*)?$/i.test(url);
         };
 
-        // Automatic Dynamic Frame Extraction from Video via HTML5 Canvas
         window.extractFrameFromVideo = function(videoUrl, onExtracted) {
             if (!videoUrl || videoPosterCache[videoUrl]) {
                 if (onExtracted && videoPosterCache[videoUrl]) onExtracted(videoPosterCache[videoUrl]);
@@ -1312,11 +1283,6 @@
         }
         window.closeCategoryDropdown = closeCategoryDropdown;
 
-        /*
-           ==========================================================================
-           CUSTOM SORT DROPDOWN (Balanced Dimensions & Adaptive Mobile Labels)
-           ==========================================================================
-        */
         const sortOptions = [
             { value: 'year-desc', label: 'ANNO [2026 → 2023]', mobileLabel: 'ANNO [26→23]' },
             { value: 'year-asc', label: 'ANNO [2023 → 2026]', mobileLabel: 'ANNO [23→26]' },
@@ -1524,7 +1490,6 @@
             const p = activeList[index] || projects[index];
             if (!p) return;
 
-            // Guaranteed active project assignment across all viewport dimensions
             currentActiveProject = p;
 
             document.getElementById('modal-id').textContent = p.id;
@@ -1560,6 +1525,11 @@
             const content = document.getElementById('modal-content');
             modal.classList.remove('opacity-0', 'pointer-events-none');
             content.classList.remove('translate-x-full');
+
+            // Crucial: Automatically scroll to the top of the project detail view
+            if (content) {
+                content.scrollTop = 0;
+            }
 
             // Set mobile 3D button label with PRJ ID
             const mobileBtnLabel = document.getElementById('mobile-3d-btn-title');
@@ -1615,7 +1585,6 @@
                 try { videoEl.pause(); } catch(e) {}
             }
 
-            // Halt 3D render loop completely when modal closes to eliminate background GPU/CPU drain
             window.stop3DRenderLoop();
 
             setTimeout(() => {
@@ -1723,7 +1692,6 @@
             window.renderModalThumbs();
         };
 
-        // Attach Swipe & Tap listener on in-page media container
         const modalMediaBox = document.getElementById('modal-media-box');
         if (modalMediaBox) {
             let mTouchStartX = 0;
@@ -1879,11 +1847,6 @@
         }
         window.switchLightboxProject = switchLightboxProject;
 
-        /*
-           ==========================================================================
-           3D VIEWPORT PROJECT SWITCHER (DROPDOWN ONLY - DESKTOP & MOBILE)
-           ==========================================================================
-        */
         window.render3DPrjDropdown = function() {
             const listEl = document.getElementById('p3d-prj-dropdown-list');
             if (!listEl) return;
@@ -2054,11 +2017,6 @@
         }
         window.prevLightboxSlide = prevLightboxSlide;
 
-        /*
-           ==========================================================================
-           FLUID TOUCH GESTURE RECOGNITION (SWIPE, PINCH-TO-ZOOM, PAN & DOUBLE-TAP)
-           ==========================================================================
-        */
         const gestureArea = document.getElementById('lb-gesture-area');
         const lbImg = document.getElementById('lb-main-img');
 
@@ -2277,11 +2235,6 @@
             }
         });
 
-        /*
-           ==========================================================================
-           THREE.JS OPTIMIZED ENGINE & MEMORY DISPOSAL SYSTEM
-           ==========================================================================
-        */
         let scene3d = null;
         let camera3d = null;
         let renderer3d = null;
@@ -2290,7 +2243,6 @@
         let animFrameId3d = null;
         let current3DMode = 'object';
         let currentActiveProject = null;
-        let is3DPaused = false;
 
         const clock3d = new THREE.Clock();
         let activeClothSim = null;
@@ -2299,7 +2251,6 @@
         let lastMousePos = { x: 0, y: 0, time: 0 };
         let mouseSpeed = 0;
 
-        // Recursive WebGL resource disposal to eliminate memory leaks across project switches
         function disposeHierarchy(obj) {
             if (!obj) return;
             obj.traverse((child) => {
@@ -2321,32 +2272,6 @@
             });
         }
 
-        function toggle3DPause() {
-            is3DPaused = !is3DPaused;
-            window.updatePauseButtonUI();
-        }
-        window.toggle3DPause = toggle3DPause;
-
-        window.updatePauseButtonUI = function() {
-            const btnLabel = document.getElementById('p3d-pause-label');
-            const icon = document.getElementById('p3d-pause-icon');
-            if (!btnLabel) return;
-            if (is3DPaused) {
-                btnLabel.textContent = 'AVVIA';
-                if (icon) {
-                    icon.setAttribute('data-lucide', 'play');
-                    icon.className = 'w-3 h-3 text-emerald-400';
-                }
-            } else {
-                btnLabel.textContent = 'PAUSA';
-                if (icon) {
-                    icon.setAttribute('data-lucide', 'pause');
-                    icon.className = 'w-3 h-3 text-accent';
-                }
-            }
-            if (window.lucide) lucide.createIcons();
-        };
-
         window.start3DRenderLoop = function() {
             if (animFrameId3d) return;
 
@@ -2367,9 +2292,19 @@
                     activeClothSim.update(elapsedTime, safeDelta);
                 }
 
-                if (!is3DPaused && current3dMeshGroup && (!controls3d || !controls3d.state || controls3d.state === -1)) {
-                    const speed = current3dMeshGroup.userData.rotationSpeed || 0.22;
-                    current3dMeshGroup.rotation.y += speed * safeDelta;
+                // Rotazione delicata per esattamente un solo giro a 360° (2*PI radianti) all'apertura
+                if (current3dMeshGroup && (!controls3d || !controls3d.state || controls3d.state === -1)) {
+                    const speed = current3dMeshGroup.userData.rotationSpeed || 0;
+                    const maxRot = current3dMeshGroup.userData.maxRotation || 0;
+                    const accRot = current3dMeshGroup.userData.accumulatedRotation || 0;
+
+                    if (accRot < maxRot) {
+                        const step = speed * safeDelta;
+                        const remaining = maxRot - accRot;
+                        const actualStep = Math.min(step, remaining);
+                        current3dMeshGroup.rotation.y += actualStep;
+                        current3dMeshGroup.userData.accumulatedRotation += actualStep;
+                    }
                 }
 
                 if (renderer3d && scene3d && camera3d) {
@@ -2386,7 +2321,6 @@
             }
         };
 
-        // Pause loop when browser tab loses focus to save memory and battery
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 window.stop3DRenderLoop();
@@ -2550,13 +2484,8 @@
                 if (child.isMesh && child.geometry) {
                     if (child.userData.isDrape) {
                         const m = child.material;
-                        if (current3DMode === 'technical') {
-                            m.wireframe = true;
-                            m.color.setHex(0xE63946);
-                        } else {
-                            m.wireframe = false;
-                            m.color.setHex(0xffffff);
-                        }
+                        m.wireframe = false;
+                        m.color.setHex(0xffffff);
                         m.needsUpdate = true;
                         return;
                     }
@@ -2624,6 +2553,8 @@
         };
 
         function cycle3DDisplayMode() {
+            if (!currentActiveProject || !currentActiveProject.model3d) return;
+
             current3DMode = (current3DMode === 'technical') ? 'object' : 'technical';
 
             const labelEl = document.getElementById('p3d-mode-btn-label');
@@ -2650,12 +2581,15 @@
         window.setupProject3D = function(project) {
             currentActiveProject = project;
 
-            const titleLower = (project && project.title) ? project.title.toLowerCase() : '';
-            const isCadTechDefault = titleLower.includes('grow up') || 
-                                     titleLower.includes('scuola') || 
-                                     (project && (project.id === 'PRJ-01' || project.id === 'PRJ-02'));
+            const modeBtn = document.getElementById('p3d-mode-btn');
 
-            current3DMode = isCadTechDefault ? 'technical' : 'object';
+            if (project && project.model3d) {
+                if (modeBtn) modeBtn.style.display = 'flex';
+                current3DMode = 'technical';
+            } else {
+                if (modeBtn) modeBtn.style.display = 'none';
+                current3DMode = 'object';
+            }
 
             const labelEl = document.getElementById('p3d-mode-btn-label');
             const dotEl = document.getElementById('p3d-mode-dot');
@@ -2668,7 +2602,6 @@
                     : 'w-1.5 h-1.5 rounded-full bg-emerald-400';
             }
 
-            window.updatePauseButtonUI();
             window.init3DViewer();
             window.start3DRenderLoop();
             if (!scene3d) return;
@@ -2676,7 +2609,6 @@
             const tagEl = document.getElementById('p3d-model-tag');
             const hintEl = document.getElementById('p3d-controls-hint');
 
-            // Explicit disposal of previous 3D object to free GPU memory
             if (current3dMeshGroup) {
                 scene3d.remove(current3dMeshGroup);
                 disposeHierarchy(current3dMeshGroup);
@@ -2705,9 +2637,6 @@
             setTimeout(update3DViewportDimensions, 50);
         };
 
-        // =========================================================================
-        // DRAPPO INTERATTIVO: ALTA EFFICIENZA CPU (36x36), ROTAZIONE E PROFONDITÀ
-        // =========================================================================
         window.createInteractiveClothDrape = function(texturePath, project) {
             const group = new THREE.Group();
 
@@ -2715,7 +2644,6 @@
             const drapeHeight = 9.6;
             const planeAspect = 1.0;
 
-            // Optimized segment density: 36x36 (1,369 vertices) delivers identical textile fidelity with 50%+ less CPU load
             const segmentsX = 36;
             const segmentsY = 36;
             const cols = segmentsX + 1;
@@ -2728,15 +2656,15 @@
             let dispZ = new Float32Array(vertexCount);
             let velZ = new Float32Array(vertexCount);
 
-            // Precalculated UV coordinates for fast sinusoidal wave motion without per-vertex inner trig calls
             const uNormArray = new Float32Array(cols);
             for (let i = 0; i < cols; i++) uNormArray[i] = i / (cols - 1);
             const vNormArray = new Float32Array(rows);
             for (let j = 0; j < rows; j++) vNormArray[j] = j / (rows - 1);
 
+            const safeTexturePath = resolveSafeAssetUrl(texturePath);
             const textureLoader = new THREE.TextureLoader();
             const texture = textureLoader.load(
-                texturePath,
+                safeTexturePath,
                 (tex) => {
                     tex.generateMipmaps = true;
                     tex.minFilter = THREE.LinearMipmapLinearFilter;
@@ -2765,6 +2693,7 @@
                 }
             );
 
+            // Materiale Object Mode di default
             const clothMat = new THREE.MeshStandardMaterial({
                 map: texture,
                 side: THREE.DoubleSide,
@@ -2779,10 +2708,14 @@
 
             group.position.set(0, 0, 0);
             group.userData.targetCenter = new THREE.Vector3(0, 0, 0);
-            group.userData.rotationSpeed = 0.135;
 
-            group.rotation.y = 0.42;
-            group.rotation.x = 0.08;
+            // Rotazione minima per una sola rivoluzione di 360°
+            group.userData.rotationSpeed = 0.18;
+            group.userData.accumulatedRotation = 0;
+            group.userData.maxRotation = Math.PI * 2; // Esattamente 360°
+
+            group.rotation.y = 0;
+            group.rotation.x = 0.04;
 
             let lastHitU = -1;
             let lastHitV = -1;
@@ -2888,7 +2821,6 @@
                     }
 
                     pos.needsUpdate = true;
-                    // Compute normals every other frame to ensure maximum 60/120fps smoothness
                     frameCounter++;
                     if (frameCounter % 2 === 0) {
                         clothGeom.computeVertexNormals();
@@ -2955,78 +2887,107 @@
             controls3d.update();
 
             if (current3dMeshGroup) {
-                current3dMeshGroup.rotation.y = isDrape ? 0.42 : 0;
-                current3dMeshGroup.rotation.x = isDrape ? 0.08 : 0;
+                current3dMeshGroup.rotation.y = 0;
+                current3dMeshGroup.rotation.x = isDrape ? 0.04 : 0;
             }
         }
         window.reset3DCamera = reset3DCamera;
 
+        function resolveSafeAssetUrl(url) {
+            if (!url || typeof url !== 'string') return '';
+            if (/^(https?|blob|data):/i.test(url)) return url;
+            try {
+                if (window.location.protocol === 'blob:') {
+                    if (window.location.origin && window.location.origin !== 'null') {
+                        return new URL(url, window.location.origin + '/').href;
+                    }
+                }
+                return new URL(url, document.baseURI || window.location.href).href;
+            } catch (e) {
+                return url;
+            }
+        }
+        window.resolveSafeAssetUrl = resolveSafeAssetUrl;
+
         window.load3DModelFromPath = function(path) {
+            if (!path) {
+                window.fallbackProcedural();
+                return;
+            }
+
+            const safePath = resolveSafeAssetUrl(path);
             const ext = path.split('.').pop().toLowerCase();
-            const resourceDir = path.substring(0, path.lastIndexOf('/') + 1);
-            
-            if (ext === 'obj' && typeof THREE.OBJLoader !== 'undefined') {
-                const loader = new THREE.OBJLoader();
-                loader.load(path, (obj) => {
-                    obj.traverse((child) => {
-                        if (child.isMesh) {
-                            child.material = new THREE.MeshStandardMaterial({
-                                color: 0xedece8,
-                                roughness: 0.45,
-                                metalness: 0.02
-                            });
-                            child.userData.baseColor = 0xedece8;
-                        }
+            const resourceDir = safePath.substring(0, safePath.lastIndexOf('/') + 1);
+
+            try {
+                if (ext === 'obj' && typeof THREE.OBJLoader !== 'undefined') {
+                    const loader = new THREE.OBJLoader();
+                    loader.load(safePath, (obj) => {
+                        obj.traverse((child) => {
+                            if (child.isMesh) {
+                                child.material = new THREE.MeshStandardMaterial({
+                                    color: 0xedece8,
+                                    roughness: 0.45,
+                                    metalness: 0.02
+                                });
+                                child.userData.baseColor = 0xedece8;
+                            }
+                        });
+                        window.displayLoaded3DModel(obj);
+                    }, undefined, (err) => {
+                        console.warn('Impossibile caricare il file OBJ specificato:', err);
+                        window.fallbackProcedural();
                     });
-                    window.displayLoaded3DModel(obj);
-                }, undefined, (err) => {
-                    console.warn('Impossibile caricare il file OBJ specificato:', err);
-                    window.fallbackProcedural();
-                });
-            } else if (ext === 'fbx' && typeof THREE.FBXLoader !== 'undefined') {
-                const loader = new THREE.FBXLoader();
-                loader.setResourcePath(resourceDir);
-                loader.load(path, (fbx) => {
-                    fbx.traverse((child) => {
-                        if (child.isMesh && child.material) {
-                            const mats = Array.isArray(child.material) ? child.material : [child.material];
-                            mats.forEach(m => {
-                                if (m.map) {
-                                    child.userData.hasTexture = true;
-                                    m.color.setHex(0xffffff);
-                                } else if (m.color) {
-                                    child.userData.baseColor = m.color.getHex();
-                                }
-                            });
-                        }
+                } else if (ext === 'fbx' && typeof THREE.FBXLoader !== 'undefined') {
+                    const loader = new THREE.FBXLoader();
+                    loader.setResourcePath(resourceDir);
+                    loader.load(safePath, (fbx) => {
+                        fbx.traverse((child) => {
+                            if (child.isMesh && child.material) {
+                                const mats = Array.isArray(child.material) ? child.material : [child.material];
+                                mats.forEach(m => {
+                                    if (m.map) {
+                                        child.userData.hasTexture = true;
+                                        m.color.setHex(0xffffff);
+                                    } else if (m.color) {
+                                        child.userData.baseColor = m.color.getHex();
+                                    }
+                                });
+                            }
+                        });
+                        window.displayLoaded3DModel(fbx);
+                    }, undefined, (err) => {
+                        console.warn('Impossibile caricare il file FBX specificato:', err);
+                        window.fallbackProcedural();
                     });
-                    window.displayLoaded3DModel(fbx);
-                }, undefined, (err) => {
-                    console.warn('Impossibile caricare il file FBX specificato:', err);
-                    window.fallbackProcedural();
-                });
-            } else if ((ext === 'glb' || ext === 'gltf') && typeof THREE.GLTFLoader !== 'undefined') {
-                const loader = new THREE.GLTFLoader();
-                loader.setResourcePath(resourceDir);
-                loader.load(path, (gltf) => {
-                    const model = gltf.scene || gltf.scenes[0];
-                    model.traverse((child) => {
-                        if (child.isMesh && child.material) {
-                            const mats = Array.isArray(child.material) ? child.material : [child.material];
-                            mats.forEach(m => {
-                                if (m.map) {
-                                    child.userData.hasTexture = true;
-                                } else if (m.color) {
-                                    child.userData.baseColor = m.color.getHex();
-                                }
-                            });
-                        }
+                } else if ((ext === 'glb' || ext === 'gltf') && typeof THREE.GLTFLoader !== 'undefined') {
+                    const loader = new THREE.GLTFLoader();
+                    loader.setResourcePath(resourceDir);
+                    loader.load(safePath, (gltf) => {
+                        const model = gltf.scene || gltf.scenes[0];
+                        model.traverse((child) => {
+                            if (child.isMesh && child.material) {
+                                const mats = Array.isArray(child.material) ? child.material : [child.material];
+                                mats.forEach(m => {
+                                    if (m.map) {
+                                        child.userData.hasTexture = true;
+                                    } else if (m.color) {
+                                        child.userData.baseColor = m.color.getHex();
+                                    }
+                                });
+                            }
+                        });
+                        window.displayLoaded3DModel(model);
+                    }, undefined, (err) => {
+                        console.warn('Impossibile caricare il file GLTF/GLB specificato:', err);
+                        window.fallbackProcedural();
                     });
-                    window.displayLoaded3DModel(model);
-                }, undefined, (err) => {
-                    console.warn('Impossibile caricare il file GLTF/GLB specificato:', err);
+                } else {
                     window.fallbackProcedural();
-                });
+                }
+            } catch (syncErr) {
+                console.warn('Errore sincrono durante il caricamento 3D:', syncErr);
+                window.fallbackProcedural();
             }
         };
 
@@ -3070,7 +3031,11 @@
             wrapper.position.set(0, centerY, 0);
 
             wrapper.userData.targetCenter = new THREE.Vector3(0, centerY, 0);
-            wrapper.userData.rotationSpeed = (isONJJ || isTENT1) ? 0.12 : 0.20;
+
+            // Rotazione morbida a 360° singola all'apertura del modello
+            wrapper.userData.rotationSpeed = (isONJJ || isTENT1) ? 0.35 : 0.25;
+            wrapper.userData.accumulatedRotation = 0;
+            wrapper.userData.maxRotation = Math.PI * 2; // Esattamente un giro di 360°
 
             current3dMeshGroup = wrapper;
             scene3d.add(current3dMeshGroup);
