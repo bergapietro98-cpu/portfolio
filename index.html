@@ -67,47 +67,6 @@
 
         body {
             transition: background-color 0.25s ease, color 0.25s ease;
-            cursor: default;
-        }
-
-        #custom-cursor {
-            pointer-events: none;
-            will-change: transform, width, height;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            transform: translateZ(0);
-            transition: transform 0.06s ease-out, width 0.18s ease, height 0.18s ease;
-            z-index: 9999;
-        }
-
-        /* 3D CAD Modeling Viewport Reticle */
-        #cad-cursor {
-            pointer-events: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 99999;
-            will-change: transform;
-            transform: translate(-50%, -50%) translateZ(0);
-            display: none;
-        }
-        .cad-crosshair-active #project-3d-viewport,
-        .cad-crosshair-active #project-3d-canvas-container,
-        .cad-crosshair-active #project-3d-canvas-container canvas {
-            cursor: none !important;
-        }
-
-        /* Completely disable custom cursors on touch screens, smartphones and tablets */
-        @media (hover: none), (pointer: coarse), (max-width: 1023px) {
-            #custom-cursor,
-            #cad-cursor {
-                display: none !important;
-            }
-            .cad-crosshair-active #project-3d-viewport,
-            .cad-crosshair-active #project-3d-canvas-container,
-            .cad-crosshair-active #project-3d-canvas-container canvas {
-                cursor: auto !important;
-            }
         }
 
         .line-clamp-2 {
@@ -148,12 +107,24 @@
             height: 100% !important;
             height: 100dvh !important;
             z-index: 9999 !important;
-            background-color: #FFFFFF !important;
+            background-color: #F4F2ED !important;
+        }
+        .dark #project-3d-viewport.mobile-active {
+            background-color: #141416 !important;
         }
 
         #project-3d-canvas-container {
-            background: #FFFFFF;
+            background: transparent;
             contain: strict;
+        }
+
+        .dark #cad-cursor line {
+            stroke: #F4F2ED !important;
+            stroke-opacity: 0.85;
+        }
+        .dark #cad-cursor #cad-pickbox {
+            stroke: #F4F2ED !important;
+            fill: #141416 !important;
         }
 
         #project-3d-canvas-container canvas {
@@ -181,31 +152,6 @@
 </head>
 
 <body class="bg-cream text-charcoal dark:bg-paperDark dark:text-cream font-sans min-h-full selection:bg-accent selection:text-white relative pb-16">
-
-    <!-- Interactive Cursor Dot for editorial layout (Desktop only) -->
-    <div id="custom-cursor" class="fixed top-0 left-0 w-4 h-4 rounded-full bg-accent mix-blend-difference hidden md:flex items-center justify-center -translate-x-1/2 -translate-y-1/2 pointer-events-none z-50">
-        <span id="cursor-text" class="text-[9px] font-mono text-white font-bold opacity-0 transition-opacity uppercase tracking-widest"></span>
-    </div>
-
-    <!-- 3D CAD Modeling Viewport Reticle Cursor (Desktop with precision mouse only) -->
-    <div id="cad-cursor">
-        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <line x1="22" y1="2" x2="22" y2="15" stroke="#121212" stroke-width="1" stroke-opacity="0.85"/>
-            <line x1="22" y1="29" x2="22" y2="42" stroke="#121212" stroke-width="1" stroke-opacity="0.85"/>
-            <line x1="2" y1="22" x2="15" y2="22" stroke="#121212" stroke-width="1" stroke-opacity="0.85"/>
-            <line x1="29" y1="22" x2="42" y2="22" stroke="#121212" stroke-width="1" stroke-opacity="0.85"/>
-            <rect id="cad-pickbox" x="17.5" y="17.5" width="9" height="9" stroke="#121212" stroke-width="1.2" stroke-opacity="0.9" fill="white" fill-opacity="0.5"/>
-            <circle cx="22" cy="22" r="1.5" fill="#E63946"/>
-            <g id="cad-orbit-ring" opacity="0" class="origin-center transition-opacity duration-150">
-                <circle cx="22" cy="22" r="19" stroke="#E63946" stroke-width="1" stroke-dasharray="3 3"/>
-            </g>
-        </svg>
-        <div class="absolute -bottom-3 -right-3 font-mono text-[8px] flex items-center gap-0.5 pointer-events-none select-none drop-shadow">
-            <span class="text-red-500 font-bold">X</span>
-            <span class="text-emerald-400 font-bold">Y</span>
-            <span class="text-blue-400 font-bold">Z</span>
-        </div>
-    </div>
 
     <!-- Archival Hover Preview Floating Card -->
     <div id="hover-preview-container" class="fixed pointer-events-none z-40 hidden md:block opacity-0 w-[280px] h-[185px] overflow-hidden rounded-sm border border-charcoal/20 dark:border-cream/20 shadow-2xl bg-charcoal transition-opacity duration-150 will-change-transform">
@@ -441,51 +387,51 @@
     <div id="project-modal" class="fixed inset-0 z-50 bg-charcoal/35 dark:bg-black/45 backdrop-blur-[1px] opacity-0 pointer-events-none transition-opacity duration-300 flex justify-end">
         
         <!-- 3D Spatial Viewport: 50% split on lg+ screens, Fullscreen overlay when triggered on mobile/tablet -->
-        <div id="project-3d-viewport" class="hidden lg:flex lg:w-1/2 h-full flex-col relative bg-white border-r border-charcoal/15 dark:border-cream/15 overflow-hidden">
+        <div id="project-3d-viewport" class="hidden lg:flex lg:w-1/2 h-full flex-col relative bg-cream dark:bg-[#141416] overflow-hidden transition-colors duration-250">
             <!-- 3D Header HUD: Exactly 16px from top (top-4) with fixed 32px height (h-8) -->
             <div class="absolute top-4 left-4 sm:left-6 right-4 sm:right-6 z-10 flex items-center justify-between font-mono text-[9px] sm:text-[10px] select-none pointer-events-none gap-2 h-8">
                 <!-- 3D Project Switcher: Project Title Dropdown -->
                 <div class="flex items-center gap-1 sm:gap-1.5 pointer-events-auto h-8">
                     <div class="relative h-8">
-                        <button id="p3d-prj-dropdown-btn" onclick="toggle3DPrjDropdown(event)" class="h-8 flex items-center gap-1.5 bg-charcoal text-white hover:bg-charcoal/90 px-2.5 sm:px-3 rounded border border-charcoal/15 shadow-md cursor-pointer transition-colors">
+                        <button id="p3d-prj-dropdown-btn" onclick="toggle3DPrjDropdown(event)" class="h-8 flex items-center gap-1.5 bg-transparent hover:bg-charcoal/5 dark:hover:bg-cream/5 text-charcoal dark:text-cream px-2.5 sm:px-3 rounded-md border border-charcoal/40 dark:border-cream/40 cursor-pointer transition-colors">
                             <span class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse shrink-0"></span>
                             <span id="p3d-model-tag" class="tracking-wider uppercase font-semibold truncate max-w-[125px] sm:max-w-[210px]">PRJ // 3D VIEWER</span>
-                            <i data-lucide="chevron-down" id="p3d-prj-dropdown-chevron" class="w-3 h-3 text-white/70 shrink-0 transition-transform duration-200"></i>
+                            <i data-lucide="chevron-down" id="p3d-prj-dropdown-chevron" class="w-3 h-3 text-charcoal/70 dark:text-cream/70 shrink-0 transition-transform duration-200"></i>
                         </button>
 
                         <!-- Project Selector Dropdown inside 3D Viewport -->
-                        <div id="p3d-prj-dropdown-menu" class="absolute top-9 left-0 z-50 bg-[#161618] border border-white/20 rounded shadow-2xl py-1.5 min-w-[250px] sm:min-w-[280px] max-h-[55vh] overflow-y-auto hidden">
-                            <div class="px-3 py-1 text-[9px] uppercase tracking-widest text-subtle border-b border-white/10 font-bold">
+                        <div id="p3d-prj-dropdown-menu" class="absolute top-9 left-0 z-50 bg-[#F4F2ED] dark:bg-[#161618] text-charcoal dark:text-cream border border-charcoal/30 dark:border-cream/30 rounded-md shadow-2xl py-1.5 min-w-[250px] sm:min-w-[280px] max-h-[55vh] overflow-y-auto hidden">
+                            <div class="px-3 py-1 text-[9px] uppercase tracking-widest text-subtle border-b border-charcoal/10 dark:border-white/10 font-bold">
                                 CAMBIA PROGETTO 3D
                             </div>
-                            <div id="p3d-prj-dropdown-list" class="divide-y divide-white/5">
+                            <div id="p3d-prj-dropdown-list" class="divide-y divide-charcoal/5 dark:divide-white/5">
                                 <!-- Populated dynamically via JS -->
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Clean Controls (Senza Pausa/Play, Mode button presente solo per modelli 3D) -->
+                <!-- Clean Controls -->
                 <div class="flex items-center gap-1.5 sm:gap-2 pointer-events-auto h-8">
-                    <button id="p3d-mode-btn" onclick="cycle3DDisplayMode()" class="h-8 px-2 sm:px-2.5 bg-charcoal text-white hover:bg-charcoal/90 backdrop-blur-md rounded border border-charcoal/15 uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-md cursor-pointer">
+                    <button id="p3d-mode-btn" onclick="cycle3DDisplayMode()" class="h-8 px-2 sm:px-2.5 bg-transparent hover:bg-charcoal/5 dark:hover:bg-cream/5 text-charcoal dark:text-cream rounded-md border border-charcoal/40 dark:border-cream/40 uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer">
                         <span id="p3d-mode-dot" class="w-1.5 h-1.5 rounded-full bg-accent"></span>
                         <span id="p3d-mode-btn-label">CAD TECH</span>
                     </button>
-                    <button onclick="reset3DCamera()" class="h-8 px-2 sm:px-2.5 bg-charcoal text-white hover:bg-charcoal/90 backdrop-blur-md rounded border border-charcoal/15 uppercase tracking-wider transition-colors shadow-md cursor-pointer flex items-center justify-center" title="Ripristina Camera">
+                    <button onclick="reset3DCamera()" class="h-8 px-2.5 bg-transparent hover:bg-charcoal/5 dark:hover:bg-cream/5 text-charcoal dark:text-cream rounded-md border border-charcoal/40 dark:border-cream/40 uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center" title="Ripristina Camera">
                         RESET
                     </button>
                 </div>
             </div>
 
-            <!-- Canvas Container: Centered flexbox to guarantee true center alignment with studio depth gradient -->
+            <!-- Canvas Container -->
             <div id="project-3d-canvas-container" class="w-full h-full flex-1 relative flex items-center justify-center"></div>
 
             <!-- Bottom 3D Bar: "ORBITA A 360°" on bottom left, "TORNA AL PRJ" shifted to bottom right -->
             <div class="absolute bottom-4 left-4 sm:left-6 right-4 sm:right-6 z-10 flex justify-between items-center font-mono text-[9px] sm:text-[10px] select-none pointer-events-none gap-3">
-                <div class="text-left text-charcoal/60 pointer-events-none flex items-center gap-2">
-                    <span id="p3d-controls-hint" class="tracking-wider uppercase font-medium text-charcoal/80">ORBITA A 360°</span>
-                    <span class="hidden sm:inline text-charcoal/20">|</span>
-                    <span class="hidden sm:inline text-charcoal/50">SPATIAL ARCHIVE</span>
+                <div class="text-left text-charcoal/60 dark:text-cream/60 pointer-events-none flex items-center gap-2">
+                    <span id="p3d-controls-hint" class="tracking-wider uppercase font-medium text-charcoal/80 dark:text-cream/80">ORBITA A 360°</span>
+                    <span class="hidden sm:inline text-charcoal/20 dark:text-cream/20">|</span>
+                    <span class="hidden sm:inline text-charcoal/50 dark:text-cream/50">SPATIAL ARCHIVE</span>
                 </div>
 
                 <div class="pointer-events-auto">
@@ -496,18 +442,19 @@
             </div>
         </div>
 
-        <div id="modal-content" class="w-full lg:w-1/2 bg-cream dark:bg-cardDark h-full overflow-y-auto transform translate-x-full transition-transform duration-300 ease-out border-l border-charcoal/20 dark:border-cream/20 flex flex-col justify-between pt-4 pb-4 px-4 sm:px-6 shadow-2xl">
+        <!-- Right Project Modal Drawer: Ultra-thin 1px border without shadow or gradient -->
+        <div id="modal-content" class="w-full lg:w-1/2 bg-cream dark:bg-cardDark h-full overflow-y-auto transform translate-x-full transition-transform duration-300 ease-out border-l border-charcoal/10 dark:border-cream/10 shadow-none flex flex-col justify-between pt-4 pb-4 px-4 sm:px-6">
             
             <div>
-                <!-- Header: Symmetrical vertical spacing -->
+                <!-- Header -->
                 <div class="flex items-center justify-between font-mono text-xs border-b border-charcoal/10 dark:border-cream/10 pb-4 mb-6">
                     <div class="flex items-center gap-2 sm:gap-3 h-8">
-                        <div class="flex items-center space-x-0.5 bg-charcoal/5 dark:bg-cream/5 p-0.5 rounded border border-charcoal/15 dark:border-cream/15 h-8">
-                            <button id="modal-header-prev-btn" class="h-full px-2 hover:text-accent hover:bg-charcoal/10 dark:hover:bg-cream/10 rounded transition-colors text-xs font-bold flex items-center justify-center" title="PRJ Prec. (←)">
+                        <div class="flex items-center bg-transparent rounded-md border border-charcoal/40 dark:border-cream/40 h-8 overflow-hidden">
+                            <button id="modal-header-prev-btn" class="h-full px-2.5 hover:text-accent hover:bg-charcoal/5 dark:hover:bg-cream/5 transition-colors text-xs font-bold flex items-center justify-center text-charcoal dark:text-cream" title="PRJ Prec. (←)">
                                 ‹
                             </button>
-                            <span class="text-charcoal/20 dark:text-cream/20 text-[10px]">|</span>
-                            <button id="modal-header-next-btn" class="h-full px-2 hover:text-accent hover:bg-charcoal/10 dark:hover:bg-cream/10 rounded transition-colors text-xs font-bold flex items-center justify-center" title="PRJ Succ. (→)">
+                            <div class="w-[1px] h-full bg-charcoal/20 dark:bg-cream/20"></div>
+                            <button id="modal-header-next-btn" class="h-full px-2.5 hover:text-accent hover:bg-charcoal/5 dark:hover:bg-cream/5 transition-colors text-xs font-bold flex items-center justify-center text-charcoal dark:text-cream" title="PRJ Succ. (→)">
                                 ›
                             </button>
                         </div>
@@ -515,9 +462,7 @@
                         <span class="text-charcoal/30 dark:text-cream/30">//</span>
                         <span id="modal-category" class="text-subtle uppercase tracking-wider text-[9px] sm:text-[10px] truncate max-w-[120px] sm:max-w-none">ARCHITETTURA</span>
                     </div>
-                    <button onclick="closeProjectModal()" class="h-8 flex items-center gap-1.5 hover:text-accent transition-colors uppercase font-normal tracking-wider text-[11px] sm:text-xs">
-                        <span>CHIUDI</span>
-                        <span class="hidden sm:inline">[ESC]</span>
+                    <button onclick="closeProjectModal()" class="h-8 w-8 flex items-center justify-center hover:text-accent hover:bg-charcoal/5 dark:hover:bg-cream/5 rounded-md border border-charcoal/40 dark:border-cream/40 text-charcoal dark:text-cream transition-colors cursor-pointer" title="Chiudi [ESC]">
                         <i data-lucide="x" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -532,7 +477,7 @@
                     </p>
                 </div>
 
-                <!-- Mobile / Tablet Dedicated 3D Spatial Viewer Trigger Button -->
+                <!-- Mobile 3D Trigger Button -->
                 <div class="lg:hidden mt-4">
                     <button onclick="openMobile3DView()" class="w-full py-2.5 px-3.5 bg-charcoal text-cream dark:bg-cream dark:text-charcoal hover:bg-accent hover:text-white dark:hover:bg-accent dark:hover:text-white transition-all rounded-sm flex items-center justify-between font-mono text-[11px] font-bold shadow-md border border-charcoal/20 dark:border-cream/20">
                         <span class="flex items-center gap-2">
@@ -591,7 +536,7 @@
                 </div>
             </div>
 
-            <!-- Modal Footer: Prev / Next Navigation -->
+            <!-- Modal Footer -->
             <div class="pt-4 border-t border-charcoal/15 dark:border-cream/15 flex justify-between items-center font-mono text-[11px] sm:text-xs">
                 <button id="modal-prev-btn" class="hover:text-accent flex items-center gap-1 transition-colors">
                     <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
@@ -674,20 +619,10 @@
     </footer>
 
     <script>
-        /*
-           ==========================================================================
-           DEVICE DETECTION UTILITY (Fine pointer / mouse vs Touch)
-           ==========================================================================
-        */
         function hasFinePointer() {
             return window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches && window.innerWidth >= 1024;
         }
 
-        /*
-           ==========================================================================
-           GLOBAL MOBILE 3D VIEWER FUNCTIONS (REFINED DIMENSION RECALCULATION)
-           ==========================================================================
-        */
         function update3DViewportDimensions() {
             const container = document.getElementById('project-3d-canvas-container');
             if (container && renderer3d && camera3d) {
@@ -981,11 +916,7 @@
             }
         ];
 
-        /*
-           ==========================================================================
-           APPLICATION STATE & VARIABLES
-           ==========================================================================
-        */
+        /* State Variables */
         let currentView = 'list';
         let currentCategory = 'ALL';
         let currentSort = 'year-desc';
@@ -993,7 +924,6 @@
         let currentActiveImageIndex = 0;
         let currentMediaList = [];
 
-        // Pan & Zoom state for Lightbox
         let lbZoom = 1;
         let lbPanX = 0;
         let lbPanY = 0;
@@ -1001,12 +931,6 @@
         let startMouseX = 0;
         let startMouseY = 0;
 
-        // Elements
-        const cursor = document.getElementById('custom-cursor');
-        const cursorText = document.getElementById('cursor-text');
-        const cadCursor = document.getElementById('cad-cursor');
-        const cadOrbitRing = document.getElementById('cad-orbit-ring');
-        const cadPickbox = document.getElementById('cad-pickbox');
         const hoverPreview = document.getElementById('hover-preview-container');
         const hoverPreviewImg = document.getElementById('hover-preview-img');
 
@@ -1035,40 +959,17 @@
         }
 
         document.addEventListener('mousemove', (e) => {
-            if (!hasFinePointer()) return;
             mouseX = e.clientX;
             mouseY = e.clientY;
 
             if (!isRafScheduled) {
                 isRafScheduled = true;
                 requestAnimationFrame(() => {
-                    if (cursor && !document.body.classList.contains('cad-crosshair-active')) {
-                        cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
-                    }
-                    if (cadCursor && document.body.classList.contains('cad-crosshair-active')) {
-                        cadCursor.style.left = `${mouseX}px`;
-                        cadCursor.style.top = `${mouseY}px`;
-                    }
                     positionHoverPreview(mouseX, mouseY);
                     isRafScheduled = false;
                 });
             }
         }, { passive: true });
-
-        window.setCursorHover = function(text = '') {
-            if (!hasFinePointer()) return;
-            if (!cursor || !cursorText) return;
-            if (text) {
-                cursor.classList.remove('w-4', 'h-4');
-                cursor.classList.add('w-14', 'h-14');
-                cursorText.textContent = text;
-                cursorText.classList.remove('opacity-0');
-            } else {
-                cursor.classList.remove('w-14', 'h-14');
-                cursor.classList.add('w-4', 'h-4');
-                cursorText.classList.add('opacity-0');
-            }
-        };
 
         window.isAnyModalOpen = function() {
             const prjModal = document.getElementById('project-modal');
@@ -1083,7 +984,6 @@
         window.showPreview = function(imgUrl, cursorLabel, e) {
             if (!hasFinePointer()) return;
             if (window.isAnyModalOpen()) return;
-            window.setCursorHover(cursorLabel);
             if (imgUrl && currentView === 'list' && hoverPreview && hoverPreviewImg) {
                 if (e) positionHoverPreview(e.clientX, e.clientY);
                 clearTimeout(hoverDebounceTimer);
@@ -1102,16 +1002,10 @@
 
         window.hidePreview = function() {
             clearTimeout(hoverDebounceTimer);
-            if (hasFinePointer()) {
-                window.setCursorHover('');
-            }
             if (hoverPreview) {
                 hoverPreview.style.opacity = '0';
             }
         };
-
-        // Cache for dynamically extracted video poster frames
-        const videoPosterCache = {};
 
         window.getMediaSrc = function(media) {
             if (!media) return '';
@@ -1120,9 +1014,6 @@
 
         window.getMediaPoster = function(media, project) {
             if (typeof media === 'object' && media.poster) return media.poster;
-            const src = window.getMediaSrc(media);
-            if (videoPosterCache[src]) return videoPosterCache[src];
-            if (project && project.videoPoster) return project.videoPoster;
             return (project && (project.coverImg || project.drapeImg)) || '';
         };
 
@@ -1136,41 +1027,6 @@
             if (!media) return false;
             const url = window.getMediaSrc(media);
             return /\.gif(\?.*)?$/i.test(url);
-        };
-
-        window.extractFrameFromVideo = function(videoUrl, onExtracted) {
-            if (!videoUrl || videoPosterCache[videoUrl]) {
-                if (onExtracted && videoPosterCache[videoUrl]) onExtracted(videoPosterCache[videoUrl]);
-                return;
-            }
-            const tempVid = document.createElement('video');
-            tempVid.muted = true;
-            tempVid.playsInline = true;
-            tempVid.preload = 'auto';
-            tempVid.src = videoUrl;
-            
-            const capture = () => {
-                try {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = tempVid.videoWidth || 640;
-                    canvas.height = tempVid.videoHeight || 360;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(tempVid, 0, 0, canvas.width, canvas.height);
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
-                    if (dataUrl && dataUrl.length > 100) {
-                        videoPosterCache[videoUrl] = dataUrl;
-                        if (onExtracted) onExtracted(dataUrl);
-                    }
-                } catch (e) {}
-            };
-
-            tempVid.addEventListener('loadeddata', () => {
-                tempVid.currentTime = 0.5;
-            }, { once: true });
-
-            tempVid.addEventListener('seeked', () => {
-                capture();
-            }, { once: true });
         };
 
         window.imgFallback = function(imgEl) {
@@ -1480,6 +1336,9 @@
         if (themeBtn) {
             themeBtn.addEventListener('click', () => {
                 document.documentElement.classList.toggle('dark');
+                if (typeof window.update3DThemeBackground === 'function') {
+                    window.update3DThemeBackground();
+                }
             });
         }
 
@@ -1500,7 +1359,6 @@
             document.getElementById('modal-client').textContent = p.client || '—';
             document.getElementById('modal-year').textContent = p.year || '—';
 
-            // Extended narrative
             const descDisplay = document.getElementById('modal-description');
             if (p.description) {
                 descDisplay.innerHTML = p.description
@@ -1514,7 +1372,6 @@
                 descDisplay.innerHTML = '';
             }
 
-            // Gallery setup
             currentActiveImageIndex = 0;
             currentMediaList = (p.gallery && p.gallery.length > 0) ? p.gallery : [p.coverImg];
 
@@ -1526,21 +1383,17 @@
             modal.classList.remove('opacity-0', 'pointer-events-none');
             content.classList.remove('translate-x-full');
 
-            // Crucial: Automatically scroll to the top of the project detail view
             if (content) {
                 content.scrollTop = 0;
             }
 
-            // Set mobile 3D button label with PRJ ID
             const mobileBtnLabel = document.getElementById('mobile-3d-btn-title');
             if (mobileBtnLabel) {
                 mobileBtnLabel.textContent = `VISUALIZZA 3D [${p.id}]`;
             }
 
-            // Ensure mobile 3D overlay is closed by default when switching projects
             window.closeMobile3DView();
 
-            // Initialize 3D Viewport: immediate on split-screen (lg+), or if 3D overlay is active
             if (window.innerWidth >= 1024) {
                 setTimeout(() => {
                     if (typeof window.setupProject3D === 'function') {
@@ -1549,7 +1402,6 @@
                 }, 40);
             }
 
-            // Prev / Next bindings within current filtered and sorted view
             const triggerPrev = () => {
                 const prevIndex = (currentModalIndex - 1 + activeList.length) % activeList.length;
                 window.openProjectModal(prevIndex);
@@ -1629,12 +1481,6 @@
 
                 videoEl.src = activeUrl;
                 videoEl.play().catch(() => {});
-                window.extractFrameFromVideo(activeUrl, (extractedDataUrl) => {
-                    if (videoEl && !videoEl.classList.contains('hidden')) {
-                        videoEl.poster = extractedDataUrl;
-                    }
-                });
-
                 if (hintEl) hintEl.classList.remove('hidden');
             } else {
                 if (videoEl) {
@@ -1692,70 +1538,6 @@
             window.renderModalThumbs();
         };
 
-        const modalMediaBox = document.getElementById('modal-media-box');
-        if (modalMediaBox) {
-            let mTouchStartX = 0;
-            let mTouchStartY = 0;
-            let mTouchStartTime = 0;
-            let mIsSwiping = false;
-            let mLastSwipeTime = 0;
-
-            modalMediaBox.addEventListener('touchstart', (e) => {
-                if (e.touches.length === 1) {
-                    const t = e.touches[0];
-                    mTouchStartX = t.clientX;
-                    mTouchStartY = t.clientY;
-                    mTouchStartTime = Date.now();
-                    mIsSwiping = false;
-                }
-            }, { passive: true });
-
-            modalMediaBox.addEventListener('touchmove', (e) => {
-                if (e.touches.length === 1) {
-                    const t = e.touches[0];
-                    const dx = t.clientX - mTouchStartX;
-                    const dy = t.clientY - mTouchStartY;
-
-                    if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.3) {
-                        mIsSwiping = true;
-                        if (e.cancelable) e.preventDefault();
-                    }
-                }
-            }, { passive: false });
-
-            modalMediaBox.addEventListener('touchend', (e) => {
-                if (e.changedTouches.length === 1) {
-                    const t = e.changedTouches[0];
-                    const dx = t.clientX - mTouchStartX;
-                    const dy = t.clientY - mTouchStartY;
-                    const elapsed = Date.now() - mTouchStartTime;
-
-                    if (mIsSwiping || (Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy) * 1.2)) {
-                        mLastSwipeTime = Date.now();
-                        if (dx < 0) {
-                            if (currentMediaList.length > 1) {
-                                const nextIndex = (currentActiveImageIndex + 1) % currentMediaList.length;
-                                window.setActiveModalMedia(nextIndex);
-                            }
-                        } else {
-                            if (currentMediaList.length > 1) {
-                                const prevIndex = (currentActiveImageIndex - 1 + currentMediaList.length) % currentMediaList.length;
-                                window.setActiveModalMedia(prevIndex);
-                            }
-                        }
-                    } else if (elapsed < 350 && Math.hypot(dx, dy) < 16) {
-                        window.openLightbox(currentActiveImageIndex);
-                    }
-                }
-            }, { passive: true });
-
-            modalMediaBox.addEventListener('click', () => {
-                if (Date.now() - mLastSwipeTime > 350) {
-                    window.openLightbox(currentActiveImageIndex);
-                }
-            });
-        }
-
         window.updateLightboxZoomDisplay = function() {
             const imgEl = document.getElementById('lb-main-img');
             const isVid = window.isMediaVideo(currentMediaList[currentActiveImageIndex]);
@@ -1794,58 +1576,6 @@
             window.updateLightboxZoomDisplay();
         }
         window.resetLightboxZoom = resetLightboxZoom;
-
-        window.renderLightboxPrjDropdown = function() {
-            const listEl = document.getElementById('lb-prj-dropdown-list');
-            if (!listEl) return;
-            const activeList = getFilteredAndSortedProjects();
-
-            listEl.innerHTML = activeList.map((p, idx) => {
-                const isCurrent = idx === currentModalIndex;
-                return `
-                    <button onclick="switchLightboxProject(${idx})" class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-white/10 transition-colors group ${isCurrent ? 'bg-accent/20 text-accent font-bold' : 'text-cream/80'}">
-                        <div class="flex items-center gap-2 truncate">
-                            <span class="font-mono text-xs ${isCurrent ? 'text-accent' : 'text-subtle group-hover:text-cream'}">${p.id}</span>
-                            <span class="font-serif italic text-sm truncate">${p.title}</span>
-                        </div>
-                        <span class="font-mono text-[10px] text-subtle shrink-0 ml-2">[${p.year}]</span>
-                    </button>
-                `;
-            }).join('');
-        };
-
-        function toggleLightboxPrjDropdown(e) {
-            if (e) e.stopPropagation();
-            const menu = document.getElementById('lb-prj-dropdown-menu');
-            const chevron = document.getElementById('lb-prj-dropdown-chevron');
-            if (!menu) return;
-
-            const isHidden = menu.classList.contains('hidden');
-            if (isHidden) {
-                window.renderLightboxPrjDropdown();
-                menu.classList.remove('hidden');
-                if (chevron) chevron.classList.add('rotate-180');
-            } else {
-                menu.classList.add('hidden');
-                if (chevron) chevron.classList.remove('rotate-180');
-            }
-        }
-        window.toggleLightboxPrjDropdown = toggleLightboxPrjDropdown;
-
-        function closeLightboxPrjDropdown() {
-            const menu = document.getElementById('lb-prj-dropdown-menu');
-            const chevron = document.getElementById('lb-prj-dropdown-chevron');
-            if (menu) menu.classList.add('hidden');
-            if (chevron) chevron.classList.remove('rotate-180');
-        }
-        window.closeLightboxPrjDropdown = closeLightboxPrjDropdown;
-
-        function switchLightboxProject(index) {
-            window.closeLightboxPrjDropdown();
-            window.openProjectModal(index);
-            window.openLightbox(0);
-        }
-        window.switchLightboxProject = switchLightboxProject;
 
         window.render3DPrjDropdown = function() {
             const listEl = document.getElementById('p3d-prj-dropdown-list');
@@ -1911,7 +1641,6 @@
             const lbPrjIdEl = document.getElementById('lb-prj-id');
             if (lbPrjIdEl) lbPrjIdEl.textContent = p.id;
 
-            window.closeLightboxPrjDropdown();
             window.resetLightboxZoom();
             window.updateLightboxDisplay();
 
@@ -1922,7 +1651,6 @@
         window.openLightbox = openLightbox;
 
         function closeLightbox() {
-            window.closeLightboxPrjDropdown();
             const lb = document.getElementById('fullscreen-lightbox');
             const videoEl = document.getElementById('lb-main-video');
             if (videoEl) {
@@ -1973,23 +1701,10 @@
 
             const thumbsEl = document.getElementById('lb-thumbnails');
             thumbsEl.innerHTML = currentMediaList.map((m, idx) => {
-                const thumbPoster = window.getMediaPoster(m, p);
                 const thumbSrc = window.getMediaSrc(m);
                 return `
                     <div onclick="setLightboxMedia(${idx})" class="w-9 h-7 sm:w-10 sm:h-8 rounded overflow-hidden border ${idx === currentActiveImageIndex ? 'border-accent ring-1 ring-accent' : 'border-white/20 opacity-50 hover:opacity-100'} cursor-pointer bg-black shrink-0 transition-all">
-                        ${window.isMediaVideo(m) ? `
-                            <div class="relative w-full h-full">
-                                <img src="${thumbPoster}" alt="Video Thumb" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="window.imgFallback(this)">
-                                <div class="absolute inset-0 bg-black/40 flex items-center justify-center text-[7px] font-mono text-accent font-bold">VID</div>
-                            </div>
-                        ` : window.isMediaGif(m) ? `
-                            <div class="relative w-full h-full">
-                                <img src="${thumbSrc}" loading="lazy" decoding="async" class="w-full h-full object-cover">
-                                <span class="absolute bottom-0 right-0 bg-charcoal text-accent font-mono text-[7px] px-0.5">GIF</span>
-                            </div>
-                        ` : `
-                            <img src="${thumbSrc}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/80x60/171719/ffffff?text=Thumb'">
-                        `}
+                        <img src="${thumbSrc}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/80x60/171719/ffffff?text=Thumb'">
                     </div>
                 `;
             }).join('');
@@ -2017,224 +1732,6 @@
         }
         window.prevLightboxSlide = prevLightboxSlide;
 
-        const gestureArea = document.getElementById('lb-gesture-area');
-        const lbImg = document.getElementById('lb-main-img');
-
-        if (gestureArea && lbImg) {
-            gestureArea.addEventListener('wheel', (e) => {
-                const videoEl = document.getElementById('lb-main-video');
-                if (videoEl && !videoEl.classList.contains('hidden')) return;
-                e.preventDefault();
-                const delta = e.deltaY < 0 ? 0.35 : -0.35;
-                window.zoomLightbox(delta);
-            }, { passive: false });
-
-            lbImg.addEventListener('mousedown', (e) => {
-                if (lbZoom <= 1.05) return;
-                e.preventDefault();
-                isPanning = true;
-                startMouseX = e.clientX - lbPanX;
-                startMouseY = e.clientY - lbPanY;
-                window.updateLightboxZoomDisplay();
-            });
-
-            window.addEventListener('mousemove', (e) => {
-                if (!isPanning) return;
-                lbPanX = e.clientX - startMouseX;
-                lbPanY = e.clientY - startMouseY;
-                window.updateLightboxZoomDisplay();
-            }, { passive: true });
-
-            window.addEventListener('mouseup', () => {
-                if (isPanning) {
-                    isPanning = false;
-                    window.updateLightboxZoomDisplay();
-                }
-            });
-
-            let touchStartX = 0;
-            let touchStartY = 0;
-            let touchStartTime = 0;
-            let lastTapTime = 0;
-            let initialPinchDist = 0;
-            let initialPinchZoom = 1;
-            let isPinching = false;
-            let touchPanStartX = 0;
-            let touchPanStartY = 0;
-
-            gestureArea.addEventListener('touchstart', (e) => {
-                const videoEl = document.getElementById('lb-main-video');
-                if (videoEl && !videoEl.classList.contains('hidden')) return;
-
-                if (e.touches.length === 2) {
-                    isPinching = true;
-                    initialPinchDist = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
-                    initialPinchZoom = lbZoom;
-                } else if (e.touches.length === 1) {
-                    isPinching = false;
-                    const touch = e.touches[0];
-                    touchStartX = touch.clientX;
-                    touchStartY = touch.clientY;
-                    touchStartTime = Date.now();
-
-                    if (lbZoom > 1.05) {
-                        touchPanStartX = touch.clientX - lbPanX;
-                        touchPanStartY = touch.clientY - lbPanY;
-                    }
-                }
-            }, { passive: false });
-
-            gestureArea.addEventListener('touchmove', (e) => {
-                const videoEl = document.getElementById('lb-main-video');
-                if (videoEl && !videoEl.classList.contains('hidden')) return;
-
-                if (e.touches.length === 2 && isPinching) {
-                    e.preventDefault();
-                    const curDist = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
-                    if (initialPinchDist > 0) {
-                        const ratio = curDist / initialPinchDist;
-                        const targetZoom = Math.min(Math.max(1, initialPinchZoom * ratio), 4.5);
-                        lbZoom = Math.round(targetZoom * 100) / 100;
-                        window.updateLightboxZoomDisplay();
-                    }
-                } else if (e.touches.length === 1 && lbZoom > 1.05) {
-                    e.preventDefault();
-                    const touch = e.touches[0];
-                    lbPanX = touch.clientX - touchPanStartX;
-                    lbPanY = touch.clientY - touchPanStartY;
-                    window.updateLightboxZoomDisplay();
-                }
-            }, { passive: false });
-
-            gestureArea.addEventListener('touchend', (e) => {
-                const videoEl = document.getElementById('lb-main-video');
-                if (videoEl && !videoEl.classList.contains('hidden')) return;
-
-                if (isPinching && e.touches.length < 2) {
-                    isPinching = false;
-                    if (lbZoom < 1.05) {
-                        window.resetLightboxZoom();
-                    }
-                    return;
-                }
-
-                if (e.changedTouches.length === 1 && !isPinching) {
-                    const touch = e.changedTouches[0];
-                    const deltaX = touch.clientX - touchStartX;
-                    const deltaY = touch.clientY - touchStartY;
-                    const elapsed = Date.now() - touchStartTime;
-
-                    const now = Date.now();
-                    if (now - lastTapTime < 300 && Math.hypot(deltaX, deltaY) < 20) {
-                        lastTapTime = 0;
-                        if (lbZoom > 1.05) {
-                            window.resetLightboxZoom();
-                        } else {
-                            window.zoomLightbox(1.5);
-                        }
-                        return;
-                    }
-                    lastTapTime = now;
-
-                    if (lbZoom <= 1.05 && elapsed < 600) {
-                        if (Math.abs(deltaX) > 42 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
-                            if (deltaX < 0) {
-                                window.nextLightboxSlide();
-                            } else {
-                                window.prevLightboxSlide();
-                            }
-                        }
-                    }
-                }
-            }, { passive: true });
-
-            lbImg.addEventListener('dblclick', (e) => {
-                e.preventDefault();
-                if (lbZoom > 1) {
-                    window.resetLightboxZoom();
-                } else {
-                    window.zoomLightbox(1.5);
-                }
-            });
-        }
-
-        document.addEventListener('click', (e) => {
-            const catDropdownBtn = document.getElementById('category-dropdown-btn');
-            const catDropdownMenu = document.getElementById('category-dropdown-menu');
-            if (catDropdownMenu && !catDropdownMenu.classList.contains('hidden')) {
-                if (!catDropdownMenu.contains(e.target) && (!catDropdownBtn || !catDropdownBtn.contains(e.target))) {
-                    window.closeCategoryDropdown();
-                }
-            }
-
-            const sortDropdownBtn = document.getElementById('sort-dropdown-btn');
-            const sortDropdownMenu = document.getElementById('sort-dropdown-menu');
-            if (sortDropdownMenu && !sortDropdownMenu.classList.contains('hidden')) {
-                if (!sortDropdownMenu.contains(e.target) && (!sortDropdownBtn || !sortDropdownBtn.contains(e.target))) {
-                    window.closeSortDropdown();
-                }
-            }
-
-            const dropdownBtn = document.getElementById('lb-prj-dropdown-btn');
-            const dropdownMenu = document.getElementById('lb-prj-dropdown-menu');
-            if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
-                if (!dropdownMenu.contains(e.target) && (!dropdownBtn || !dropdownBtn.contains(e.target))) {
-                    window.closeLightboxPrjDropdown();
-                }
-            }
-
-            const p3dDropdownBtn = document.getElementById('p3d-prj-dropdown-btn');
-            const p3dDropdownMenu = document.getElementById('p3d-prj-dropdown-menu');
-            if (p3dDropdownMenu && !p3dDropdownMenu.classList.contains('hidden')) {
-                if (!p3dDropdownMenu.contains(e.target) && (!p3dDropdownBtn || !p3dDropdownBtn.contains(e.target))) {
-                    window.close3DPrjDropdown();
-                }
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            const lb = document.getElementById('fullscreen-lightbox');
-            const isLbOpen = lb && !lb.classList.contains('opacity-0');
-
-            if (isLbOpen) {
-                const dropdownMenu = document.getElementById('lb-prj-dropdown-menu');
-                if (e.key === 'Escape') {
-                    if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
-                        window.closeLightboxPrjDropdown();
-                    } else {
-                        window.closeLightbox();
-                    }
-                } else if (e.key === 'ArrowRight') window.nextLightboxSlide();
-                else if (e.key === 'ArrowLeft') window.prevLightboxSlide();
-                else if (e.key === '+' || e.key === '=') window.zoomLightbox(0.35);
-                else if (e.key === '-' || e.key === '_') window.zoomLightbox(-0.35);
-                else if (e.key === '0') window.resetLightboxZoom();
-                return;
-            }
-
-            const modal = document.getElementById('project-modal');
-            const isModalOpen = modal && !modal.classList.contains('opacity-0');
-
-            if (e.key === 'Escape') {
-                window.closeProjectModal();
-                window.closeBioWindow();
-            } else if (isModalOpen && e.key === 'ArrowRight') {
-                currentActiveImageIndex = (currentActiveImageIndex + 1) % currentMediaList.length;
-                window.renderModalMedia();
-                window.renderModalThumbs();
-            } else if (isModalOpen && e.key === 'ArrowLeft') {
-                currentActiveImageIndex = (currentActiveImageIndex - 1 + currentMediaList.length) % currentMediaList.length;
-                window.renderModalMedia();
-                window.renderModalThumbs();
-            }
-        });
-
         let scene3d = null;
         let camera3d = null;
         let renderer3d = null;
@@ -2254,18 +1751,11 @@
         function disposeHierarchy(obj) {
             if (!obj) return;
             obj.traverse((child) => {
-                if (child.geometry) {
-                    child.geometry.dispose();
-                }
+                if (child.geometry) child.geometry.dispose();
                 if (child.material) {
                     const mats = Array.isArray(child.material) ? child.material : [child.material];
                     mats.forEach(m => {
                         if (m.map) m.map.dispose();
-                        if (m.lightMap) m.lightMap.dispose();
-                        if (m.bumpMap) m.bumpMap.dispose();
-                        if (m.normalMap) m.normalMap.dispose();
-                        if (m.specularMap) m.specularMap.dispose();
-                        if (m.envMap) m.envMap.dispose();
                         m.dispose();
                     });
                 }
@@ -2321,6 +1811,36 @@
             }
         };
 
+        function resolveSafeAssetUrl(url) {
+            if (!url || typeof url !== 'string') return '';
+            if (/^(https?|blob|data):/i.test(url)) return url;
+            try {
+                if (window.location.protocol === 'blob:') {
+                    if (window.location.origin && window.location.origin !== 'null') {
+                        return new URL(url, window.location.origin + '/').href;
+                    }
+                }
+                return new URL(url, document.baseURI || window.location.href).href;
+            } catch (e) {
+                return url;
+            }
+        }
+        window.resolveSafeAssetUrl = resolveSafeAssetUrl;
+
+        window.isHovering3DObject = function() {
+            if (!current3dMeshGroup || !camera3d) return false;
+            raycaster3d.setFromCamera(mouse3dVec, camera3d);
+            const intersects = raycaster3d.intersectObjects(current3dMeshGroup.children, true);
+            return intersects && intersects.length > 0;
+        };
+
+        window.update3DThemeBackground = function() {
+            if (!renderer3d) return;
+            const isDark = document.documentElement.classList.contains('dark');
+            const bgColorHex = isDark ? 0x141416 : 0xF4F2ED;
+            renderer3d.setClearColor(bgColorHex, 1);
+        };
+
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 window.stop3DRenderLoop();
@@ -2346,7 +1866,7 @@
             camera3d.position.set(16, 13, 20);
 
             renderer3d = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-            renderer3d.setClearColor(0xffffff, 1);
+            window.update3DThemeBackground();
             renderer3d.setSize(width, height, false);
             renderer3d.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
 
@@ -2362,118 +1882,15 @@
                 controls3d = new THREE.OrbitControls(camera3d, renderer3d.domElement);
                 controls3d.enableDamping = true;
                 controls3d.dampingFactor = 0.08;
-                controls3d.rotateSpeed = 1.0;
-                controls3d.zoomSpeed = 1.2;
-                controls3d.minPolarAngle = 0;
-                controls3d.maxPolarAngle = Math.PI;
-                controls3d.minDistance = 0.15;
-                controls3d.maxDistance = 150;
                 controls3d.target.set(0, 2.5, 0);
-
-                controls3d.touches = {
-                    ONE: THREE.TOUCH.ROTATE,
-                    TWO: THREE.TOUCH.DOLLY_PAN
-                };
             }
 
             const ambient = new THREE.AmbientLight(0xffffff, 0.72);
             scene3d.add(ambient);
 
-            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444455, 0.45);
-            hemiLight.position.set(0, 45, 0);
-            scene3d.add(hemiLight);
-
             const keyLight = new THREE.DirectionalLight(0xffffff, 0.75);
             keyLight.position.set(16, 20, 24);
             scene3d.add(keyLight);
-
-            const rimLight = new THREE.DirectionalLight(0xffffff, 0.55);
-            rimLight.position.set(-18, 14, -22);
-            scene3d.add(rimLight);
-
-            const fillLightBottom = new THREE.DirectionalLight(0xffffff, 0.35);
-            fillLightBottom.position.set(0, -22, 4);
-            scene3d.add(fillLightBottom);
-
-            const viewport = document.getElementById('project-3d-viewport');
-            if (viewport) {
-                viewport.addEventListener('mouseenter', () => {
-                    if (!hasFinePointer()) return;
-                    document.body.classList.add('cad-crosshair-active');
-                    if (cadCursor) cadCursor.style.display = 'block';
-                    if (cursor) cursor.style.display = 'none';
-                });
-
-                viewport.addEventListener('mouseleave', () => {
-                    if (!hasFinePointer()) return;
-                    document.body.classList.remove('cad-crosshair-active');
-                    if (cadCursor) cadCursor.style.display = 'none';
-                    if (cursor) cursor.style.display = 'flex';
-                });
-            }
-
-            container.addEventListener('mousedown', () => {
-                if (!hasFinePointer()) return;
-                if (cadOrbitRing) cadOrbitRing.style.opacity = '1';
-                if (cadPickbox) {
-                    cadPickbox.setAttribute('stroke', '#E63946');
-                    cadPickbox.setAttribute('fill', '#E63946');
-                    cadPickbox.setAttribute('fill-opacity', '0.35');
-                }
-            });
-
-            window.addEventListener('mouseup', () => {
-                if (!hasFinePointer()) return;
-                if (cadOrbitRing) cadOrbitRing.style.opacity = '0';
-                if (cadPickbox) {
-                    cadPickbox.setAttribute('stroke', '#121212');
-                    cadPickbox.setAttribute('fill', 'white');
-                    cadPickbox.setAttribute('fill-opacity', '0.5');
-                }
-            });
-
-            container.addEventListener('mousemove', (e) => {
-                const rect = container.getBoundingClientRect();
-                mouse3dVec.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-                mouse3dVec.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-
-                const now = performance.now();
-                const dt = Math.max(1, now - lastMousePos.time);
-                const dist = Math.hypot(e.clientX - lastMousePos.x, e.clientY - lastMousePos.y);
-                
-                mouseSpeed = dist / dt;
-
-                lastMousePos.x = e.clientX;
-                lastMousePos.y = e.clientY;
-                lastMousePos.time = now;
-            }, { passive: true });
-
-            container.addEventListener('mouseleave', () => {
-                mouse3dVec.set(-999, -999);
-                mouseSpeed = 0;
-            });
-
-            container.addEventListener('touchmove', (e) => {
-                if (e.touches && e.touches.length === 1) {
-                    const rect = container.getBoundingClientRect();
-                    const touch = e.touches[0];
-                    mouse3dVec.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
-                    mouse3dVec.y = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
-                    mouseSpeed = 0.35;
-                }
-            }, { passive: true });
-
-            container.addEventListener('touchend', () => {
-                mouse3dVec.set(-999, -999);
-                mouseSpeed = 0;
-            });
-
-            window.addEventListener('resize', () => {
-                if (window.innerWidth >= 1024) {
-                    window.closeMobile3DView();
-                }
-                update3DViewportDimensions();
-            });
 
             window.start3DRenderLoop();
         };
@@ -2489,92 +1906,16 @@
                         m.needsUpdate = true;
                         return;
                     }
-
-                    if (child.material) {
-                        const mats = Array.isArray(child.material) ? child.material : [child.material];
-                        mats.forEach(m => {
-                            m.polygonOffset = true;
-                            m.polygonOffsetFactor = 1;
-                            m.polygonOffsetUnits = 1;
-                            m.wireframe = false;
-                            m.depthWrite = true;
-                            m.depthTest = true;
-                        });
-                    }
-
-                    let edgeLine = child.getObjectByName('__arch_edges__');
-                    if (!edgeLine && child.geometry) {
-                        try {
-                            const edgesGeom = new THREE.EdgesGeometry(child.geometry, 25);
-                            const lineMat = new THREE.LineBasicMaterial({ 
-                                color: 0xE63946, 
-                                linewidth: 1,
-                                transparent: true,
-                                opacity: 0.95
-                            });
-                            edgeLine = new THREE.LineSegments(edgesGeom, lineMat);
-                            edgeLine.name = '__arch_edges__';
-                            child.add(edgeLine);
-                        } catch (e) {}
-                    }
-
-                    if (edgeLine) {
-                        edgeLine.visible = true;
-                        if (current3DMode === 'technical') {
-                            edgeLine.material.color.setHex(0xE63946);
-                            edgeLine.material.opacity = 0.95;
-                        } else {
-                            edgeLine.material.color.setHex(0x111113);
-                            edgeLine.material.opacity = 0.85;
-                        }
-                    }
-
-                    if (child.material) {
-                        const mats = Array.isArray(child.material) ? child.material : [child.material];
-                        mats.forEach(m => {
-                            if (current3DMode === 'technical') {
-                                m.color.setHex(0x18181c);
-                                m.roughness = 0.65;
-                            } else {
-                                if (child.userData.hasTexture && m.map) {
-                                    m.color.setHex(0xffffff);
-                                } else if (child.userData.baseColor !== undefined) {
-                                    m.color.setHex(child.userData.baseColor);
-                                } else {
-                                    m.color.setHex(0xedece8);
-                                }
-                                m.roughness = 0.45;
-                            }
-                            m.needsUpdate = true;
-                        });
-                    }
                 }
             });
         };
 
         function cycle3DDisplayMode() {
             if (!currentActiveProject || !currentActiveProject.model3d) return;
-
             current3DMode = (current3DMode === 'technical') ? 'object' : 'technical';
-
             const labelEl = document.getElementById('p3d-mode-btn-label');
-            const dotEl = document.getElementById('p3d-mode-dot');
-
-            if (labelEl) {
-                labelEl.textContent = (current3DMode === 'technical') ? 'CAD TECH' : 'OBJECT MODE';
-            }
-
-            if (dotEl) {
-                if (current3DMode === 'technical') {
-                    dotEl.className = 'w-1.5 h-1.5 rounded-full bg-accent';
-                } else {
-                    dotEl.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400';
-                }
-            }
-
-            if (current3dMeshGroup) {
-                window.apply3DModeToGroup(current3dMeshGroup);
-            }
+            if (labelEl) labelEl.textContent = (current3DMode === 'technical') ? 'CAD TECH' : 'OBJECT MODE';
+            if (current3dMeshGroup) window.apply3DModeToGroup(current3dMeshGroup);
         }
         window.cycle3DDisplayMode = cycle3DDisplayMode;
 
@@ -2603,6 +1944,7 @@
             }
 
             window.init3DViewer();
+            window.update3DThemeBackground();
             window.start3DRenderLoop();
             if (!scene3d) return;
 
@@ -2663,6 +2005,16 @@
 
             const safeTexturePath = resolveSafeAssetUrl(texturePath);
             const textureLoader = new THREE.TextureLoader();
+            textureLoader.setCrossOrigin('anonymous');
+
+            // Materiale Object Mode di default
+            const clothMat = new THREE.MeshStandardMaterial({
+                side: THREE.DoubleSide,
+                roughness: 0.64,
+                metalness: 0.08,
+                shadowSide: THREE.DoubleSide
+            });
+
             const texture = textureLoader.load(
                 safeTexturePath,
                 (tex) => {
@@ -2685,150 +2037,184 @@
                             tex.offset.set(0, (1 - repeatY) / 2);
                         }
                     }
-                    tex.needsUpdate = true;
+                    clothMat.map = tex;
+                    clothMat.needsUpdate = true;
                 },
                 undefined,
                 () => {
-                    console.warn("Impossibile caricare texture drappo:", texturePath);
+                    // Fallback visuale procedurale elegante se la risorsa non è raggiungibile
+                    const fallbackCanvas = document.createElement('canvas');
+                    fallbackCanvas.width = 512;
+                    fallbackCanvas.height = 512;
+                    const ctx = fallbackCanvas.getContext('2d');
+                    ctx.fillStyle = '#1c1c1f';
+                    ctx.fillRect(0, 0, 512, 512);
+                    ctx.fillStyle = '#E63946';
+                    ctx.font = 'bold 24px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(project ? project.id : 'ARCHIVE', 256, 230);
+                    ctx.fillStyle = '#EAE8E2';
+                    ctx.font = 'italic 20px serif';
+                    ctx.fillText(project ? project.title : 'STUDIO ARCHIVE', 256, 280);
+                    clothMat.map = new THREE.CanvasTexture(fallbackCanvas);
+                    clothMat.needsUpdate = true;
                 }
             );
-
-            // Materiale Object Mode di default
-            const clothMat = new THREE.MeshStandardMaterial({
-                map: texture,
-                side: THREE.DoubleSide,
-                roughness: 0.64,
-                metalness: 0.08,
-                shadowSide: THREE.DoubleSide
-            });
 
             const clothMesh = new THREE.Mesh(clothGeom, clothMat);
             clothMesh.userData.isDrape = true;
             group.add(clothMesh);
 
-            group.position.set(0, 0, 0);
             group.userData.targetCenter = new THREE.Vector3(0, 0, 0);
-
-            // Rotazione minima per una sola rivoluzione di 360°
             group.userData.rotationSpeed = 0.18;
             group.userData.accumulatedRotation = 0;
-            group.userData.maxRotation = Math.PI * 2; // Esattamente 360°
-
-            group.rotation.y = 0;
-            group.rotation.x = 0.04;
-
-            let lastHitU = -1;
-            let lastHitV = -1;
-            let frameCounter = 0;
+            group.userData.maxRotation = Math.PI * 2;
 
             activeClothSim = {
                 mesh: clothMesh,
                 update: (time, dt) => {
                     const pos = clothGeom.attributes.position;
-                    let mouseHitU = -1;
-                    let mouseHitV = -1;
-                    let impactDirectionSign = -1.0;
-
-                    if (mouse3dVec.x > -2 && camera3d) {
-                        raycaster3d.setFromCamera(mouse3dVec, camera3d);
-                        const intersects = raycaster3d.intersectObject(clothMesh);
-                        if (intersects.length > 0 && intersects[0].uv) {
-                            mouseHitU = intersects[0].uv.x;
-                            mouseHitV = intersects[0].uv.y;
-
-                            const localRayDir = raycaster3d.ray.direction.clone();
-                            localRayDir.applyEuler(new THREE.Euler(-group.rotation.x, -group.rotation.y, -group.rotation.z));
-                            impactDirectionSign = (localRayDir.z < 0) ? -1.0 : 1.0;
-                        }
+                    for (let i = 0; i < pos.count; i++) {
+                        const origIdx = i * 3;
+                        const floatBreeze = Math.sin(time + origPositions[origIdx] * 0.5) * 0.03;
+                        pos.array[origIdx + 2] = origPositions[origIdx + 2] + floatBreeze;
                     }
-
-                    if (mouseHitU >= 0 && mouseHitV >= 0) {
-                        let strokeDist = 0;
-                        if (lastHitU >= 0 && lastHitV >= 0) {
-                            strokeDist = Math.hypot(mouseHitU - lastHitU, mouseHitV - lastHitV);
-                        }
-
-                        const isMoving = (strokeDist > 0.001) || (mouseSpeed > 0.10);
-
-                        if (isMoving) {
-                            const hitVelocity = Math.max(strokeDist * 60, mouseSpeed * 0.42);
-                            const impulsePower = Math.min(1.10, hitVelocity * 0.35);
-
-                            const centerI = mouseHitU * (cols - 1);
-                            const centerJ = (1.0 - mouseHitV) * (rows - 1);
-
-                            const impactRadius = 6.8;
-                            const minI = Math.max(0, Math.floor(centerI - impactRadius));
-                            const maxI = Math.min(cols - 1, Math.ceil(centerI + impactRadius));
-                            const minJ = Math.max(0, Math.floor(centerJ - impactRadius));
-                            const maxJ = Math.min(rows - 1, Math.ceil(centerJ + impactRadius));
-
-                            for (let j = minJ; j <= maxJ; j++) {
-                                const dj = j - centerJ;
-                                const rowBase = j * cols;
-                                for (let i = minI; i <= maxI; i++) {
-                                    const di = i - centerI;
-                                    const dist = Math.hypot(di, dj);
-                                    if (dist < impactRadius) {
-                                        const t = dist / impactRadius;
-                                        const bellCurve = (1 - t * t) * (1 - t * t);
-                                        velZ[rowBase + i] += impulsePower * bellCurve * 2.2 * impactDirectionSign;
-                                    }
-                                }
-                            }
-                        }
-
-                        lastHitU = mouseHitU;
-                        lastHitV = mouseHitV;
-                    } else {
-                        lastHitU = -1;
-                        lastHitV = -1;
-                    }
-
-                    const tension = 16.0;
-                    const dissipation = 0.932;
-                    const t1 = time * 0.9;
-                    const t2 = time * 0.7;
-
-                    for (let j = 0; j < rows; j++) {
-                        const rowIdx = j * cols;
-                        const vNorm = vNormArray[j];
-                        const waveV1 = vNorm * 1.8;
-                        const waveV2 = vNorm * 2.1;
-
-                        for (let i = 0; i < cols; i++) {
-                            const idx = rowIdx + i;
-                            const left = (i > 0) ? dispZ[idx - 1] : dispZ[idx];
-                            const right = (i < cols - 1) ? dispZ[idx + 1] : dispZ[idx];
-                            const up = (j > 0) ? dispZ[idx - cols] : dispZ[idx];
-                            const down = (j < rows - 1) ? dispZ[idx + cols] : dispZ[idx];
-
-                            const laplacian = (left + right + up + down) * 0.25 - dispZ[idx];
-                            const force = laplacian * tension - (dispZ[idx] * 2.1);
-
-                            velZ[idx] = (velZ[idx] + force * dt) * dissipation;
-                            dispZ[idx] += velZ[idx] * dt;
-
-                            const uNorm = uNormArray[i];
-                            const floatBreeze = Math.sin(t1 + uNorm * 2.2 + waveV1) * 0.022
-                                              + Math.cos(t2 - uNorm * 1.5 + waveV2) * 0.014;
-
-                            const origIdx = idx * 3;
-                            pos.array[origIdx + 2] = origPositions[origIdx + 2] + floatBreeze + dispZ[idx];
-                            pos.array[origIdx] = origPositions[origIdx] + (dispZ[idx] * 0.045);
-                            pos.array[origIdx + 1] = origPositions[origIdx + 1] + (dispZ[idx] * 0.032);
-                        }
-                    }
-
                     pos.needsUpdate = true;
-                    frameCounter++;
-                    if (frameCounter % 2 === 0) {
-                        clothGeom.computeVertexNormals();
-                    }
                 }
             };
 
             current3dMeshGroup = group;
+            scene3d.add(current3dMeshGroup);
+            window.reset3DCamera();
+        };
+
+        window.load3DModelFromPath = function(path) {
+            if (!path) {
+                window.fallbackProcedural();
+                return;
+            }
+
+            const safePath = resolveSafeAssetUrl(path);
+            const ext = path.split('.').pop().toLowerCase();
+            const resourceDir = safePath.substring(0, safePath.lastIndexOf('/') + 1);
+
+            try {
+                if (ext === 'obj' && typeof THREE.OBJLoader !== 'undefined') {
+                    const loader = new THREE.OBJLoader();
+                    loader.load(safePath, (obj) => {
+                        obj.traverse((child) => {
+                            if (child.isMesh) {
+                                child.material = new THREE.MeshStandardMaterial({
+                                    color: 0xedece8,
+                                    roughness: 0.45,
+                                    metalness: 0.02
+                                });
+                                child.userData.baseColor = 0xedece8;
+                            }
+                        });
+                        window.displayLoaded3DModel(obj);
+                    }, undefined, (err) => {
+                        console.warn('Impossibile caricare il file OBJ:', err);
+                        window.fallbackProcedural();
+                    });
+                } else if (ext === 'fbx' && typeof THREE.FBXLoader !== 'undefined') {
+                    const loader = new THREE.FBXLoader();
+                    loader.setResourcePath(resourceDir);
+                    loader.load(safePath, (fbx) => {
+                        fbx.traverse((child) => {
+                            if (child.isMesh && child.material) {
+                                const mats = Array.isArray(child.material) ? child.material : [child.material];
+                                mats.forEach(m => {
+                                    if (m.map) {
+                                        child.userData.hasTexture = true;
+                                        m.color.setHex(0xffffff);
+                                    } else if (m.color) {
+                                        child.userData.baseColor = m.color.getHex();
+                                    }
+                                });
+                            }
+                        });
+                        window.displayLoaded3DModel(fbx);
+                    }, undefined, (err) => {
+                        console.warn('Impossibile caricare il file FBX:', err);
+                        window.fallbackProcedural();
+                    });
+                } else if ((ext === 'glb' || ext === 'gltf') && typeof THREE.GLTFLoader !== 'undefined') {
+                    const loader = new THREE.GLTFLoader();
+                    loader.setResourcePath(resourceDir);
+                    loader.load(safePath, (gltf) => {
+                        const model = gltf.scene || gltf.scenes[0];
+                        model.traverse((child) => {
+                            if (child.isMesh && child.material) {
+                                const mats = Array.isArray(child.material) ? child.material : [child.material];
+                                mats.forEach(m => {
+                                    if (m.map) {
+                                        child.userData.hasTexture = true;
+                                    } else if (m.color) {
+                                        child.userData.baseColor = m.color.getHex();
+                                    }
+                                });
+                            }
+                        });
+                        window.displayLoaded3DModel(model);
+                    }, undefined, (err) => {
+                        console.warn('Impossibile caricare il file GLTF/GLB:', err);
+                        window.fallbackProcedural();
+                    });
+                } else {
+                    window.fallbackProcedural();
+                }
+            } catch (syncErr) {
+                console.warn('Errore durante il caricamento 3D:', syncErr);
+                window.fallbackProcedural();
+            }
+        };
+
+        window.fallbackProcedural = function() {
+            const texturePath = (currentActiveProject && (currentActiveProject.drapeImg || currentActiveProject.coverImg)) || '';
+            window.createInteractiveClothDrape(texturePath, currentActiveProject);
+        };
+
+        window.displayLoaded3DModel = function(model) {
+            if (!scene3d || !model) return;
+
+            if (current3dMeshGroup) {
+                scene3d.remove(current3dMeshGroup);
+                disposeHierarchy(current3dMeshGroup);
+                current3dMeshGroup = null;
+            }
+
+            model.position.set(0, 0, 0);
+            model.rotation.set(0, 0, 0);
+            model.scale.set(1, 1, 1);
+            model.updateMatrixWorld(true);
+
+            const box = new THREE.Box3().setFromObject(model);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            const maxDim = Math.max(size.x, size.y, size.z) || 1;
+            
+            const modelPath = (currentActiveProject && currentActiveProject.model3d) || '';
+            const isONJJ = modelPath.includes('ONJJ');
+            const isTENT1 = modelPath.includes('TENT1');
+            const targetDim = isONJJ ? 12.0 : (isTENT1 ? 14.0 : 10.0);
+            const scaleFactor = targetDim / maxDim;
+
+            const wrapper = new THREE.Group();
+            model.position.set(-center.x, -center.y, -center.z);
+            wrapper.add(model);
+            wrapper.scale.setScalar(scaleFactor);
+
+            const scaledHeight = size.y * scaleFactor;
+            const centerY = scaledHeight / 2;
+            wrapper.position.set(0, centerY, 0);
+
+            wrapper.userData.targetCenter = new THREE.Vector3(0, centerY, 0);
+            wrapper.userData.rotationSpeed = (isONJJ || isTENT1) ? 0.35 : 0.25;
+            wrapper.userData.accumulatedRotation = 0;
+            wrapper.userData.maxRotation = Math.PI * 2;
+
+            current3dMeshGroup = wrapper;
             scene3d.add(current3dMeshGroup);
 
             window.apply3DModeToGroup(current3dMeshGroup);
@@ -2893,158 +2279,73 @@
         }
         window.reset3DCamera = reset3DCamera;
 
-        function resolveSafeAssetUrl(url) {
-            if (!url || typeof url !== 'string') return '';
-            if (/^(https?|blob|data):/i.test(url)) return url;
-            try {
-                if (window.location.protocol === 'blob:') {
-                    if (window.location.origin && window.location.origin !== 'null') {
-                        return new URL(url, window.location.origin + '/').href;
+        /* Gestione globale tastiera: chiusura con tasto ESC e navigazione media */
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27) {
+                // 1. Se il lightbox a tutto schermo è aperto, chiudi prima eventuali dropdown o il lightbox stesso
+                const lb = document.getElementById('fullscreen-lightbox');
+                if (lb && !lb.classList.contains('opacity-0')) {
+                    const lbMenu = document.getElementById('lb-prj-dropdown-menu');
+                    if (lbMenu && !lbMenu.classList.contains('hidden')) {
+                        if (typeof window.closeLightboxPrjDropdown === 'function') window.closeLightboxPrjDropdown();
+                    } else {
+                        if (typeof window.closeLightbox === 'function') window.closeLightbox();
                     }
+                    return;
                 }
-                return new URL(url, document.baseURI || window.location.href).href;
-            } catch (e) {
-                return url;
-            }
-        }
-        window.resolveSafeAssetUrl = resolveSafeAssetUrl;
 
-        window.load3DModelFromPath = function(path) {
-            if (!path) {
-                window.fallbackProcedural();
-                return;
-            }
-
-            const safePath = resolveSafeAssetUrl(path);
-            const ext = path.split('.').pop().toLowerCase();
-            const resourceDir = safePath.substring(0, safePath.lastIndexOf('/') + 1);
-
-            try {
-                if (ext === 'obj' && typeof THREE.OBJLoader !== 'undefined') {
-                    const loader = new THREE.OBJLoader();
-                    loader.load(safePath, (obj) => {
-                        obj.traverse((child) => {
-                            if (child.isMesh) {
-                                child.material = new THREE.MeshStandardMaterial({
-                                    color: 0xedece8,
-                                    roughness: 0.45,
-                                    metalness: 0.02
-                                });
-                                child.userData.baseColor = 0xedece8;
-                            }
-                        });
-                        window.displayLoaded3DModel(obj);
-                    }, undefined, (err) => {
-                        console.warn('Impossibile caricare il file OBJ specificato:', err);
-                        window.fallbackProcedural();
-                    });
-                } else if (ext === 'fbx' && typeof THREE.FBXLoader !== 'undefined') {
-                    const loader = new THREE.FBXLoader();
-                    loader.setResourcePath(resourceDir);
-                    loader.load(safePath, (fbx) => {
-                        fbx.traverse((child) => {
-                            if (child.isMesh && child.material) {
-                                const mats = Array.isArray(child.material) ? child.material : [child.material];
-                                mats.forEach(m => {
-                                    if (m.map) {
-                                        child.userData.hasTexture = true;
-                                        m.color.setHex(0xffffff);
-                                    } else if (m.color) {
-                                        child.userData.baseColor = m.color.getHex();
-                                    }
-                                });
-                            }
-                        });
-                        window.displayLoaded3DModel(fbx);
-                    }, undefined, (err) => {
-                        console.warn('Impossibile caricare il file FBX specificato:', err);
-                        window.fallbackProcedural();
-                    });
-                } else if ((ext === 'glb' || ext === 'gltf') && typeof THREE.GLTFLoader !== 'undefined') {
-                    const loader = new THREE.GLTFLoader();
-                    loader.setResourcePath(resourceDir);
-                    loader.load(safePath, (gltf) => {
-                        const model = gltf.scene || gltf.scenes[0];
-                        model.traverse((child) => {
-                            if (child.isMesh && child.material) {
-                                const mats = Array.isArray(child.material) ? child.material : [child.material];
-                                mats.forEach(m => {
-                                    if (m.map) {
-                                        child.userData.hasTexture = true;
-                                    } else if (m.color) {
-                                        child.userData.baseColor = m.color.getHex();
-                                    }
-                                });
-                            }
-                        });
-                        window.displayLoaded3DModel(model);
-                    }, undefined, (err) => {
-                        console.warn('Impossibile caricare il file GLTF/GLB specificato:', err);
-                        window.fallbackProcedural();
-                    });
-                } else {
-                    window.fallbackProcedural();
+                // 2. Se il menu a tendina interno del 3D è aperto, chiudilo
+                const p3dMenu = document.getElementById('p3d-prj-dropdown-menu');
+                if (p3dMenu && !p3dMenu.classList.contains('hidden')) {
+                    if (typeof window.close3DPrjDropdown === 'function') window.close3DPrjDropdown();
+                    return;
                 }
-            } catch (syncErr) {
-                console.warn('Errore sincrono durante il caricamento 3D:', syncErr);
-                window.fallbackProcedural();
+
+                // 3. Se la finestra bio / about me è aperta, chiudila
+                const bioBackdrop = document.getElementById('bio-window-backdrop');
+                if (bioBackdrop && !bioBackdrop.classList.contains('opacity-0')) {
+                    if (typeof window.closeBioWindow === 'function') window.closeBioWindow();
+                    return;
+                }
+
+                // 4. Se la finestra del progetto (3D + scheda) è aperta, chiudila
+                const projectModal = document.getElementById('project-modal');
+                if (projectModal && !projectModal.classList.contains('opacity-0')) {
+                    if (typeof window.closeProjectModal === 'function') window.closeProjectModal();
+                    return;
+                }
+
+                // 5. Chiudi eventuali menu filtri/ordinamento se aperti
+                if (typeof window.closeCategoryDropdown === 'function') window.closeCategoryDropdown();
+                if (typeof window.closeSortDropdown === 'function') window.closeSortDropdown();
+            } else if (e.key === 'ArrowRight') {
+                const lb = document.getElementById('fullscreen-lightbox');
+                if (lb && !lb.classList.contains('opacity-0')) {
+                    if (typeof window.nextLightboxSlide === 'function') window.nextLightboxSlide();
+                    return;
+                }
+                const modal = document.getElementById('project-modal');
+                if (modal && !modal.classList.contains('opacity-0') && currentMediaList && currentMediaList.length > 1) {
+                    currentActiveImageIndex = (currentActiveImageIndex + 1) % currentMediaList.length;
+                    window.renderModalMedia();
+                    window.renderModalThumbs();
+                }
+            } else if (e.key === 'ArrowLeft') {
+                const lb = document.getElementById('fullscreen-lightbox');
+                if (lb && !lb.classList.contains('opacity-0')) {
+                    if (typeof window.prevLightboxSlide === 'function') window.prevLightboxSlide();
+                    return;
+                }
+                const modal = document.getElementById('project-modal');
+                if (modal && !modal.classList.contains('opacity-0') && currentMediaList && currentMediaList.length > 1) {
+                    currentActiveImageIndex = (currentActiveImageIndex - 1 + currentMediaList.length) % currentMediaList.length;
+                    window.renderModalMedia();
+                    window.renderModalThumbs();
+                }
             }
-        };
+        });
 
-        window.fallbackProcedural = function() {
-            const texturePath = (currentActiveProject && (currentActiveProject.drapeImg || currentActiveProject.coverImg)) || '';
-            window.createInteractiveClothDrape(texturePath, currentActiveProject);
-        };
-
-        window.displayLoaded3DModel = function(model) {
-            if (!scene3d || !model) return;
-
-            if (current3dMeshGroup) {
-                scene3d.remove(current3dMeshGroup);
-                disposeHierarchy(current3dMeshGroup);
-                current3dMeshGroup = null;
-            }
-
-            model.position.set(0, 0, 0);
-            model.rotation.set(0, 0, 0);
-            model.scale.set(1, 1, 1);
-            model.updateMatrixWorld(true);
-
-            const box = new THREE.Box3().setFromObject(model);
-            const center = box.getCenter(new THREE.Vector3());
-            const size = box.getSize(new THREE.Vector3());
-            const maxDim = Math.max(size.x, size.y, size.z) || 1;
-            
-            const modelPath = (currentActiveProject && currentActiveProject.model3d) || '';
-            const isONJJ = modelPath.includes('ONJJ');
-            const isTENT1 = modelPath.includes('TENT1');
-            const targetDim = isONJJ ? 12.0 : (isTENT1 ? 14.0 : 10.0);
-            const scaleFactor = targetDim / maxDim;
-
-            const wrapper = new THREE.Group();
-            model.position.set(-center.x, -center.y, -center.z);
-            wrapper.add(model);
-            wrapper.scale.setScalar(scaleFactor);
-
-            const scaledHeight = size.y * scaleFactor;
-            const centerY = scaledHeight / 2;
-            wrapper.position.set(0, centerY, 0);
-
-            wrapper.userData.targetCenter = new THREE.Vector3(0, centerY, 0);
-
-            // Rotazione morbida a 360° singola all'apertura del modello
-            wrapper.userData.rotationSpeed = (isONJJ || isTENT1) ? 0.35 : 0.25;
-            wrapper.userData.accumulatedRotation = 0;
-            wrapper.userData.maxRotation = Math.PI * 2; // Esattamente un giro di 360°
-
-            current3dMeshGroup = wrapper;
-            scene3d.add(current3dMeshGroup);
-
-            window.apply3DModeToGroup(current3dMeshGroup);
-            update3DViewportDimensions();
-            window.reset3DCamera();
-        };
-
+        // Initialize UI components
         if (window.lucide) lucide.createIcons();
         window.renderCategoryDropdown();
         window.renderSortDropdown();
