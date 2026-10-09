@@ -2861,9 +2861,8 @@
 
         // Initialize UI components on load
         if (window.lucide) lucide.createIcons();
-        window.renderCategoryDropdown();
         window.renderSortDropdown();
-        window.renderPortfolio();
+        window.setViewMode(currentView); // Sets default grid on mobile/tablet or list on desktop
     </script>
 </body>
 </html>
