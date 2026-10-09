@@ -46,7 +46,6 @@
             }
         }
     </script>
-    
     <style>
         ::-webkit-scrollbar {
             width: 5px;
@@ -118,15 +117,6 @@
             contain: strict;
         }
 
-        .dark #cad-cursor line {
-            stroke: #F4F2ED !important;
-            stroke-opacity: 0.85;
-        }
-        .dark #cad-cursor #cad-pickbox {
-            stroke: #F4F2ED !important;
-            fill: #141416 !important;
-        }
-
         #project-3d-canvas-container canvas {
             display: block !important;
             width: 100% !important;
@@ -150,7 +140,6 @@
         }
     </style>
 </head>
-
 <body class="bg-cream text-charcoal dark:bg-paperDark dark:text-cream font-sans min-h-full selection:bg-accent selection:text-white relative pb-16">
 
     <!-- Archival Hover Preview Floating Card -->
@@ -171,12 +160,12 @@
 
             <!-- Top Actions: About Me & Mode Switcher -->
             <div class="flex items-center space-x-4 text-xs sm:text-sm">
-                <button onclick="openBioWindow()" class="hover:text-accent transition-colors font-bold uppercase tracking-wider flex items-center gap-1.5 text-accent">
+                <button onclick="openBioWindow()" class="hover:text-accent transition-colors font-bold uppercase tracking-wider flex items-center gap-1.5 text-accent cursor-pointer">
                     <span>ABOUT ME</span>
                     <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                 </button>
                 <span class="text-charcoal/20 dark:text-cream/20">|</span>
-                <button id="theme-toggle" class="hover:text-accent transition-colors flex items-center gap-1.5" title="Cambia Tema">
+                <button id="theme-toggle" class="hover:text-accent transition-colors flex items-center gap-1.5 cursor-pointer" title="Cambia Tema">
                     <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
                     <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
                     <span class="hidden sm:inline">MODE</span>
@@ -184,7 +173,6 @@
             </div>
         </div>
     </header>
-
     <main class="px-4 pt-3 pb-6 md:pt-3.5 md:pb-8 md:px-8 max-w-[1800px] mx-auto min-h-[75vh]">
         
         <!-- Category Filter & Sort Bar -->
@@ -243,10 +231,10 @@
 
                 <!-- View Switcher -->
                 <div class="flex items-center space-x-0.5 border border-charcoal/20 dark:border-cream/20 p-0.5 rounded h-7 shrink-0">
-                    <button id="view-list" onclick="setViewMode('list')" class="h-full px-1 sm:px-1.5 hover:bg-charcoal/10 dark:hover:bg-cream/10 rounded transition-colors text-accent flex items-center justify-center" title="Vista Elenco Archivio">
+                    <button id="view-list" onclick="setViewMode('list')" class="h-full px-1 sm:px-1.5 hover:bg-charcoal/10 dark:hover:bg-cream/10 rounded transition-colors text-accent flex items-center justify-center cursor-pointer" title="Vista Elenco Archivio">
                         <i data-lucide="list" class="w-3.5 h-3.5"></i>
                     </button>
-                    <button id="view-grid" onclick="setViewMode('grid')" class="h-full px-1 sm:px-1.5 hover:bg-charcoal/10 dark:hover:bg-cream/10 rounded transition-colors flex items-center justify-center" title="Vista Griglia">
+                    <button id="view-grid" onclick="setViewMode('grid')" class="h-full px-1 sm:px-1.5 hover:bg-charcoal/10 dark:hover:bg-cream/10 rounded transition-colors flex items-center justify-center cursor-pointer" title="Vista Griglia">
                         <i data-lucide="grid" class="w-3.5 h-3.5"></i>
                     </button>
                 </div>
@@ -263,7 +251,6 @@
             <!-- Project items rendered dynamically via JavaScript -->
         </div>
     </main>
-
     <div id="bio-window-backdrop" class="fixed inset-0 z-50 bg-charcoal/40 dark:bg-black/60 backdrop-blur-[2px] opacity-0 pointer-events-none transition-opacity duration-200 flex items-center justify-center p-3 sm:p-6 md:p-8">
         <div id="bio-window" class="w-full max-w-3xl bg-[#F8F7F3] dark:bg-[#141416] text-charcoal dark:text-cream border border-charcoal/30 dark:border-cream/30 shadow-2xl rounded-sm transform scale-95 transition-transform duration-200 overflow-hidden flex flex-col max-h-[90vh]">
             
@@ -272,7 +259,7 @@
                 <span class="font-bold tracking-wider">BIO — PIETRO BERGAMASCHI.EXE</span>
                 <div class="flex items-center space-x-4">
                     <span class="opacity-60 hidden sm:inline">[ESC TO CLOSE]</span>
-                    <button onclick="closeBioWindow()" class="font-bold hover:text-accent transition-colors">
+                    <button onclick="closeBioWindow()" class="font-bold hover:text-accent transition-colors cursor-pointer">
                         <span>[✕]</span>
                     </button>
                 </div>
@@ -383,14 +370,13 @@
             </div>
         </div>
     </div>
-
     <div id="project-modal" class="fixed inset-0 z-50 bg-charcoal/35 dark:bg-black/45 backdrop-blur-[1px] opacity-0 pointer-events-none transition-opacity duration-300 flex justify-end">
         
         <!-- 3D Spatial Viewport: 50% split on lg+ screens, Fullscreen overlay when triggered on mobile/tablet -->
         <div id="project-3d-viewport" class="hidden lg:flex lg:w-1/2 h-full flex-col relative bg-cream dark:bg-[#141416] overflow-hidden transition-colors duration-250">
-            <!-- 3D Header HUD: Exactly 16px from top (top-4) with fixed 32px height (h-8) -->
+            <!-- 3D Header HUD -->
             <div class="absolute top-4 left-4 sm:left-6 right-4 sm:right-6 z-10 flex items-center justify-between font-mono text-[9px] sm:text-[10px] select-none pointer-events-none gap-2 h-8">
-                <!-- 3D Project Switcher: Project Title Dropdown -->
+                <!-- 3D Project Switcher -->
                 <div class="flex items-center gap-1 sm:gap-1.5 pointer-events-auto h-8">
                     <div class="relative h-8">
                         <button id="p3d-prj-dropdown-btn" onclick="toggle3DPrjDropdown(event)" class="h-8 flex items-center gap-1.5 bg-transparent hover:bg-charcoal/5 dark:hover:bg-cream/5 text-charcoal dark:text-cream px-2.5 sm:px-3 rounded-md border border-charcoal/40 dark:border-cream/40 cursor-pointer transition-colors">
@@ -426,7 +412,7 @@
             <!-- Canvas Container -->
             <div id="project-3d-canvas-container" class="w-full h-full flex-1 relative flex items-center justify-center"></div>
 
-            <!-- Bottom 3D Bar: "ORBITA A 360°" on bottom left, "TORNA AL PRJ" shifted to bottom right -->
+            <!-- Bottom 3D Bar -->
             <div class="absolute bottom-4 left-4 sm:left-6 right-4 sm:right-6 z-10 flex justify-between items-center font-mono text-[9px] sm:text-[10px] select-none pointer-events-none gap-3">
                 <div class="text-left text-charcoal/60 dark:text-cream/60 pointer-events-none flex items-center gap-2">
                     <span id="p3d-controls-hint" class="tracking-wider uppercase font-medium text-charcoal/80 dark:text-cream/80">ORBITA A 360°</span>
@@ -450,11 +436,11 @@
                 <div class="flex items-center justify-between font-mono text-xs border-b border-charcoal/10 dark:border-cream/10 pb-4 mb-6">
                     <div class="flex items-center gap-2 sm:gap-3 h-8">
                         <div class="flex items-center bg-transparent rounded-md border border-charcoal/40 dark:border-cream/40 h-8 overflow-hidden">
-                            <button id="modal-header-prev-btn" class="h-full px-2.5 hover:text-accent hover:bg-charcoal/5 dark:hover:bg-cream/5 transition-colors text-xs font-bold flex items-center justify-center text-charcoal dark:text-cream" title="PRJ Prec. (←)">
+                            <button id="modal-header-prev-btn" class="h-full px-2.5 hover:text-accent hover:bg-charcoal/5 dark:hover:bg-cream/5 transition-colors text-xs font-bold flex items-center justify-center text-charcoal dark:text-cream cursor-pointer" title="PRJ Prec. (←)">
                                 ‹
                             </button>
                             <div class="w-[1px] h-full bg-charcoal/20 dark:bg-cream/20"></div>
-                            <button id="modal-header-next-btn" class="h-full px-2.5 hover:text-accent hover:bg-charcoal/5 dark:hover:bg-cream/5 transition-colors text-xs font-bold flex items-center justify-center text-charcoal dark:text-cream" title="PRJ Succ. (→)">
+                            <button id="modal-header-next-btn" class="h-full px-2.5 hover:text-accent hover:bg-charcoal/5 dark:hover:bg-cream/5 transition-colors text-xs font-bold flex items-center justify-center text-charcoal dark:text-cream cursor-pointer" title="PRJ Succ. (→)">
                                 ›
                             </button>
                         </div>
@@ -479,7 +465,7 @@
 
                 <!-- Mobile 3D Trigger Button -->
                 <div class="lg:hidden mt-4">
-                    <button onclick="openMobile3DView()" class="w-full py-2.5 px-3.5 bg-charcoal text-cream dark:bg-cream dark:text-charcoal hover:bg-accent hover:text-white dark:hover:bg-accent dark:hover:text-white transition-all rounded-sm flex items-center justify-between font-mono text-[11px] font-bold shadow-md border border-charcoal/20 dark:border-cream/20">
+                    <button onclick="openMobile3DView()" class="w-full py-2.5 px-3.5 bg-charcoal text-cream dark:bg-cream dark:text-charcoal hover:bg-accent hover:text-white dark:hover:bg-accent dark:hover:text-white transition-all rounded-sm flex items-center justify-between font-mono text-[11px] font-bold shadow-md border border-charcoal/20 dark:border-cream/20 cursor-pointer">
                         <span class="flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
                             <span id="mobile-3d-btn-title">VISUALIZZA 3D [PRJ-01]</span>
@@ -513,22 +499,34 @@
                         <!-- Populated by JS -->
                     </div>
                 </div>
-
-                <!-- Media Viewer -->
+                <!-- Media Viewer with Fullscreen & Left/Right Arrows -->
                 <div class="my-5 sm:my-6 space-y-3 sm:space-y-4">
-                    <div id="modal-media-box" class="relative group bg-charcoal/5 dark:bg-cream/5 rounded border border-charcoal/10 dark:border-cream/10 overflow-hidden cursor-zoom-in w-full select-none">
+                    <div id="modal-media-box" onclick="handleMediaBoxClick(event)" class="relative group bg-charcoal/5 dark:bg-cream/5 rounded border border-charcoal/10 dark:border-cream/10 overflow-hidden cursor-zoom-in w-full select-none">
                         <img id="modal-main-img" src="" alt="Anteprima Progetto" class="w-full h-auto block transition-transform duration-500 group-hover:scale-[1.01]">
                         <video id="modal-main-video" autoplay loop muted playsinline preload="metadata" class="w-full h-auto block bg-black hidden pointer-events-none"></video>
 
-                        <div id="modal-media-counter" class="absolute top-2.5 left-2.5 bg-charcoal/80 text-cream font-mono text-[9px] px-2 py-0.5 rounded shadow pointer-events-none backdrop-blur-sm">
-                            01 / 01
+                        <!-- Counter and keyboard hint -->
+                        <div id="modal-media-counter" class="absolute top-2.5 left-2.5 bg-charcoal/80 text-cream font-mono text-[9px] px-2 py-0.5 rounded shadow pointer-events-none backdrop-blur-sm flex items-center gap-1.5 z-10">
+                            <span id="modal-media-counter-text">01 / 01</span>
+                            <span class="text-white/40">|</span>
+                            <span class="text-accent font-semibold">[← / →]</span>
                         </div>
 
-                        <div id="modal-fullscreen-hint" class="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 bg-charcoal/85 text-cream font-mono text-[9px] sm:text-[10px] px-2 sm:px-2.5 py-1 rounded opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 sm:gap-1.5 uppercase tracking-wider pointer-events-none shadow-lg backdrop-blur-sm">
-                            <i data-lucide="maximize-2" class="w-3 h-3 text-accent"></i>
+                        <!-- Left / Right Navigation Arrow Buttons on Image -->
+                        <button id="modal-media-prev-btn" onclick="prevModalMedia(event)" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-charcoal/70 hover:bg-accent text-white flex items-center justify-center transition-all opacity-80 sm:opacity-0 group-hover:opacity-100 shadow-lg cursor-pointer z-20" title="Immagine precedente (←)">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        </button>
+                        <button id="modal-media-next-btn" onclick="nextModalMedia(event)" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-charcoal/70 hover:bg-accent text-white flex items-center justify-center transition-all opacity-80 sm:opacity-0 group-hover:opacity-100 shadow-lg cursor-pointer z-20" title="Immagine successiva (→)">
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+
+                        <!-- Explicit Fullscreen Button Hint -->
+                        <button id="modal-fullscreen-hint" onclick="openLightbox(currentActiveImageIndex); event.stopPropagation();" class="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 bg-charcoal/85 hover:bg-accent text-cream font-mono text-[9px] sm:text-[10px] px-2 sm:px-2.5 py-1 rounded opacity-90 sm:opacity-0 group-hover:opacity-100 transition-all flex items-center gap-1 sm:gap-1.5 uppercase tracking-wider cursor-pointer shadow-lg backdrop-blur-sm z-20" title="Apri a tutto schermo">
+                            <i data-lucide="maximize-2" class="w-3 h-3 text-accent group-hover:text-white"></i>
                             <span>FULL SCREEN</span>
-                        </div>
+                        </button>
                     </div>
+
                     <!-- Thumbnails row -->
                     <div id="modal-gallery-thumbs" class="grid grid-cols-4 sm:grid-cols-6 gap-1.5 sm:gap-2">
                         <!-- Thumbnails injected via JS -->
@@ -538,20 +536,21 @@
 
             <!-- Modal Footer -->
             <div class="pt-4 border-t border-charcoal/15 dark:border-cream/15 flex justify-between items-center font-mono text-[11px] sm:text-xs">
-                <button id="modal-prev-btn" class="hover:text-accent flex items-center gap-1 transition-colors">
+                <button id="modal-prev-btn" class="hover:text-accent flex items-center gap-1 transition-colors cursor-pointer">
                     <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                     <span>PRJ PREC.</span>
                 </button>
-                <button id="modal-next-btn" class="hover:text-accent flex items-center gap-1 transition-colors">
+                <button id="modal-next-btn" class="hover:text-accent flex items-center gap-1 transition-colors cursor-pointer">
                     <span>PRJ SUCC.</span>
                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </button>
             </div>
         </div>
     </div>
-
+    <!-- Fullscreen Lightbox Modal -->
     <div id="fullscreen-lightbox" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-between p-3 sm:p-5 md:p-8 select-none">
         
+        <!-- Lightbox Top HUD -->
         <div class="flex items-center justify-between font-mono text-xs text-cream/70 border-b border-white/10 pb-3 relative">
             <div class="flex items-center gap-2 sm:gap-3 relative">
                 <button id="lb-prj-dropdown-btn" onclick="toggleLightboxPrjDropdown(event)" class="text-accent font-bold flex items-center gap-1.5 px-2.5 py-1 rounded bg-white/5 hover:bg-white/15 border border-accent/40 transition-colors cursor-pointer group text-xs sm:text-sm" title="Cambia PRJ">
@@ -573,14 +572,15 @@
                 <div class="flex items-center gap-1.5">
                     <span id="lb-counter" class="text-accent font-bold text-xs sm:text-sm tracking-wider">01 / 01</span>
                 </div>
-                <button onclick="closeLightbox()" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-cream hover:text-accent bg-white/10 hover:bg-white/20 active:scale-95 rounded transition-all cursor-pointer" title="Chiudi">
+                <button onclick="closeLightbox()" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-cream hover:text-accent bg-white/10 hover:bg-white/20 active:scale-95 rounded transition-all cursor-pointer" title="Chiudi [ESC]">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
         </div>
 
+        <!-- Lightbox Gesture & Viewing Area -->
         <div id="lb-gesture-area" class="relative flex-1 flex items-center justify-center my-2 sm:my-4 overflow-hidden cursor-zoom-in">
-            <button onclick="prevLightboxSlide()" class="hidden md:flex absolute left-2 md:left-6 z-20 w-11 h-11 rounded-full bg-black/60 hover:bg-accent text-white items-center justify-center transition-all border border-white/20 hover:border-transparent group" title="PRJ Prec. (←)">
+            <button onclick="prevLightboxSlide(); event.stopPropagation();" class="hidden md:flex absolute left-2 md:left-6 z-20 w-11 h-11 rounded-full bg-black/60 hover:bg-accent text-white items-center justify-center transition-all border border-white/20 hover:border-transparent group cursor-pointer" title="PRJ Prec. (←)">
                 <i data-lucide="chevron-left" class="w-6 h-6 group-hover:-translate-x-0.5 transition-transform"></i>
             </button>
 
@@ -589,11 +589,12 @@
                 <video id="lb-main-video" controls playsinline preload="metadata" class="max-w-[92vw] max-h-[74vh] object-contain hidden shadow-2xl bg-black"></video>
             </div>
 
-            <button onclick="nextLightboxSlide()" class="hidden md:flex absolute right-2 md:right-6 z-20 w-11 h-11 rounded-full bg-black/60 hover:bg-accent text-white items-center justify-center transition-all border border-white/20 hover:border-transparent group" title="PRJ Succ. (→)">
+            <button onclick="nextLightboxSlide(); event.stopPropagation();" class="hidden md:flex absolute right-2 md:right-6 z-20 w-11 h-11 rounded-full bg-black/60 hover:bg-accent text-white items-center justify-center transition-all border border-white/20 hover:border-transparent group cursor-pointer" title="PRJ Succ. (→)">
                 <i data-lucide="chevron-right" class="w-6 h-6 group-hover:translate-x-0.5 transition-transform"></i>
             </button>
         </div>
 
+        <!-- Lightbox Bottom Navigation -->
         <div class="flex items-center justify-center lg:justify-between gap-2 border-t border-white/10 pt-2 sm:pt-3">
             <span class="font-mono text-[9px] sm:text-[10px] text-cream/40 uppercase tracking-widest hidden lg:inline">
                 SCORRI / ROTELLINA PER ZOOM
@@ -617,59 +618,10 @@
             <a href="mailto:bergapietro98@gmail.com" class="hover:text-accent transition-colors font-medium tracking-wider underline decoration-charcoal/30 dark:decoration-cream/30 hover:decoration-accent">bergapietro98@gmail.com</a>
         </div>
     </footer>
-
     <script>
         function hasFinePointer() {
             return window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches && window.innerWidth >= 1024;
         }
-
-        function update3DViewportDimensions() {
-            const container = document.getElementById('project-3d-canvas-container');
-            if (container && renderer3d && camera3d) {
-                const w = container.clientWidth || window.innerWidth;
-                const h = container.clientHeight || window.innerHeight;
-                if (w > 0 && h > 0) {
-                    camera3d.aspect = w / h;
-                    camera3d.updateProjectionMatrix();
-                    renderer3d.setSize(w, h, false);
-                    renderer3d.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
-                }
-            }
-        }
-        window.update3DViewportDimensions = update3DViewportDimensions;
-
-        function openMobile3DView() {
-            const viewport = document.getElementById('project-3d-viewport');
-            if (!viewport) return;
-            viewport.classList.add('mobile-active');
-
-            const activeList = getFilteredAndSortedProjects();
-            const p = currentActiveProject || activeList[currentModalIndex] || projects[currentModalIndex];
-            currentActiveProject = p;
-
-            if (p && typeof window.setupProject3D === 'function') {
-                window.setupProject3D(p);
-            }
-
-            requestAnimationFrame(() => {
-                update3DViewportDimensions();
-                if (typeof window.reset3DCamera === 'function') {
-                    window.reset3DCamera();
-                }
-            });
-            setTimeout(update3DViewportDimensions, 100);
-        }
-        window.openMobile3DView = openMobile3DView;
-
-        function closeMobile3DView() {
-            const viewport = document.getElementById('project-3d-viewport');
-            if (!viewport) return;
-            viewport.classList.remove('mobile-active');
-            if (window.innerWidth < 1024) {
-                window.stop3DRenderLoop();
-            }
-        }
-        window.closeMobile3DView = closeMobile3DView;
 
         const projects = [
             {
@@ -915,8 +867,6 @@
                 ]
             }
         ];
-
-        /* State Variables */
         let currentView = 'list';
         let currentCategory = 'ALL';
         let currentSort = 'year-desc';
@@ -924,6 +874,7 @@
         let currentActiveImageIndex = 0;
         let currentMediaList = [];
 
+        /* Pan & Zoom state for Lightbox */
         let lbZoom = 1;
         let lbPanX = 0;
         let lbPanY = 0;
@@ -1046,7 +997,6 @@
             const match = (p.id || '').match(/\d+/);
             return match ? parseInt(match[0], 10) : 0;
         }
-
         function getFilteredAndSortedProjects() {
             let list = [...projects];
 
@@ -1092,7 +1042,7 @@
             const isAllActive = currentCategory === 'ALL';
 
             let itemsHtml = `
-                <button onclick="setCategoryFilter('ALL')" class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-charcoal/5 dark:hover:bg-white/10 transition-colors group ${isAllActive ? 'bg-accent/10 text-accent font-bold' : 'text-charcoal/80 dark:text-cream/80'}">
+                <button onclick="setCategoryFilter('ALL')" class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-charcoal/5 dark:hover:bg-white/10 transition-colors group cursor-pointer ${isAllActive ? 'bg-accent/10 text-accent font-bold' : 'text-charcoal/80 dark:text-cream/80'}">
                     <span class="font-mono text-[10px] uppercase tracking-wider">TUTTI I PROGETTI</span>
                     <span class="font-mono text-[9px] ${isAllActive ? 'text-accent' : 'text-subtle'}">[${totalCount}]</span>
                 </button>
@@ -1102,7 +1052,7 @@
                 const count = projects.filter(p => (p.category || '').toUpperCase() === cat.toUpperCase()).length;
                 const isSelected = currentCategory.toUpperCase() === cat.toUpperCase();
                 itemsHtml += `
-                    <button onclick="setCategoryFilter('${cat}')" class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-charcoal/5 dark:hover:bg-white/10 transition-colors group ${isSelected ? 'bg-accent/10 text-accent font-bold' : 'text-charcoal/80 dark:text-cream/80'}">
+                    <button onclick="setCategoryFilter('${cat}')" class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-charcoal/5 dark:hover:bg-white/10 transition-colors group cursor-pointer ${isSelected ? 'bg-accent/10 text-accent font-bold' : 'text-charcoal/80 dark:text-cream/80'}">
                         <span class="font-mono text-[10px] uppercase tracking-wider">${cat}</span>
                         <span class="font-mono text-[9px] ${isSelected ? 'text-accent' : 'text-subtle'}">[${count}]</span>
                     </button>
@@ -1160,7 +1110,7 @@
             listEl.innerHTML = sortOptions.map(opt => {
                 const isSelected = opt.value === currentSort;
                 return `
-                    <button onclick="setSortMode('${opt.value}')" class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-charcoal/5 dark:hover:bg-white/10 transition-colors group ${isSelected ? 'bg-accent/10 text-accent font-bold' : 'text-charcoal/80 dark:text-cream/80'}">
+                    <button onclick="setSortMode('${opt.value}')" class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-charcoal/5 dark:hover:bg-white/10 transition-colors group cursor-pointer ${isSelected ? 'bg-accent/10 text-accent font-bold' : 'text-charcoal/80 dark:text-cream/80'}">
                         <span class="font-mono text-[10px] uppercase tracking-wider">${opt.label}</span>
                         ${isSelected ? '<span class="w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>' : ''}
                     </button>
@@ -1222,7 +1172,7 @@
                 container.innerHTML = `
                     <div class="space-y-2">
                         <p class="uppercase tracking-wider">NESSUN PROGETTO TROVATO IN QUESTA CATEGORIA</p>
-                        <button onclick="setCategoryFilter('ALL')" class="text-accent underline font-semibold">MOSTRA TUTTI I RECORD</button>
+                        <button onclick="setCategoryFilter('ALL')" class="text-accent underline font-semibold cursor-pointer">MOSTRA TUTTI I RECORD</button>
                     </div>
                 `;
                 return;
@@ -1299,7 +1249,6 @@
             });
             window.renderPortfolio();
         };
-
         function openBioWindow() {
             window.hidePreview();
             const backdrop = document.getElementById('bio-window-backdrop');
@@ -1341,7 +1290,6 @@
                 }
             });
         }
-
         function openProjectModal(index) {
             window.hidePreview();
             const activeList = getFilteredAndSortedProjects();
@@ -1451,7 +1399,6 @@
                 if (e.target.id === 'project-modal') window.closeProjectModal();
             });
         }
-
         window.renderModalMedia = function() {
             const activeItem = currentMediaList[currentActiveImageIndex];
             const activeUrl = window.getMediaSrc(activeItem);
@@ -1462,13 +1409,19 @@
             const imgEl = document.getElementById('modal-main-img');
             const videoEl = document.getElementById('modal-main-video');
             const hintEl = document.getElementById('modal-fullscreen-hint');
-            const counterEl = document.getElementById('modal-media-counter');
+            const counterTextEl = document.getElementById('modal-media-counter-text');
+            const prevMediaBtn = document.getElementById('modal-media-prev-btn');
+            const nextMediaBtn = document.getElementById('modal-media-next-btn');
 
-            if (counterEl) {
+            if (counterTextEl) {
                 const cur = String(currentActiveImageIndex + 1).padStart(2, '0');
                 const tot = String(currentMediaList.length).padStart(2, '0');
-                counterEl.textContent = `${cur} / ${tot}`;
+                counterTextEl.textContent = `${cur} / ${tot}`;
             }
+
+            const hasMultipleMedia = currentMediaList && currentMediaList.length > 1;
+            if (prevMediaBtn) prevMediaBtn.style.display = hasMultipleMedia ? 'flex' : 'none';
+            if (nextMediaBtn) nextMediaBtn.style.display = hasMultipleMedia ? 'flex' : 'none';
 
             if (window.isMediaVideo(activeItem)) {
                 imgEl.classList.add('hidden');
@@ -1495,7 +1448,33 @@
                 };
                 if (hintEl) hintEl.classList.remove('hidden');
             }
+            if (window.lucide) lucide.createIcons();
         };
+
+        function handleMediaBoxClick(e) {
+            // Evita di aprire il fullscreen se l'utente ha fatto click sui pulsanti di navigazione laterali
+            if (e && e.target && e.target.closest('#modal-media-prev-btn, #modal-media-next-btn')) {
+                return;
+            }
+            window.openLightbox(currentActiveImageIndex);
+        }
+        window.handleMediaBoxClick = handleMediaBoxClick;
+
+        function prevModalMedia(e) {
+            if (e) e.stopPropagation();
+            if (!currentMediaList || currentMediaList.length <= 1) return;
+            const prevIndex = (currentActiveImageIndex - 1 + currentMediaList.length) % currentMediaList.length;
+            window.setActiveModalMedia(prevIndex);
+        }
+        window.prevModalMedia = prevModalMedia;
+
+        function nextModalMedia(e) {
+            if (e) e.stopPropagation();
+            if (!currentMediaList || currentMediaList.length <= 1) return;
+            const nextIndex = (currentActiveImageIndex + 1) % currentMediaList.length;
+            window.setActiveModalMedia(nextIndex);
+        }
+        window.nextModalMedia = nextModalMedia;
 
         window.renderModalThumbs = function() {
             const thumbsContainer = document.getElementById('modal-gallery-thumbs');
@@ -1537,7 +1516,6 @@
             window.renderModalMedia();
             window.renderModalThumbs();
         };
-
         window.updateLightboxZoomDisplay = function() {
             const imgEl = document.getElementById('lb-main-img');
             const isVid = window.isMediaVideo(currentMediaList[currentActiveImageIndex]);
@@ -1577,34 +1555,34 @@
         }
         window.resetLightboxZoom = resetLightboxZoom;
 
-        window.render3DPrjDropdown = function() {
-            const listEl = document.getElementById('p3d-prj-dropdown-list');
+        window.renderLightboxPrjDropdown = function() {
+            const listEl = document.getElementById('lb-prj-dropdown-list');
             if (!listEl) return;
             const activeList = getFilteredAndSortedProjects();
 
             listEl.innerHTML = activeList.map((p, idx) => {
                 const isCurrent = idx === currentModalIndex;
                 return `
-                    <button onclick="switch3DProject(${idx})" class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-white/10 transition-colors group ${isCurrent ? 'bg-accent/20 text-accent font-bold' : 'text-cream/80'}">
+                    <button onclick="switchLightboxProject(${idx})" class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-white/10 transition-colors group cursor-pointer ${isCurrent ? 'bg-accent/20 text-accent font-bold' : 'text-cream/80'}">
                         <div class="flex items-center gap-2 truncate">
                             <span class="font-mono text-xs ${isCurrent ? 'text-accent' : 'text-subtle group-hover:text-cream'}">${p.id}</span>
                             <span class="font-serif italic text-sm truncate">${p.title}</span>
                         </div>
-                        <span class="font-mono text-[9px] text-subtle shrink-0 ml-2">[${p.model3d ? '3D' : 'DRAPPO'}]</span>
+                        <span class="font-mono text-[10px] text-subtle shrink-0 ml-2">[${p.year}]</span>
                     </button>
                 `;
             }).join('');
         };
 
-        function toggle3DPrjDropdown(e) {
+        function toggleLightboxPrjDropdown(e) {
             if (e) e.stopPropagation();
-            const menu = document.getElementById('p3d-prj-dropdown-menu');
-            const chevron = document.getElementById('p3d-prj-dropdown-chevron');
+            const menu = document.getElementById('lb-prj-dropdown-menu');
+            const chevron = document.getElementById('lb-prj-dropdown-chevron');
             if (!menu) return;
 
             const isHidden = menu.classList.contains('hidden');
             if (isHidden) {
-                window.render3DPrjDropdown();
+                window.renderLightboxPrjDropdown();
                 menu.classList.remove('hidden');
                 if (chevron) chevron.classList.add('rotate-180');
             } else {
@@ -1612,25 +1590,22 @@
                 if (chevron) chevron.classList.remove('rotate-180');
             }
         }
-        window.toggle3DPrjDropdown = toggle3DPrjDropdown;
+        window.toggleLightboxPrjDropdown = toggleLightboxPrjDropdown;
 
-        function close3DPrjDropdown() {
-            const menu = document.getElementById('p3d-prj-dropdown-menu');
-            const chevron = document.getElementById('p3d-prj-dropdown-chevron');
+        function closeLightboxPrjDropdown() {
+            const menu = document.getElementById('lb-prj-dropdown-menu');
+            const chevron = document.getElementById('lb-prj-dropdown-chevron');
             if (menu) menu.classList.add('hidden');
             if (chevron) chevron.classList.remove('rotate-180');
         }
-        window.close3DPrjDropdown = close3DPrjDropdown;
+        window.closeLightboxPrjDropdown = closeLightboxPrjDropdown;
 
-        function switch3DProject(index) {
-            const isMobile3D = document.getElementById('project-3d-viewport')?.classList.contains('mobile-active');
-            window.close3DPrjDropdown();
+        function switchLightboxProject(index) {
+            window.closeLightboxPrjDropdown();
             window.openProjectModal(index);
-            if (isMobile3D) {
-                window.openMobile3DView();
-            }
+            window.openLightbox(0);
         }
-        window.switch3DProject = switch3DProject;
+        window.switchLightboxProject = switchLightboxProject;
 
         function openLightbox(index = 0) {
             window.hidePreview();
@@ -1641,6 +1616,7 @@
             const lbPrjIdEl = document.getElementById('lb-prj-id');
             if (lbPrjIdEl) lbPrjIdEl.textContent = p.id;
 
+            window.closeLightboxPrjDropdown();
             window.resetLightboxZoom();
             window.updateLightboxDisplay();
 
@@ -1651,6 +1627,7 @@
         window.openLightbox = openLightbox;
 
         function closeLightbox() {
+            window.closeLightboxPrjDropdown();
             const lb = document.getElementById('fullscreen-lightbox');
             const videoEl = document.getElementById('lb-main-video');
             if (videoEl) {
@@ -1701,10 +1678,23 @@
 
             const thumbsEl = document.getElementById('lb-thumbnails');
             thumbsEl.innerHTML = currentMediaList.map((m, idx) => {
+                const thumbPoster = window.getMediaPoster(m, p);
                 const thumbSrc = window.getMediaSrc(m);
                 return `
                     <div onclick="setLightboxMedia(${idx})" class="w-9 h-7 sm:w-10 sm:h-8 rounded overflow-hidden border ${idx === currentActiveImageIndex ? 'border-accent ring-1 ring-accent' : 'border-white/20 opacity-50 hover:opacity-100'} cursor-pointer bg-black shrink-0 transition-all">
-                        <img src="${thumbSrc}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/80x60/171719/ffffff?text=Thumb'">
+                        ${window.isMediaVideo(m) ? `
+                            <div class="relative w-full h-full">
+                                <img src="${thumbPoster}" alt="Video Thumb" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="window.imgFallback(this)">
+                                <div class="absolute inset-0 bg-black/40 flex items-center justify-center text-[7px] font-mono text-accent font-bold">VID</div>
+                            </div>
+                        ` : window.isMediaGif(m) ? `
+                            <div class="relative w-full h-full">
+                                <img src="${thumbSrc}" loading="lazy" decoding="async" class="w-full h-full object-cover">
+                                <span class="absolute bottom-0 right-0 bg-charcoal text-accent font-mono text-[7px] px-0.5">GIF</span>
+                            </div>
+                        ` : `
+                            <img src="${thumbSrc}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/80x60/171719/ffffff?text=Thumb'">
+                        `}
                     </div>
                 `;
             }).join('');
@@ -1731,6 +1721,206 @@
             window.updateLightboxDisplay();
         }
         window.prevLightboxSlide = prevLightboxSlide;
+        const gestureArea = document.getElementById('lb-gesture-area');
+        const lbImg = document.getElementById('lb-main-img');
+
+        if (gestureArea && lbImg) {
+            gestureArea.addEventListener('wheel', (e) => {
+                const videoEl = document.getElementById('lb-main-video');
+                if (videoEl && !videoEl.classList.contains('hidden')) return;
+                e.preventDefault();
+                const delta = e.deltaY < 0 ? 0.35 : -0.35;
+                window.zoomLightbox(delta);
+            }, { passive: false });
+
+            lbImg.addEventListener('mousedown', (e) => {
+                if (lbZoom <= 1.05) return;
+                e.preventDefault();
+                isPanning = true;
+                startMouseX = e.clientX - lbPanX;
+                startMouseY = e.clientY - lbPanY;
+                window.updateLightboxZoomDisplay();
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isPanning) return;
+                lbPanX = e.clientX - startMouseX;
+                lbPanY = e.clientY - startMouseY;
+                window.updateLightboxZoomDisplay();
+            }, { passive: true });
+
+            window.addEventListener('mouseup', () => {
+                if (isPanning) {
+                    isPanning = false;
+                    window.updateLightboxZoomDisplay();
+                }
+            });
+
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let touchStartTime = 0;
+            let lastTapTime = 0;
+            let initialPinchDist = 0;
+            let initialPinchZoom = 1;
+            let isPinching = false;
+            let touchPanStartX = 0;
+            let touchPanStartY = 0;
+
+            gestureArea.addEventListener('touchstart', (e) => {
+                const videoEl = document.getElementById('lb-main-video');
+                if (videoEl && !videoEl.classList.contains('hidden')) return;
+
+                if (e.touches.length === 2) {
+                    isPinching = true;
+                    initialPinchDist = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                    initialPinchZoom = lbZoom;
+                } else if (e.touches.length === 1) {
+                    isPinching = false;
+                    const touch = e.touches[0];
+                    touchStartX = touch.clientX;
+                    touchStartY = touch.clientY;
+                    touchStartTime = Date.now();
+
+                    if (lbZoom > 1.05) {
+                        touchPanStartX = touch.clientX - lbPanX;
+                        touchPanStartY = touch.clientY - lbPanY;
+                    }
+                }
+            }, { passive: false });
+
+            gestureArea.addEventListener('touchmove', (e) => {
+                const videoEl = document.getElementById('lb-main-video');
+                if (videoEl && !videoEl.classList.contains('hidden')) return;
+
+                if (e.touches.length === 2 && isPinching) {
+                    e.preventDefault();
+                    const curDist = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                    if (initialPinchDist > 0) {
+                        const ratio = curDist / initialPinchDist;
+                        const targetZoom = Math.min(Math.max(1, initialPinchZoom * ratio), 4.5);
+                        lbZoom = Math.round(targetZoom * 100) / 100;
+                        window.updateLightboxZoomDisplay();
+                    }
+                } else if (e.touches.length === 1 && lbZoom > 1.05) {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    lbPanX = touch.clientX - touchPanStartX;
+                    lbPanY = touch.clientY - touchPanStartY;
+                    window.updateLightboxZoomDisplay();
+                }
+            }, { passive: false });
+
+            gestureArea.addEventListener('touchend', (e) => {
+                const videoEl = document.getElementById('lb-main-video');
+                if (videoEl && !videoEl.classList.contains('hidden')) return;
+
+                if (isPinching && e.touches.length < 2) {
+                    isPinching = false;
+                    if (lbZoom < 1.05) {
+                        window.resetLightboxZoom();
+                    }
+                    return;
+                }
+
+                if (e.changedTouches.length === 1 && !isPinching) {
+                    const touch = e.changedTouches[0];
+                    const deltaX = touch.clientX - touchStartX;
+                    const deltaY = touch.clientY - touchStartY;
+                    const elapsed = Date.now() - touchStartTime;
+
+                    const now = Date.now();
+                    if (now - lastTapTime < 300 && Math.hypot(deltaX, deltaY) < 20) {
+                        lastTapTime = 0;
+                        if (lbZoom > 1.05) {
+                            window.resetLightboxZoom();
+                        } else {
+                            window.zoomLightbox(1.5);
+                        }
+                        return;
+                    }
+                    lastTapTime = now;
+
+                    if (lbZoom <= 1.05 && elapsed < 600) {
+                        if (Math.abs(deltaX) > 42 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+                            if (deltaX < 0) {
+                                window.nextLightboxSlide();
+                            } else {
+                                window.prevLightboxSlide();
+                            }
+                        }
+                    }
+                }
+            }, { passive: true });
+
+            lbImg.addEventListener('dblclick', (e) => {
+                e.preventDefault();
+                if (lbZoom > 1) {
+                    window.resetLightboxZoom();
+                } else {
+                    window.zoomLightbox(1.5);
+                }
+            });
+        }
+        window.render3DPrjDropdown = function() {
+            const listEl = document.getElementById('p3d-prj-dropdown-list');
+            if (!listEl) return;
+            const activeList = getFilteredAndSortedProjects();
+
+            listEl.innerHTML = activeList.map((p, idx) => {
+                const isCurrent = idx === currentModalIndex;
+                return `
+                    <button onclick="switch3DProject(${idx})" class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-white/10 transition-colors group cursor-pointer ${isCurrent ? 'bg-accent/20 text-accent font-bold' : 'text-cream/80'}">
+                        <div class="flex items-center gap-2 truncate">
+                            <span class="font-mono text-xs ${isCurrent ? 'text-accent' : 'text-subtle group-hover:text-cream'}">${p.id}</span>
+                            <span class="font-serif italic text-sm truncate">${p.title}</span>
+                        </div>
+                        <span class="font-mono text-[9px] text-subtle shrink-0 ml-2">[${p.model3d ? '3D' : 'DRAPPO'}]</span>
+                    </button>
+                `;
+            }).join('');
+        };
+
+        function toggle3DPrjDropdown(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById('p3d-prj-dropdown-menu');
+            const chevron = document.getElementById('p3d-prj-dropdown-chevron');
+            if (!menu) return;
+
+            const isHidden = menu.classList.contains('hidden');
+            if (isHidden) {
+                window.render3DPrjDropdown();
+                menu.classList.remove('hidden');
+                if (chevron) chevron.classList.add('rotate-180');
+            } else {
+                menu.classList.add('hidden');
+                if (chevron) chevron.classList.remove('rotate-180');
+            }
+        }
+        window.toggle3DPrjDropdown = toggle3DPrjDropdown;
+
+        function close3DPrjDropdown() {
+            const menu = document.getElementById('p3d-prj-dropdown-menu');
+            const chevron = document.getElementById('p3d-prj-dropdown-chevron');
+            if (menu) menu.classList.add('hidden');
+            if (chevron) chevron.classList.remove('rotate-180');
+        }
+        window.close3DPrjDropdown = close3DPrjDropdown;
+
+        function switch3DProject(index) {
+            const isMobile3D = document.getElementById('project-3d-viewport')?.classList.contains('mobile-active');
+            window.close3DPrjDropdown();
+            window.openProjectModal(index);
+            if (isMobile3D) {
+                window.openMobile3DView();
+            }
+        }
+        window.switch3DProject = switch3DProject;
 
         let scene3d = null;
         let camera3d = null;
@@ -1756,12 +1946,16 @@
                     const mats = Array.isArray(child.material) ? child.material : [child.material];
                     mats.forEach(m => {
                         if (m.map) m.map.dispose();
+                        if (m.lightMap) m.lightMap.dispose();
+                        if (m.bumpMap) m.bumpMap.dispose();
+                        if (m.normalMap) m.normalMap.dispose();
+                        if (m.specularMap) m.specularMap.dispose();
+                        if (m.envMap) m.envMap.dispose();
                         m.dispose();
                     });
                 }
             });
         }
-
         window.start3DRenderLoop = function() {
             if (animFrameId3d) return;
 
@@ -1827,13 +2021,6 @@
         }
         window.resolveSafeAssetUrl = resolveSafeAssetUrl;
 
-        window.isHovering3DObject = function() {
-            if (!current3dMeshGroup || !camera3d) return false;
-            raycaster3d.setFromCamera(mouse3dVec, camera3d);
-            const intersects = raycaster3d.intersectObjects(current3dMeshGroup.children, true);
-            return intersects && intersects.length > 0;
-        };
-
         window.update3DThemeBackground = function() {
             if (!renderer3d) return;
             const isDark = document.documentElement.classList.contains('dark');
@@ -1841,17 +2028,53 @@
             renderer3d.setClearColor(bgColorHex, 1);
         };
 
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                window.stop3DRenderLoop();
-            } else {
-                const modal = document.getElementById('project-modal');
-                if (modal && !modal.classList.contains('opacity-0')) {
-                    window.start3DRenderLoop();
+        function update3DViewportDimensions() {
+            const container = document.getElementById('project-3d-canvas-container');
+            if (container && renderer3d && camera3d) {
+                const w = container.clientWidth || window.innerWidth;
+                const h = container.clientHeight || window.innerHeight;
+                if (w > 0 && h > 0) {
+                    camera3d.aspect = w / h;
+                    camera3d.updateProjectionMatrix();
+                    renderer3d.setSize(w, h, false);
+                    renderer3d.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
                 }
             }
-        });
+        }
+        window.update3DViewportDimensions = update3DViewportDimensions;
 
+        function openMobile3DView() {
+            const viewport = document.getElementById('project-3d-viewport');
+            if (!viewport) return;
+            viewport.classList.add('mobile-active');
+
+            const activeList = getFilteredAndSortedProjects();
+            const p = currentActiveProject || activeList[currentModalIndex] || projects[currentModalIndex];
+            currentActiveProject = p;
+
+            if (p && typeof window.setupProject3D === 'function') {
+                window.setupProject3D(p);
+            }
+
+            requestAnimationFrame(() => {
+                update3DViewportDimensions();
+                if (typeof window.reset3DCamera === 'function') {
+                    window.reset3DCamera();
+                }
+            });
+            setTimeout(update3DViewportDimensions, 100);
+        }
+        window.openMobile3DView = openMobile3DView;
+
+        function closeMobile3DView() {
+            const viewport = document.getElementById('project-3d-viewport');
+            if (!viewport) return;
+            viewport.classList.remove('mobile-active');
+            if (window.innerWidth < 1024) {
+                window.stop3DRenderLoop();
+            }
+        }
+        window.closeMobile3DView = closeMobile3DView;
         window.init3DViewer = function() {
             const container = document.getElementById('project-3d-canvas-container');
             if (!container || renderer3d || typeof THREE === 'undefined') return;
@@ -1882,15 +2105,80 @@
                 controls3d = new THREE.OrbitControls(camera3d, renderer3d.domElement);
                 controls3d.enableDamping = true;
                 controls3d.dampingFactor = 0.08;
+                controls3d.rotateSpeed = 1.0;
+                controls3d.zoomSpeed = 1.2;
+                controls3d.minPolarAngle = 0;
+                controls3d.maxPolarAngle = Math.PI;
+                controls3d.minDistance = 0.15;
+                controls3d.maxDistance = 150;
                 controls3d.target.set(0, 2.5, 0);
+
+                controls3d.touches = {
+                    ONE: THREE.TOUCH.ROTATE,
+                    TWO: THREE.TOUCH.DOLLY_PAN
+                };
             }
 
             const ambient = new THREE.AmbientLight(0xffffff, 0.72);
             scene3d.add(ambient);
 
+            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444455, 0.45);
+            hemiLight.position.set(0, 45, 0);
+            scene3d.add(hemiLight);
+
             const keyLight = new THREE.DirectionalLight(0xffffff, 0.75);
             keyLight.position.set(16, 20, 24);
             scene3d.add(keyLight);
+
+            const rimLight = new THREE.DirectionalLight(0xffffff, 0.55);
+            rimLight.position.set(-18, 14, -22);
+            scene3d.add(rimLight);
+
+            const fillLightBottom = new THREE.DirectionalLight(0xffffff, 0.35);
+            fillLightBottom.position.set(0, -22, 4);
+            scene3d.add(fillLightBottom);
+
+            container.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                mouse3dVec.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse3dVec.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+                const now = performance.now();
+                const dt = Math.max(1, now - lastMousePos.time);
+                const dist = Math.hypot(e.clientX - lastMousePos.x, e.clientY - lastMousePos.y);
+                mouseSpeed = dist / dt;
+
+                lastMousePos.x = e.clientX;
+                lastMousePos.y = e.clientY;
+                lastMousePos.time = now;
+            }, { passive: true });
+
+            container.addEventListener('mouseleave', () => {
+                mouse3dVec.set(-999, -999);
+                mouseSpeed = 0;
+            });
+
+            container.addEventListener('touchmove', (e) => {
+                if (e.touches && e.touches.length === 1) {
+                    const rect = container.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    mouse3dVec.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+                    mouse3dVec.y = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
+                    mouseSpeed = 0.35;
+                }
+            }, { passive: true });
+
+            container.addEventListener('touchend', () => {
+                mouse3dVec.set(-999, -999);
+                mouseSpeed = 0;
+            });
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 1024) {
+                    window.closeMobile3DView();
+                }
+                update3DViewportDimensions();
+            });
 
             window.start3DRenderLoop();
         };
@@ -1906,6 +2194,65 @@
                         m.needsUpdate = true;
                         return;
                     }
+
+                    if (child.material) {
+                        const mats = Array.isArray(child.material) ? child.material : [child.material];
+                        mats.forEach(m => {
+                            m.polygonOffset = true;
+                            m.polygonOffsetFactor = 1;
+                            m.polygonOffsetUnits = 1;
+                            m.wireframe = false;
+                            m.depthWrite = true;
+                            m.depthTest = true;
+                        });
+                    }
+
+                    let edgeLine = child.getObjectByName('__arch_edges__');
+                    if (!edgeLine && child.geometry) {
+                        try {
+                            const edgesGeom = new THREE.EdgesGeometry(child.geometry, 25);
+                            const lineMat = new THREE.LineBasicMaterial({ 
+                                color: 0xE63946, 
+                                linewidth: 1,
+                                transparent: true,
+                                opacity: 0.95
+                            });
+                            edgeLine = new THREE.LineSegments(edgesGeom, lineMat);
+                            edgeLine.name = '__arch_edges__';
+                            child.add(edgeLine);
+                        } catch (e) {}
+                    }
+
+                    if (edgeLine) {
+                        edgeLine.visible = true;
+                        if (current3DMode === 'technical') {
+                            edgeLine.material.color.setHex(0xE63946);
+                            edgeLine.material.opacity = 0.95;
+                        } else {
+                            edgeLine.material.color.setHex(0x111113);
+                            edgeLine.material.opacity = 0.85;
+                        }
+                    }
+
+                    if (child.material) {
+                        const mats = Array.isArray(child.material) ? child.material : [child.material];
+                        mats.forEach(m => {
+                            if (current3DMode === 'technical') {
+                                m.color.setHex(0x18181c);
+                                m.roughness = 0.65;
+                            } else {
+                                if (child.userData.hasTexture && m.map) {
+                                    m.color.setHex(0xffffff);
+                                } else if (child.userData.baseColor !== undefined) {
+                                    m.color.setHex(child.userData.baseColor);
+                                } else {
+                                    m.color.setHex(0xedece8);
+                                }
+                                m.roughness = 0.45;
+                            }
+                            m.needsUpdate = true;
+                        });
+                    }
                 }
             });
         };
@@ -1914,7 +2261,13 @@
             if (!currentActiveProject || !currentActiveProject.model3d) return;
             current3DMode = (current3DMode === 'technical') ? 'object' : 'technical';
             const labelEl = document.getElementById('p3d-mode-btn-label');
+            const dotEl = document.getElementById('p3d-mode-dot');
             if (labelEl) labelEl.textContent = (current3DMode === 'technical') ? 'CAD TECH' : 'OBJECT MODE';
+            if (dotEl) {
+                dotEl.className = (current3DMode === 'technical') 
+                    ? 'w-1.5 h-1.5 rounded-full bg-accent' 
+                    : 'w-1.5 h-1.5 rounded-full bg-emerald-400';
+            }
             if (current3dMeshGroup) window.apply3DModeToGroup(current3dMeshGroup);
         }
         window.cycle3DDisplayMode = cycle3DDisplayMode;
@@ -1978,7 +2331,6 @@
 
             setTimeout(update3DViewportDimensions, 50);
         };
-
         window.createInteractiveClothDrape = function(texturePath, project) {
             const group = new THREE.Group();
 
@@ -2007,7 +2359,6 @@
             const textureLoader = new THREE.TextureLoader();
             textureLoader.setCrossOrigin('anonymous');
 
-            // Materiale Object Mode di default
             const clothMat = new THREE.MeshStandardMaterial({
                 side: THREE.DoubleSide,
                 roughness: 0.64,
@@ -2015,7 +2366,7 @@
                 shadowSide: THREE.DoubleSide
             });
 
-            const texture = textureLoader.load(
+            textureLoader.load(
                 safeTexturePath,
                 (tex) => {
                     tex.generateMipmaps = true;
@@ -2042,7 +2393,6 @@
                 },
                 undefined,
                 () => {
-                    // Fallback visuale procedurale elegante se la risorsa non è raggiungibile
                     const fallbackCanvas = document.createElement('canvas');
                     fallbackCanvas.width = 512;
                     fallbackCanvas.height = 512;
@@ -2070,24 +2420,124 @@
             group.userData.accumulatedRotation = 0;
             group.userData.maxRotation = Math.PI * 2;
 
+            let lastHitU = -1;
+            let lastHitV = -1;
+            let frameCounter = 0;
+
             activeClothSim = {
                 mesh: clothMesh,
                 update: (time, dt) => {
                     const pos = clothGeom.attributes.position;
-                    for (let i = 0; i < pos.count; i++) {
-                        const origIdx = i * 3;
-                        const floatBreeze = Math.sin(time + origPositions[origIdx] * 0.5) * 0.03;
-                        pos.array[origIdx + 2] = origPositions[origIdx + 2] + floatBreeze;
+                    let mouseHitU = -1;
+                    let mouseHitV = -1;
+                    let impactDirectionSign = -1.0;
+
+                    if (mouse3dVec.x > -2 && camera3d) {
+                        raycaster3d.setFromCamera(mouse3dVec, camera3d);
+                        const intersects = raycaster3d.intersectObject(clothMesh);
+                        if (intersects.length > 0 && intersects[0].uv) {
+                            mouseHitU = intersects[0].uv.x;
+                            mouseHitV = intersects[0].uv.y;
+
+                            const localRayDir = raycaster3d.ray.direction.clone();
+                            localRayDir.applyEuler(new THREE.Euler(-group.rotation.x, -group.rotation.y, -group.rotation.z));
+                            impactDirectionSign = (localRayDir.z < 0) ? -1.0 : 1.0;
+                        }
                     }
+
+                    if (mouseHitU >= 0 && mouseHitV >= 0) {
+                        let strokeDist = 0;
+                        if (lastHitU >= 0 && lastHitV >= 0) {
+                            strokeDist = Math.hypot(mouseHitU - lastHitU, mouseHitV - lastHitV);
+                        }
+
+                        const isMoving = (strokeDist > 0.001) || (mouseSpeed > 0.10);
+
+                        if (isMoving) {
+                            const hitVelocity = Math.max(strokeDist * 60, mouseSpeed * 0.42);
+                            const impulsePower = Math.min(1.10, hitVelocity * 0.35);
+
+                            const centerI = mouseHitU * (cols - 1);
+                            const centerJ = (1.0 - mouseHitV) * (rows - 1);
+
+                            const impactRadius = 6.8;
+                            const minI = Math.max(0, Math.floor(centerI - impactRadius));
+                            const maxI = Math.min(cols - 1, Math.ceil(centerI + impactRadius));
+                            const minJ = Math.max(0, Math.floor(centerJ - impactRadius));
+                            const maxJ = Math.min(rows - 1, Math.ceil(centerJ + impactRadius));
+
+                            for (let j = minJ; j <= maxJ; j++) {
+                                const dj = j - centerJ;
+                                const rowBase = j * cols;
+                                for (let i = minI; i <= maxI; i++) {
+                                    const di = i - centerI;
+                                    const dist = Math.hypot(di, dj);
+                                    if (dist < impactRadius) {
+                                        const t = dist / impactRadius;
+                                        const bellCurve = (1 - t * t) * (1 - t * t);
+                                        velZ[rowBase + i] += impulsePower * bellCurve * 2.2 * impactDirectionSign;
+                                    }
+                                }
+                            }
+                        }
+
+                        lastHitU = mouseHitU;
+                        lastHitV = mouseHitV;
+                    } else {
+                        lastHitU = -1;
+                        lastHitV = -1;
+                    }
+
+                    const tension = 16.0;
+                    const dissipation = 0.932;
+                    const t1 = time * 0.9;
+                    const t2 = time * 0.7;
+
+                    for (let j = 0; j < rows; j++) {
+                        const rowIdx = j * cols;
+                        const vNorm = vNormArray[j];
+                        const waveV1 = vNorm * 1.8;
+                        const waveV2 = vNorm * 2.1;
+
+                        for (let i = 0; i < cols; i++) {
+                            const idx = rowIdx + i;
+                            const left = (i > 0) ? dispZ[idx - 1] : dispZ[idx];
+                            const right = (i < cols - 1) ? dispZ[idx + 1] : dispZ[idx];
+                            const up = (j > 0) ? dispZ[idx - cols] : dispZ[idx];
+                            const down = (j < rows - 1) ? dispZ[idx + cols] : dispZ[idx];
+
+                            const laplacian = (left + right + up + down) * 0.25 - dispZ[idx];
+                            const force = laplacian * tension - (dispZ[idx] * 2.1);
+
+                            velZ[idx] = (velZ[idx] + force * dt) * dissipation;
+                            dispZ[idx] += velZ[idx] * dt;
+
+                            const uNorm = uNormArray[i];
+                            const floatBreeze = Math.sin(t1 + uNorm * 2.2 + waveV1) * 0.022
+                                              + Math.cos(t2 - uNorm * 1.5 + waveV2) * 0.014;
+
+                            const origIdx = idx * 3;
+                            pos.array[origIdx + 2] = origPositions[origIdx + 2] + floatBreeze + dispZ[idx];
+                            pos.array[origIdx] = origPositions[origIdx] + (dispZ[idx] * 0.045);
+                            pos.array[origIdx + 1] = origPositions[origIdx + 1] + (dispZ[idx] * 0.032);
+                        }
+                    }
+
                     pos.needsUpdate = true;
+                    frameCounter++;
+                    if (frameCounter % 2 === 0) {
+                        clothGeom.computeVertexNormals();
+                    }
                 }
             };
 
             current3dMeshGroup = group;
             scene3d.add(current3dMeshGroup);
+
+            window.apply3DModeToGroup(current3dMeshGroup);
+            update3DViewportDimensions();
             window.reset3DCamera();
         };
-
         window.load3DModelFromPath = function(path) {
             if (!path) {
                 window.fallbackProcedural();
@@ -2278,8 +2728,6 @@
             }
         }
         window.reset3DCamera = reset3DCamera;
-
-        /* Gestione globale tastiera: chiusura con tasto ESC e navigazione media */
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27) {
                 // 1. Se il lightbox a tutto schermo è aperto, chiudi prima eventuali dropdown o il lightbox stesso
@@ -2342,10 +2790,25 @@
                     window.renderModalMedia();
                     window.renderModalThumbs();
                 }
+            } else if (e.key === '+' || e.key === '=') {
+                const lb = document.getElementById('fullscreen-lightbox');
+                if (lb && !lb.classList.contains('opacity-0')) {
+                    window.zoomLightbox(0.35);
+                }
+            } else if (e.key === '-' || e.key === '_') {
+                const lb = document.getElementById('fullscreen-lightbox');
+                if (lb && !lb.classList.contains('opacity-0')) {
+                    window.zoomLightbox(-0.35);
+                }
+            } else if (e.key === '0') {
+                const lb = document.getElementById('fullscreen-lightbox');
+                if (lb && !lb.classList.contains('opacity-0')) {
+                    window.resetLightboxZoom();
+                }
             }
         });
 
-        // Initialize UI components
+        // Initialize UI components on load
         if (window.lucide) lucide.createIcons();
         window.renderCategoryDropdown();
         window.renderSortDropdown();
