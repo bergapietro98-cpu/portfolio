@@ -150,13 +150,13 @@
     <!-- Top Navigation Header -->
     <header class="sticky top-0 z-30 bg-cream/90 dark:bg-paperDark/90 backdrop-blur-md text-sm font-mono border-b border-charcoal/5 dark:border-cream/5">
         <div class="px-4 py-2.5 sm:py-3 md:px-8 flex items-center justify-between gap-4">
-            <!-- Studio Name -->
-            <div class="flex items-center space-x-3">
-                <a href="#" onclick="openBioWindow(); return false;" class="font-bold text-base sm:text-lg tracking-tight text-accent hover:opacity-80 transition-opacity">
+            <!-- Studio Name linked to About Me -->
+            <button onclick="openBioWindow()" class="flex items-center space-x-3 text-left group cursor-pointer focus:outline-none" title="Apri Bio / About Me">
+                <span class="font-bold text-base sm:text-lg tracking-tight text-accent group-hover:opacity-80 transition-opacity">
                     PIETRO BERGAMASCHI
-                </a>
-                <span class="hidden sm:inline-block text-[11px] sm:text-xs px-2 py-0.5 border border-charcoal/20 dark:border-cream/20 text-charcoal dark:text-cream rounded uppercase tracking-widest">PORTFOLIO</span>
-            </div>
+                </span>
+                <span class="hidden sm:inline-block text-[11px] sm:text-xs px-2 py-0.5 border border-charcoal/20 dark:border-cream/20 text-charcoal dark:text-cream rounded uppercase tracking-widest group-hover:border-accent group-hover:text-accent transition-colors">PORTFOLIO</span>
+            </button>
 
             <!-- Top Actions: About Me & Mode Switcher -->
             <div class="flex items-center space-x-4 text-xs sm:text-sm">
@@ -251,7 +251,8 @@
             <!-- Project items rendered dynamically via JavaScript -->
         </div>
     </main>
-    <div id="bio-window-backdrop" class="fixed inset-0 z-50 bg-charcoal/40 dark:bg-black/60 backdrop-blur-[2px] opacity-0 pointer-events-none transition-opacity duration-200 flex items-center justify-center p-3 sm:p-6 md:p-8">
+
+    <div id="bio-window-backdrop" class="fixed inset-0 z-50 bg-charcoal/40 dark:bg-black/60 backdrop-blur-[2px] opacity-0 pointer-events-none hidden transition-opacity duration-200 flex items-center justify-center p-3 sm:p-6 md:p-8">
         <div id="bio-window" class="w-full max-w-3xl bg-[#F8F7F3] dark:bg-[#141416] text-charcoal dark:text-cream border border-charcoal/30 dark:border-cream/30 shadow-2xl rounded-sm transform scale-95 transition-transform duration-200 overflow-hidden flex flex-col max-h-[90vh]">
             
             <!-- Window Title Bar -->
@@ -370,7 +371,8 @@
             </div>
         </div>
     </div>
-    <div id="project-modal" class="fixed inset-0 z-50 bg-charcoal/35 dark:bg-black/45 backdrop-blur-[1px] opacity-0 pointer-events-none transition-opacity duration-300 flex justify-end">
+
+    <div id="project-modal" class="fixed inset-0 z-50 bg-charcoal/35 dark:bg-black/45 backdrop-blur-[1px] opacity-0 pointer-events-none hidden transition-opacity duration-300 flex justify-end">
         
         <!-- 3D Spatial Viewport: 50% split on lg+ screens, Fullscreen overlay when triggered on mobile/tablet -->
         <div id="project-3d-viewport" class="hidden lg:flex lg:w-1/2 h-full flex-col relative bg-cream dark:bg-[#141416] overflow-hidden transition-colors duration-250">
@@ -547,13 +549,30 @@
             </div>
         </div>
     </div>
-    <!-- Fullscreen Lightbox Modal -->
-    <div id="fullscreen-lightbox" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-between p-3 sm:p-5 md:p-8 select-none">
+
+    <!-- Fullscreen Lightbox Modal (Full-bleed edge-to-edge, no letterbox paddings) -->
+    <div id="fullscreen-lightbox" class="fixed inset-0 z-[100] bg-black opacity-0 pointer-events-none hidden transition-opacity duration-300 overflow-hidden select-none">
         
-        <!-- Lightbox Top HUD -->
-        <div class="flex items-center justify-between font-mono text-xs text-cream/70 border-b border-white/10 pb-3 relative">
-            <div class="flex items-center gap-2 sm:gap-3 relative">
-                <button id="lb-prj-dropdown-btn" onclick="toggleLightboxPrjDropdown(event)" class="text-accent font-bold flex items-center gap-1.5 px-2.5 py-1 rounded bg-white/5 hover:bg-white/15 border border-accent/40 transition-colors cursor-pointer group text-xs sm:text-sm" title="Cambia PRJ">
+        <!-- Full-bleed Viewing Canvas -->
+        <div id="lb-gesture-area" class="absolute inset-0 w-full h-full flex items-center justify-center overflow-hidden cursor-zoom-in">
+            <div class="w-full h-full flex items-center justify-center overflow-hidden">
+                <img id="lb-main-img" src="" alt="Fullscreen Archival View" class="w-full h-full object-contain shadow-2xl select-none zoom-transition pointer-events-auto origin-center">
+                <video id="lb-main-video" controls playsinline preload="metadata" class="w-full h-full object-contain hidden shadow-2xl bg-black"></video>
+            </div>
+        </div>
+
+        <!-- Left / Right Navigation Floating Arrows -->
+        <button onclick="prevLightboxSlide(); event.stopPropagation();" class="hidden md:flex absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-black/50 hover:bg-accent text-white items-center justify-center transition-all border border-white/20 hover:border-transparent group cursor-pointer backdrop-blur-md" title="PRJ Prec. (←)">
+            <i data-lucide="chevron-left" class="w-6 h-6 group-hover:-translate-x-0.5 transition-transform"></i>
+        </button>
+        <button onclick="nextLightboxSlide(); event.stopPropagation();" class="hidden md:flex absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-black/50 hover:bg-accent text-white items-center justify-center transition-all border border-white/20 hover:border-transparent group cursor-pointer backdrop-blur-md" title="PRJ Succ. (→)">
+            <i data-lucide="chevron-right" class="w-6 h-6 group-hover:translate-x-0.5 transition-transform"></i>
+        </button>
+
+        <!-- Lightbox Floating Top HUD with delicate gradient -->
+        <div class="absolute top-0 left-0 right-0 z-30 flex items-center justify-between font-mono text-xs text-cream/80 px-4 py-3 sm:px-6 sm:py-4 bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-none">
+            <div class="flex items-center gap-2 sm:gap-3 relative pointer-events-auto">
+                <button id="lb-prj-dropdown-btn" onclick="toggleLightboxPrjDropdown(event)" class="text-accent font-bold flex items-center gap-1.5 px-2.5 py-1 rounded bg-black/40 hover:bg-white/15 border border-accent/40 backdrop-blur-md transition-colors cursor-pointer group text-xs sm:text-sm" title="Cambia PRJ">
                     <span id="lb-prj-id">PRJ-01</span>
                     <i data-lucide="chevron-down" id="lb-prj-dropdown-chevron" class="w-3.5 h-3.5 transition-transform duration-200"></i>
                 </button>
@@ -568,41 +587,25 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-3 sm:gap-5">
-                <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-3 sm:gap-4 pointer-events-auto">
+                <div class="flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded border border-white/10">
                     <span id="lb-counter" class="text-accent font-bold text-xs sm:text-sm tracking-wider">01 / 01</span>
                 </div>
-                <button onclick="closeLightbox()" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-cream hover:text-accent bg-white/10 hover:bg-white/20 active:scale-95 rounded transition-all cursor-pointer" title="Chiudi [ESC]">
+                <button onclick="closeLightbox()" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-cream hover:text-accent bg-black/40 hover:bg-white/20 backdrop-blur-md border border-white/10 active:scale-95 rounded transition-all cursor-pointer" title="Chiudi [ESC]">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
         </div>
 
-        <!-- Lightbox Gesture & Viewing Area -->
-        <div id="lb-gesture-area" class="relative flex-1 flex items-center justify-center my-2 sm:my-4 overflow-hidden cursor-zoom-in">
-            <button onclick="prevLightboxSlide(); event.stopPropagation();" class="hidden md:flex absolute left-2 md:left-6 z-20 w-11 h-11 rounded-full bg-black/60 hover:bg-accent text-white items-center justify-center transition-all border border-white/20 hover:border-transparent group cursor-pointer" title="PRJ Prec. (←)">
-                <i data-lucide="chevron-left" class="w-6 h-6 group-hover:-translate-x-0.5 transition-transform"></i>
-            </button>
-
-            <div class="w-full h-full flex items-center justify-center overflow-hidden">
-                <img id="lb-main-img" src="" alt="Fullscreen Archival View" class="max-w-[92vw] max-h-[74vh] object-contain shadow-2xl select-none zoom-transition pointer-events-auto origin-center">
-                <video id="lb-main-video" controls playsinline preload="metadata" class="max-w-[92vw] max-h-[74vh] object-contain hidden shadow-2xl bg-black"></video>
-            </div>
-
-            <button onclick="nextLightboxSlide(); event.stopPropagation();" class="hidden md:flex absolute right-2 md:right-6 z-20 w-11 h-11 rounded-full bg-black/60 hover:bg-accent text-white items-center justify-center transition-all border border-white/20 hover:border-transparent group cursor-pointer" title="PRJ Succ. (→)">
-                <i data-lucide="chevron-right" class="w-6 h-6 group-hover:translate-x-0.5 transition-transform"></i>
-            </button>
-        </div>
-
-        <!-- Lightbox Bottom Navigation -->
-        <div class="flex items-center justify-center lg:justify-between gap-2 border-t border-white/10 pt-2 sm:pt-3">
-            <span class="font-mono text-[9px] sm:text-[10px] text-cream/40 uppercase tracking-widest hidden lg:inline">
+        <!-- Lightbox Floating Bottom Navigation Bar -->
+        <div class="absolute bottom-0 left-0 right-0 z-30 flex items-center justify-center lg:justify-between gap-3 px-4 py-3 sm:px-6 sm:py-3.5 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none">
+            <span class="font-mono text-[9px] sm:text-[10px] text-cream/50 uppercase tracking-widest hidden lg:inline">
                 SCORRI / ROTELLINA PER ZOOM
             </span>
-            <div id="lb-thumbnails" class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto max-w-full py-1">
+            <div id="lb-thumbnails" class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto max-w-full py-1 pointer-events-auto">
                 <!-- Injected via JS -->
             </div>
-            <span class="font-mono text-[9px] sm:text-[10px] text-cream/40 uppercase tracking-widest hidden lg:inline">
+            <span class="font-mono text-[9px] sm:text-[10px] text-cream/50 uppercase tracking-widest hidden lg:inline">
                 [ESC PER USCIRE]
             </span>
         </div>
@@ -881,6 +884,7 @@
         let isPanning = false;
         let startMouseX = 0;
         let startMouseY = 0;
+        let lbFitMode = 'contain'; // 'contain' (adatta) o 'cover' (riempi)
 
         const hoverPreview = document.getElementById('hover-preview-container');
         const hoverPreviewImg = document.getElementById('hover-preview-img');
@@ -926,9 +930,9 @@
             const prjModal = document.getElementById('project-modal');
             const bioBackdrop = document.getElementById('bio-window-backdrop');
             const lb = document.getElementById('fullscreen-lightbox');
-            return (prjModal && !prjModal.classList.contains('opacity-0')) ||
-                   (bioBackdrop && !bioBackdrop.classList.contains('opacity-0')) ||
-                   (lb && !lb.classList.contains('opacity-0'));
+            return (prjModal && !prjModal.classList.contains('hidden') && !prjModal.classList.contains('opacity-0')) ||
+                   (bioBackdrop && !bioBackdrop.classList.contains('hidden') && !bioBackdrop.classList.contains('opacity-0')) ||
+                   (lb && !lb.classList.contains('hidden') && !lb.classList.contains('opacity-0'));
         };
 
         let hoverDebounceTimer = null;
@@ -1254,10 +1258,13 @@
             const backdrop = document.getElementById('bio-window-backdrop');
             const windowEl = document.getElementById('bio-window');
             if (!backdrop || !windowEl) return;
+            backdrop.classList.remove('hidden');
+            void backdrop.offsetWidth; // Trigger reflow for transition
             backdrop.classList.remove('opacity-0', 'pointer-events-none');
             backdrop.classList.add('opacity-100');
             windowEl.classList.remove('scale-95');
             windowEl.classList.add('scale-100');
+            if (window.lucide) lucide.createIcons();
         }
         window.openBioWindow = openBioWindow;
 
@@ -1268,9 +1275,10 @@
             windowEl.classList.remove('scale-100');
             windowEl.classList.add('scale-95');
             backdrop.classList.remove('opacity-100');
+            backdrop.classList.add('opacity-0', 'pointer-events-none');
             setTimeout(() => {
-                backdrop.classList.add('opacity-0', 'pointer-events-none');
-            }, 180);
+                backdrop.classList.add('hidden');
+            }, 200);
         }
         window.closeBioWindow = closeBioWindow;
 
@@ -1328,6 +1336,10 @@
 
             const modal = document.getElementById('project-modal');
             const content = document.getElementById('modal-content');
+            if (!modal || !content) return;
+            
+            modal.classList.remove('hidden');
+            void modal.offsetWidth; // forza il reflow CSS per consentire l'animazione di transizione
             modal.classList.remove('opacity-0', 'pointer-events-none');
             content.classList.remove('translate-x-full');
 
@@ -1379,6 +1391,7 @@
             const content = document.getElementById('modal-content');
             if (!modal || !content) return;
             content.classList.add('translate-x-full');
+            modal.classList.add('opacity-0', 'pointer-events-none');
             
             const videoEl = document.getElementById('modal-main-video');
             if (videoEl) {
@@ -1388,7 +1401,7 @@
             window.stop3DRenderLoop();
 
             setTimeout(() => {
-                modal.classList.add('opacity-0', 'pointer-events-none');
+                modal.classList.add('hidden');
             }, 250);
         }
         window.closeProjectModal = closeProjectModal;
@@ -1516,6 +1529,36 @@
             window.renderModalMedia();
             window.renderModalThumbs();
         };
+
+        window.toggleLightboxFitMode = function() {
+            lbFitMode = (lbFitMode === 'contain') ? 'cover' : 'contain';
+            const imgEl = document.getElementById('lb-main-img');
+            const videoEl = document.getElementById('lb-main-video');
+            const labelEl = document.getElementById('lb-fit-label');
+            const iconEl = document.getElementById('lb-fit-icon');
+
+            if (labelEl) {
+                labelEl.textContent = (lbFitMode === 'cover') ? 'ADATTA' : 'RIEMPI';
+            }
+            if (iconEl) {
+                iconEl.setAttribute('data-lucide', (lbFitMode === 'cover') ? 'minimize' : 'maximize');
+            }
+
+            [imgEl, videoEl].forEach(el => {
+                if (!el) return;
+                if (lbFitMode === 'cover') {
+                    el.classList.remove('object-contain');
+                    el.classList.add('object-cover');
+                } else {
+                    el.classList.remove('object-cover');
+                    el.classList.add('object-contain');
+                }
+            });
+
+            window.resetLightboxZoom();
+            if (window.lucide) lucide.createIcons();
+        };
+
         window.updateLightboxZoomDisplay = function() {
             const imgEl = document.getElementById('lb-main-img');
             const isVid = window.isMediaVideo(currentMediaList[currentActiveImageIndex]);
@@ -1621,7 +1664,11 @@
             window.updateLightboxDisplay();
 
             const lb = document.getElementById('fullscreen-lightbox');
-            lb.classList.remove('opacity-0', 'pointer-events-none');
+            if (lb) {
+                lb.classList.remove('hidden');
+                void lb.offsetWidth; // forza il reflow
+                lb.classList.remove('opacity-0', 'pointer-events-none');
+            }
             if (window.lucide) lucide.createIcons();
         }
         window.openLightbox = openLightbox;
@@ -1629,12 +1676,16 @@
         function closeLightbox() {
             window.closeLightboxPrjDropdown();
             const lb = document.getElementById('fullscreen-lightbox');
+            if (!lb) return;
             const videoEl = document.getElementById('lb-main-video');
             if (videoEl) {
                 try { videoEl.pause(); } catch(e) {}
             }
             window.resetLightboxZoom();
             lb.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                lb.classList.add('hidden');
+            }, 250);
         }
         window.closeLightbox = closeLightbox;
 
@@ -2660,7 +2711,7 @@
             wrapper.position.set(0, centerY, 0);
 
             wrapper.userData.targetCenter = new THREE.Vector3(0, centerY, 0);
-            wrapper.userData.rotationSpeed = (isONJJ || isTENT1) ? 0.35 : 0.25;
+            wrapper.userData.rotationSpeed = (isONJJ || isTENT1) ? 0.18 : 0.15;
             wrapper.userData.accumulatedRotation = 0;
             wrapper.userData.maxRotation = Math.PI * 2;
 
